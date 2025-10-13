@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>SB Logger</title>
+  <style>
+    body { font-family: Arial, sans-serif; width: 520px; margin: 10px; color: #222; }
+    h1 { font-size: 16px; margin: 4px 0 10px; }
+    #bets { max-height: 350px; overflow: auto; border: 1px solid #ddd; padding: 6px; background: #fafafa; }
+    table { border-collapse: collapse; width: 100%; font-size: 12px; background: #fff; }
+    th, td { padding: 8px; border-bottom: 1px solid #eee; text-align: left; vertical-align: top; }
+    th { background: #f0f0f0; font-weight: 600; font-size: 12px; }
+    tr:hover { background: #f8f8f8; }
+    .controls { margin-top: 8px; display:flex; gap:8px; }
+    button { padding: 6px 10px; font-size: 12px; cursor: pointer; border: 1px solid #ccc; background: #fff; border-radius: 3px; }
+    button:hover { background: #f0f0f0; }
+    #clear-all { color: #c00; border-color: #c00; }
+    #clear-all:hover { background: #fee; }
+    .note { color: #666; font-size: 11px; margin-top: 2px; }
+    .small { font-size: 11px; color: #555; }
+    .badge { display: inline-block; border-radius: 3px; }
+    #chart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; }
+    #chart-modal.active { display: flex; align-items: center; justify-content: center; }
+    #chart-container { background: #fff; padding: 25px; border-radius: 8px; width: 95%; max-width: 750px; max-height: 85%; overflow: auto; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    #close-chart { position: absolute; top: 15px; right: 15px; background: #dc3545; color: #fff; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 14px; }
+    #close-chart:hover { background: #c82333; }
+    #chart-container h2 { margin: 0 0 15px 0; font-size: 18px; color: #333; font-weight: 600; }
+    canvas { display: block; max-width: 100%; height: auto; }
+  </style>
+</head>
+<body>
+  <h1>SB Logger — Saved Bets</h1>
+  <div style="margin-bottom:8px;display:flex;align-items:center;gap:8px;font-size:12px">
+    <label style="font-weight:600">Sort by:</label>
+    <select id="sort-select" style="padding:4px 8px;border:1px solid #ccc;border-radius:3px;font-size:12px">
+      <option value="saved-desc">Saved (newest first)</option>
+      <option value="saved-asc">Saved (oldest first)</option>
+      <option value="event-asc">Event Time (soonest first)</option>
+      <option value="event-desc">Event Time (latest first)</option>
+      <option value="status">Status (pending first)</option>
+    </select>
+  </div>
+  <div id="bets">
+    <div class="small">Loading...</div>
+  </div>
+
+  <div class="controls">
+    <button id="view-chart">📊 View Chart</button>
+    <button id="export-json">Export JSON</button>
+    <button id="export-csv">Export CSV</button>
+    <button id="clear-all" style="margin-left:auto;color:#c00">Clear All</button>
+  </div>
+
+  <div id="chart-modal">
+    <div id="chart-container">
+      <button id="close-chart">✕</button>
+      <h2>Betting Performance: P/L vs Expected Value</h2>
+      <canvas id="plChart" width="700" height="450"></canvas>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

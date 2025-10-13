@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "SB Logger - Save Bets",
+  "version": "1.0.0",
+  "description": "Injects a 'Save Bet' button to record bets (amount, page, selection). View and export saved bets.",
+  "icons": {
+    "48": "icons/icon48.png",
+    "96": "icons/icon96.png"
+  },
+  "permissions": [
+    "storage",
+    "downloads",
+    "activeTab"
+  ],
+  "action": {
+    "default_icon": {
+      "48": "icons/icon48.png",
+      "96": "icons/icon96.png"
+    },
+    "default_title": "SB Logger",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["contentScript.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "host_permissions": ["<all_urls>"]
+}
