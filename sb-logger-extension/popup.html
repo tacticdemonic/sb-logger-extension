@@ -15,6 +15,11 @@
     .controls { margin-top: 8px; display:flex; gap:8px; }
     button { padding: 6px 10px; font-size: 12px; cursor: pointer; border: 1px solid #ccc; background: #fff; border-radius: 3px; }
     button:hover { background: #f0f0f0; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    #check-results { background: #28a745; color: #fff; border-color: #28a745; font-weight: 500; }
+    #check-results:hover:not(:disabled) { background: #218838; }
+    #api-setup { background: #6c757d; color: #fff; border-color: #6c757d; }
+    #api-setup:hover { background: #5a6268; }
     #clear-all { color: #c00; border-color: #c00; }
     #clear-all:hover { background: #fee; }
     .note { color: #666; font-size: 11px; margin-top: 2px; }
@@ -40,12 +45,41 @@
       <option value="event-desc">Event Time (latest first)</option>
       <option value="status">Status (pending first)</option>
     </select>
+    <button id="commission-settings" style="padding:4px 8px;border:1px solid #007bff;background:#007bff;color:#fff;border-radius:3px;font-size:12px;cursor:pointer;margin-left:auto">⚙️ Commission</button>
+  </div>
+  <div id="commission-panel" style="display:none;margin-bottom:8px;padding:10px;background:#f8f9fa;border:1px solid #dee2e6;border-radius:4px;font-size:12px">
+    <div style="font-weight:600;margin-bottom:8px">Exchange Commission Rates (%)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div>
+        <label style="display:block;color:#666;margin-bottom:2px">Betfair:</label>
+        <input type="number" id="comm-betfair" step="0.1" min="0" max="100" style="width:100%;padding:4px;border:1px solid #ccc;border-radius:3px" />
+      </div>
+      <div>
+        <label style="display:block;color:#666;margin-bottom:2px">Betdaq:</label>
+        <input type="number" id="comm-betdaq" step="0.1" min="0" max="100" style="width:100%;padding:4px;border:1px solid #ccc;border-radius:3px" />
+      </div>
+      <div>
+        <label style="display:block;color:#666;margin-bottom:2px">Matchbook:</label>
+        <input type="number" id="comm-matchbook" step="0.1" min="0" max="100" style="width:100%;padding:4px;border:1px solid #ccc;border-radius:3px" />
+      </div>
+      <div>
+        <label style="display:block;color:#666;margin-bottom:2px">Smarkets:</label>
+        <input type="number" id="comm-smarkets" step="0.1" min="0" max="100" style="width:100%;padding:4px;border:1px solid #ccc;border-radius:3px" />
+      </div>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:6px;justify-content:flex-end">
+      <button id="save-commission" style="padding:4px 12px;background:#28a745;color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:11px">Save</button>
+      <button id="cancel-commission" style="padding:4px 12px;background:#6c757d;color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:11px">Cancel</button>
+    </div>
+    <div class="note" style="margin-top:6px">Commission is deducted from winning bets only. Default: Betfair 5%, Betdaq 2%, Matchbook 1%, Smarkets 2%</div>
   </div>
   <div id="bets">
     <div class="small">Loading...</div>
   </div>
 
   <div class="controls">
+    <button id="check-results">🔍 Check Results</button>
+    <button id="api-setup">⚙️ API Setup</button>
     <button id="view-chart">📊 View Chart</button>
     <button id="export-json">Export JSON</button>
     <button id="export-csv">Export CSV</button>

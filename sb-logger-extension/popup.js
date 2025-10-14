@@ -7,6 +7,77 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnChart = document.getElementById('view-chart');
   const btnCloseChart = document.getElementById('close-chart');
   const chartModal = document.getElementById('chart-modal');
+  const btnCheckResults = document.getElementById('check-results');
+  const btnApiSetup = document.getElementById('api-setup');
+  const btnCommissionSettings = document.getElementById('commission-settings');
+  const commissionPanel = document.getElementById('commission-panel');
+  const btnSaveCommission = document.getElementById('save-commission');
+  const btnCancelCommission = document.getElementById('cancel-commission');
+
+  // Default commission rates
+  const defaultCommission = {
+    betfair: 5.0,
+    betdaq: 2.0,
+    matchbook: 1.0,
+    smarkets: 2.0
+  };
+
+  // Load commission settings
+  let commissionRates = { ...defaultCommission };
+  chrome.storage.local.get({ commission: defaultCommission }, (res) => {
+    commissionRates = res.commission;
+  });
+
+  // Helper function to get commission rate for a bookmaker
+  function getCommission(bookmaker) {
+    if (!bookmaker) return 0;
+    const bookie = bookmaker.toLowerCase();
+    if (bookie.includes('betfair')) return commissionRates.betfair || 0;
+    if (bookie.includes('betdaq')) return commissionRates.betdaq || 0;
+    if (bookie.includes('matchbook')) return commissionRates.matchbook || 0;
+    if (bookie.includes('smarkets')) return commissionRates.smarkets || 0;
+    return 0;
+  }
+
+  // Commission settings button
+  if (btnCommissionSettings) {
+    btnCommissionSettings.addEventListener('click', () => {
+      const isVisible = commissionPanel.style.display !== 'none';
+      if (isVisible) {
+        commissionPanel.style.display = 'none';
+      } else {
+        // Load current values
+        document.getElementById('comm-betfair').value = commissionRates.betfair || defaultCommission.betfair;
+        document.getElementById('comm-betdaq').value = commissionRates.betdaq || defaultCommission.betdaq;
+        document.getElementById('comm-matchbook').value = commissionRates.matchbook || defaultCommission.matchbook;
+        document.getElementById('comm-smarkets').value = commissionRates.smarkets || defaultCommission.smarkets;
+        commissionPanel.style.display = 'block';
+      }
+    });
+  }
+
+  // Save commission settings
+  if (btnSaveCommission) {
+    btnSaveCommission.addEventListener('click', () => {
+      commissionRates = {
+        betfair: parseFloat(document.getElementById('comm-betfair').value) || 0,
+        betdaq: parseFloat(document.getElementById('comm-betdaq').value) || 0,
+        matchbook: parseFloat(document.getElementById('comm-matchbook').value) || 0,
+        smarkets: parseFloat(document.getElementById('comm-smarkets').value) || 0
+      };
+      chrome.storage.local.set({ commission: commissionRates }, () => {
+        commissionPanel.style.display = 'none';
+        loadAndRender(); // Refresh display with new commission rates
+      });
+    });
+  }
+
+  // Cancel commission settings
+  if (btnCancelCommission) {
+    btnCancelCommission.addEventListener('click', () => {
+      commissionPanel.style.display = 'none';
+    });
+  }
 
   function render(bets, sortBy = 'saved-desc') {
     if (!bets || bets.length === 0) {
@@ -63,27 +134,41 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const rows = sortedBets.map((b, idx) => {
       const ts = new Date(b.timestamp).toLocaleString();
-      const potential = b.stake && b.odds ? (b.stake * b.odds).toFixed(2) : '-';
-      const profit = b.stake && b.odds ? ((b.stake * b.odds) - b.stake).toFixed(2) : '-';
+      const commission = getCommission(b.bookmaker);
       
-      // Calculate expected value (EV) based on probability and odds
+      // Calculate profit with commission
+      let profit = 0;
+      let potential = 0;
+      if (b.stake && b.odds) {
+        const grossProfit = (parseFloat(b.stake) * parseFloat(b.odds)) - parseFloat(b.stake);
+        const commissionAmount = commission > 0 ? (grossProfit * commission / 100) : 0;
+        profit = grossProfit - commissionAmount;
+        potential = parseFloat(b.stake) + profit;
+      }
+      const profitDisplay = b.stake && b.odds ? profit.toFixed(2) : '-';
+      const potentialDisplay = b.stake && b.odds ? potential.toFixed(2) : '-';
+      
+      // Calculate expected value (EV) based on probability and odds, including commission
       let expectedValue = 0;
       if (b.stake && b.odds && b.probability) {
         const winProb = parseFloat(b.probability) / 100;
-        const winAmount = parseFloat(b.stake) * parseFloat(b.odds);
+        const grossWinAmount = parseFloat(b.stake) * parseFloat(b.odds);
+        const grossProfit = grossWinAmount - parseFloat(b.stake);
+        const commissionAmount = commission > 0 ? (grossProfit * commission / 100) : 0;
+        const netWinAmount = grossWinAmount - commissionAmount;
         const loseProb = 1 - winProb;
         const loseAmount = parseFloat(b.stake);
-        expectedValue = (winProb * winAmount) - (loseProb * loseAmount);
+        expectedValue = (winProb * netWinAmount) - (loseProb * loseAmount);
       }
       
       // Add to total EV for all bets
       totalEV += expectedValue;
       
-      // Calculate actual profit/loss based on status
+      // Calculate actual profit/loss based on status, including commission
       let actualPL = 0;
       if (b.stake && b.odds) {
         if (b.status === 'won') {
-          actualPL = parseFloat(profit);
+          actualPL = profit;
         } else if (b.status === 'lost') {
           actualPL = -parseFloat(b.stake);
         }
@@ -102,12 +187,12 @@ document.addEventListener('DOMContentLoaded', () => {
       // Status badge
       let statusBadge = '';
       let statusColor = '#6c757d';
-      let plDisplay = profit;
+      let plDisplay = profitDisplay;
       
       if (b.status === 'won') {
         statusBadge = '✓ WON';
         statusColor = '#28a745';
-        plDisplay = `+${profit}`;
+        plDisplay = `+${profitDisplay}`;
       } else if (b.status === 'lost') {
         statusBadge = '✗ LOST';
         statusColor = '#dc3545';
@@ -161,9 +246,9 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <div style="margin-top:4px;font-size:12px">
             <strong>Stake:</strong> ${b.stake || '-'} | 
-            <strong>Potential:</strong> ${potential} | 
+            <strong>Potential:</strong> ${potentialDisplay} | 
             <strong>P/L:</strong> <span style="color:${b.status === 'won' ? '#28a745' : b.status === 'lost' ? '#dc3545' : '#666'}">${plDisplay}</span> | 
-            <strong>EV:</strong> <span style="color:#007bff">${expectedValue > 0 ? '+' : ''}${expectedValue.toFixed(2)}</span>
+            <strong>EV:</strong> <span style="color:#007bff">${expectedValue > 0 ? '+' : ''}${expectedValue.toFixed(2)}</span>${commission > 0 ? ` <span style="font-size:10px;color:#666">(${commission}% comm)</span>` : ''}
           </div>
           ${b.note ? `<div class="note" style="margin-top:4px"><em>${escapeHtml(b.note)}</em></div>` : ''}
           ${b.status !== 'won' && b.status !== 'lost' && b.status !== 'void' ? `
@@ -270,23 +355,38 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       // Build CSV header
       const rows = [];
-      rows.push(['timestamp', 'bookmaker', 'sport', 'event', 'tournament', 'market', 'odds', 'probability', 'overvalue', 'stake', 'potential_return', 'profit', 'expected_value', 'status', 'settled_at', 'actual_pl', 'note', 'url'].join(','));
+      rows.push(['timestamp', 'bookmaker', 'sport', 'event', 'tournament', 'market', 'odds', 'probability', 'overvalue', 'stake', 'commission_rate', 'commission_amount', 'potential_return', 'profit', 'expected_value', 'status', 'settled_at', 'actual_pl', 'note', 'url'].join(','));
       for (const b of data) {
         const esc = (v) => `\"${('' + (v ?? '')).replace(/\"/g, '\"\"')}\"`;
-        const potential = b.stake && b.odds ? (b.stake * b.odds).toFixed(2) : '';
-        const profit = b.stake && b.odds ? ((b.stake * b.odds) - b.stake).toFixed(2) : '';
+        const commission = getCommission(b.bookmaker);
         
-        // Calculate expected value
+        // Calculate profit with commission
+        let profit = '';
+        let potential = '';
+        let commissionAmount = '';
+        if (b.stake && b.odds) {
+          const grossProfit = (parseFloat(b.stake) * parseFloat(b.odds)) - parseFloat(b.stake);
+          const commAmt = commission > 0 ? (grossProfit * commission / 100) : 0;
+          const netProfit = grossProfit - commAmt;
+          profit = netProfit.toFixed(2);
+          potential = (parseFloat(b.stake) + netProfit).toFixed(2);
+          commissionAmount = commAmt.toFixed(2);
+        }
+        
+        // Calculate expected value with commission
         let expectedValue = '';
         if (b.stake && b.odds && b.probability) {
           const winProb = parseFloat(b.probability) / 100;
-          const winAmount = parseFloat(b.stake) * parseFloat(b.odds);
+          const grossWinAmount = parseFloat(b.stake) * parseFloat(b.odds);
+          const grossProfit = grossWinAmount - parseFloat(b.stake);
+          const commAmt = commission > 0 ? (grossProfit * commission / 100) : 0;
+          const netWinAmount = grossWinAmount - commAmt;
           const loseProb = 1 - winProb;
           const loseAmount = parseFloat(b.stake);
-          expectedValue = ((winProb * winAmount) - (loseProb * loseAmount)).toFixed(2);
+          expectedValue = ((winProb * netWinAmount) - (loseProb * loseAmount)).toFixed(2);
         }
         
-        // Calculate actual P/L
+        // Calculate actual P/L with commission
         let actualPL = '';
         if (b.stake && b.odds) {
           if (b.status === 'won') {
@@ -309,6 +409,8 @@ document.addEventListener('DOMContentLoaded', () => {
           esc(b.probability),
           esc(b.overvalue),
           esc(b.stake),
+          esc(commission),
+          esc(commissionAmount),
           esc(potential),
           esc(profit),
           esc(expectedValue),
@@ -360,6 +462,85 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  if (btnCheckResults) {
+    btnCheckResults.addEventListener('click', () => {
+      btnCheckResults.disabled = true;
+      btnCheckResults.textContent = '🔄 Checking...';
+      
+      console.log('🔍 Check Results button clicked');
+      console.log('📤 Sending message to background script...');
+      
+      chrome.runtime.sendMessage({ action: 'checkResults' }, (response) => {
+        console.log('📬 Message callback triggered');
+        
+        // Check for runtime errors
+        if (chrome.runtime.lastError) {
+          console.error('❌ Runtime error:', chrome.runtime.lastError);
+          btnCheckResults.disabled = false;
+          btnCheckResults.textContent = '🔍 Check Results';
+          alert('Communication error: ' + chrome.runtime.lastError.message);
+          return;
+        }
+        btnCheckResults.disabled = false;
+        btnCheckResults.textContent = '🔍 Check Results';
+        
+        console.log('📥 Response received:', response);
+        
+        if (!response) {
+          console.error('❌ No response received from background script');
+          alert('No response from result checker. Check the console (F12) for errors.');
+          return;
+        }
+        
+        if (response.error) {
+          console.error('❌ Error response:', response.error);
+          alert('Error checking results: ' + response.error);
+        } else if (response.message) {
+          console.log('ℹ️ Info message:', response.message);
+          alert(response.message);
+        } else if (response.results !== undefined) {
+          const found = response.found || 0;
+          const checked = response.checked || 0;
+          
+          console.log(`✅ Results: ${found} found from ${checked} checked`);
+          
+          if (found > 0) {
+            alert(`Found ${found} result(s) from ${checked} bet(s) checked!\n\nRefreshing bet list...`);
+            loadAndRender();
+          } else {
+            alert(`Checked ${checked} bet(s), but no results found yet.\n\nBets will be rechecked automatically or you can try again later.`);
+          }
+        } else {
+          console.error('❌ Unexpected response structure:', JSON.stringify(response));
+          alert('Unexpected response from result checker.\n\nResponse: ' + JSON.stringify(response));
+        }
+      });
+    });
+  }
+
+  if (btnApiSetup) {
+    btnApiSetup.addEventListener('click', () => {
+      const message = `API Setup Instructions:
+      
+1. Get free API keys:
+   • API-Football: https://www.api-football.com/ (100 req/day)
+   • The Odds API: https://the-odds-api.com/ (500 req/month)
+
+2. Open the extension folder:
+   sb-logger-extension/apiService.js
+
+3. Replace the placeholder API keys at the top of the file
+
+4. Reload the extension in Firefox (about:debugging)
+
+5. Click "🔍 Check Results" to test
+
+See API_SETUP.md in the extension folder for detailed instructions.`;
+      
+      alert(message);
+    });
+  }
+
   function showChart(bets) {
     const canvas = document.getElementById('plChart');
     const ctx = canvas.getContext('2d');
@@ -373,21 +554,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const dataPoints = [];
     
     sortedBets.forEach((b, idx) => {
-      // Calculate EV
+      // Calculate EV with commission
       let ev = 0;
       if (b.stake && b.odds && b.probability) {
+        const commission = getCommission(b.bookmaker);
         const winProb = parseFloat(b.probability) / 100;
-        const winAmount = parseFloat(b.stake) * parseFloat(b.odds);
+        const grossWinAmount = parseFloat(b.stake) * parseFloat(b.odds);
+        const grossProfit = grossWinAmount - parseFloat(b.stake);
+        const commissionAmount = commission > 0 ? (grossProfit * commission / 100) : 0;
+        const netWinAmount = grossWinAmount - commissionAmount;
         const loseProb = 1 - winProb;
         const loseAmount = parseFloat(b.stake);
-        ev = (winProb * winAmount) - (loseProb * loseAmount);
+        ev = (winProb * netWinAmount) - (loseProb * loseAmount);
       }
       cumulativeEV += ev;
       
-      // Calculate actual P/L for settled bets
+      // Calculate actual P/L for settled bets with commission
       if (b.status === 'won' && b.stake && b.odds) {
-        const profit = (parseFloat(b.stake) * parseFloat(b.odds)) - parseFloat(b.stake);
-        cumulativePL += profit;
+        const commission = getCommission(b.bookmaker);
+        const grossProfit = (parseFloat(b.stake) * parseFloat(b.odds)) - parseFloat(b.stake);
+        const commissionAmount = commission > 0 ? (grossProfit * commission / 100) : 0;
+        const netProfit = grossProfit - commissionAmount;
+        cumulativePL += netProfit;
       } else if (b.status === 'lost' && b.stake) {
         cumulativePL -= parseFloat(b.stake);
       }
