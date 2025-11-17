@@ -1,6 +1,38 @@
 // Popup UI — lists bets and triggers export/clear actions.
 console.log('🚀 SB Logger Popup Script Loading...');
 
+// Use chrome API when available (includes Firefox shim), fallback to browser
+const api = typeof chrome !== 'undefined' ? chrome : browser;
+
+function generateBetUid() {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return `sb-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function getBetKey(bet) {
+  if (!bet) return '';
+  if (bet.uid) return String(bet.uid);
+  const idPart = bet.id !== undefined && bet.id !== null ? String(bet.id) : '';
+  const tsPart = bet.timestamp ? String(bet.timestamp) : '';
+  if (idPart && tsPart) return `${idPart}::${tsPart}`;
+  return idPart || tsPart || '';
+}
+
+function ensureBetIdentity(bet) {
+  let changed = false;
+  if (bet && !bet.timestamp) {
+    bet.timestamp = new Date().toISOString();
+    changed = true;
+  }
+  if (bet && !bet.uid) {
+    bet.uid = generateBetUid();
+    changed = true;
+  }
+  return changed;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   console.log('📄 DOM Content Loaded - Initializing popup...');
   const container = document.getElementById('bets');
@@ -31,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Function to load commission rates from storage
   function loadCommissionRates(callback) {
-    chrome.storage.local.get({ commission: defaultCommission }, (res) => {
+    api.storage.local.get({ commission: defaultCommission }, (res) => {
       commissionRates = { ...res.commission };
       console.log('💰 Commission rates loaded:', commissionRates);
       if (callback) callback();
@@ -78,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
         smarkets: parseFloat(document.getElementById('comm-smarkets').value) || 0
       };
       console.log('💾 Saving commission rates:', newRates);
-      chrome.storage.local.set({ commission: newRates }, () => {
+      api.storage.local.set({ commission: newRates }, () => {
         console.log('✅ Commission rates saved successfully');
         // Reload commission rates from storage and then refresh the display
         loadCommissionRates(() => {
@@ -199,6 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let totalEV = 0; // EV for all bets (pending + settled)
     
     const rows = sortedBets.map((b, idx) => {
+      const betKey = getBetKey(b);
       const ts = new Date(b.timestamp).toLocaleString();
       const commission = getCommission(b.bookmaker);
       
@@ -279,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('🔍 Rendering Galatasaray bet:', {
           id: b.id,
           timestamp: b.timestamp,
-          betId: b.id || b.timestamp,
+          betKey,
           event: b.event,
           status: b.status,
           statusType: typeof b.status,
@@ -316,7 +349,6 @@ document.addEventListener('DOMContentLoaded', () => {
         statusColor = '#ffc107';
       }
       
-      const betId = b.id || b.timestamp;
       
       // Format event time and check if it's passed
       let eventTimeDisplay = '';
@@ -335,10 +367,10 @@ document.addEventListener('DOMContentLoaded', () => {
         eventTimeDisplay = `<div class="small" style="${passedStyle};margin-top:2px">🕒 ${eventTimeStr}${eventPassed && b.status === 'pending' ? ' ⚠️' : ''}</div>`;
       }
       
-      return `<tr data-bet-id="${betId}" style="${eventPassed && b.status === 'pending' ? 'background:#fff3cd' : ''}">
+      return `<tr data-bet-id="${betKey}" style="${eventPassed && b.status === 'pending' ? 'background:#fff3cd' : ''}">
         <td style="width:110px">
           <div class="small">${ts}</div>
-          ${b.event && b.event.includes('Galatasaray') ? `<div class="small" style="color:#dc3545;font-weight:600">ID: ${betId}</div>` : ''}
+          ${b.event && b.event.includes('Galatasaray') ? `<div class="small" style="color:#dc3545;font-weight:600">ID: ${betKey}</div>` : ''}
           <div style="font-weight:600;color:#28a745">${b.bookmaker || 'Unknown'}</div>
           <div class="small">${b.sport || ''}</div>
           ${eventTimeDisplay}
@@ -365,11 +397,11 @@ document.addEventListener('DOMContentLoaded', () => {
           ${b.note ? `<div class="note" style="margin-top:4px"><em>${escapeHtml(b.note)}</em></div>` : ''}
           <div style="margin-top:6px;display:flex;gap:4px">
             ${(!b.status || b.status === 'pending') ? `
-            <button class="status-btn" data-bet-id="${betId}" data-status="won" style="font-size:10px;padding:3px 8px;background:#28a745;color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600">✓ Won</button>
-            <button class="status-btn" data-bet-id="${betId}" data-status="lost" style="font-size:10px;padding:3px 8px;background:#dc3545;color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600">✗ Lost</button>
-            <button class="status-btn" data-bet-id="${betId}" data-status="void" style="font-size:10px;padding:3px 8px;background:#6c757d;color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600">○ Void</button>
+            <button class="status-btn" data-bet-id="${betKey}" data-status="won" style="font-size:10px;padding:3px 8px;background:#28a745;color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600">✓ Won</button>
+            <button class="status-btn" data-bet-id="${betKey}" data-status="lost" style="font-size:10px;padding:3px 8px;background:#dc3545;color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600">✗ Lost</button>
+            <button class="status-btn" data-bet-id="${betKey}" data-status="void" style="font-size:10px;padding:3px 8px;background:#6c757d;color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600">○ Void</button>
             ` : ''}
-            <button class="delete-btn" data-bet-id="${betId}" style="font-size:10px;padding:3px 8px;background:#ffc107;color:#000;border:none;border-radius:3px;cursor:pointer;font-weight:600;margin-left:auto" title="Delete this bet">🗑️ Delete</button>
+            <button class="delete-btn" data-bet-id="${betKey}" style="font-size:10px;padding:3px 8px;background:#ffc107;color:#000;border:none;border-radius:3px;cursor:pointer;font-weight:600;margin-left:auto" title="Delete this bet">🗑️ Delete</button>
           </div>
         </td>
       </tr>`;
@@ -415,16 +447,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateBetStatus(betId, status) {
     console.log('updateBetStatus called with:', { betId, status });
-    chrome.storage.local.get({ bets: [] }, (res) => {
+    api.storage.local.get({ bets: [] }, (res) => {
       const bets = res.bets || [];
       console.log('Total bets in storage:', bets.length);
       // Convert betId to string for comparison since data attributes are always strings
-      const betIdStr = String(betId);
-      const bet = bets.find(b => {
-        const storedId = String(b.id || b.timestamp);
-        return storedId === betIdStr;
-      });
-      console.log('Searching for bet with ID:', betIdStr);
+      const betKey = String(betId);
+      const bet = bets.find(b => getBetKey(b) === betKey);
+      console.log('Searching for bet with ID:', betKey);
       console.log('Found bet:', bet);
       if (bet) {
         const oldStatus = bet.status;
@@ -432,27 +461,27 @@ document.addEventListener('DOMContentLoaded', () => {
         bet.status = status.trim().toLowerCase();
         bet.settledAt = new Date().toISOString();
         console.log('Updating bet status to:', bet.status, '(was:', oldStatus, ')');
-        chrome.storage.local.set({ bets }, () => {
+        api.storage.local.set({ bets }, () => {
           console.log('✅ Bet status updated successfully in storage');
           // Verify the update
-          chrome.storage.local.get({ bets: [] }, (verifyRes) => {
+          api.storage.local.get({ bets: [] }, (verifyRes) => {
             const verifiedBet = (verifyRes.bets || []).find(b => {
-              const storedId = String(b.id || b.timestamp);
-              return storedId === betIdStr;
+              return getBetKey(b) === betKey;
             });
             console.log('🔍 Verified bet after save:', {
               id: verifiedBet?.id,
               event: verifiedBet?.event,
               status: verifiedBet?.status,
-              settledAt: verifiedBet?.settledAt
+              settledAt: verifiedBet?.settledAt,
+              betKey: verifiedBet ? getBetKey(verifiedBet) : undefined
             });
             console.log('🔄 Reloading UI...');
             loadAndRender();
           });
         });
       } else {
-        console.error('Bet not found with id:', betIdStr);
-        console.error('Available bet IDs:', bets.map(b => String(b.id || b.timestamp)));
+        console.error('Bet not found with id:', betKey);
+        console.error('Available bet IDs:', bets.map(b => getBetKey(b)));
       }
     });
   }
@@ -462,29 +491,26 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!confirm('Are you sure you want to delete this bet? This cannot be undone.')) {
       return;
     }
-    chrome.storage.local.get({ bets: [] }, (res) => {
+    api.storage.local.get({ bets: [] }, (res) => {
       const bets = res.bets || [];
       console.log('Total bets in storage before delete:', bets.length);
       // Convert betId to string for comparison since data attributes are always strings
-      const betIdStr = String(betId);
-      const betIndex = bets.findIndex(b => {
-        const storedId = String(b.id || b.timestamp);
-        return storedId === betIdStr;
-      });
-      console.log('Searching for bet with ID:', betIdStr);
+      const betKey = String(betId);
+      const betIndex = bets.findIndex(b => getBetKey(b) === betKey);
+      console.log('Searching for bet with ID:', betKey);
       console.log('Found bet at index:', betIndex);
       if (betIndex !== -1) {
         const deletedBet = bets[betIndex];
         console.log('Deleting bet:', deletedBet);
         bets.splice(betIndex, 1);
-        chrome.storage.local.set({ bets }, () => {
+        api.storage.local.set({ bets }, () => {
           console.log('Bet deleted successfully, reloading...');
           console.log('Total bets after delete:', bets.length);
           loadAndRender();
         });
       } else {
-        console.error('Bet not found with id:', betIdStr);
-        console.error('Available bet IDs:', bets.map(b => String(b.id || b.timestamp)));
+        console.error('Bet not found with id:', betKey);
+        console.error('Available bet IDs:', bets.map(b => getBetKey(b)));
         alert('Error: Bet not found');
       }
     });
@@ -493,12 +519,15 @@ document.addEventListener('DOMContentLoaded', () => {
   function loadAndRender() {
     const sortBy = document.getElementById('sort-select')?.value || 'saved-desc';
     const hideLayBets = document.getElementById('hide-lay-bets')?.checked || false;
-    chrome.storage.local.get({ bets: [] }, (res) => {
+    api.storage.local.get({ bets: [] }, (res) => {
       let bets = res.bets || [];
       
       // Clean up any bets with whitespace in status (migration)
       let needsCleanup = false;
       bets = bets.map(b => {
+        if (ensureBetIdentity(b)) {
+          needsCleanup = true;
+        }
         if (b.status && typeof b.status === 'string') {
           const cleaned = b.status.trim().toLowerCase();
           if (cleaned !== b.status) {
@@ -513,7 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Save cleaned bets if needed
       if (needsCleanup) {
         console.log('💾 Saving cleaned bets to storage...');
-        chrome.storage.local.set({ bets }, () => {
+        api.storage.local.set({ bets }, () => {
           render(bets, sortBy, hideLayBets);
         });
       } else {
@@ -535,18 +564,28 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   btnJson.addEventListener('click', async () => {
-    chrome.storage.local.get({ bets: [] }, (res) => {
+    api.storage.local.get({ bets: [] }, (res) => {
       const data = res.bets || [];
       const dataStr = JSON.stringify(data, null, 2);
       const filename = `sb-bets-${(new Date()).toISOString().replace(/[:.]/g, '-')}.json`;
-      chrome.runtime.sendMessage({ action: 'export', dataStr, filename, mime: 'application/json' }, (resp) => {
-        // Optional feedback
+      console.log('📤 Sending export message for JSON...');
+      api.runtime.sendMessage({ action: 'export', dataStr, filename, mime: 'application/json' }, (resp) => {
+        console.log('📥 Export response:', resp);
+        if (api.runtime.lastError) {
+          console.error('Export error:', api.runtime.lastError);
+          alert('Export failed: ' + api.runtime.lastError.message);
+        } else if (resp && resp.success) {
+          console.log('✅ Export successful');
+          alert('JSON exported successfully!');
+        } else if (resp && resp.error) {
+          alert('Export failed: ' + resp.error);
+        }
       });
     });
   });
 
   btnCsv.addEventListener('click', async () => {
-    chrome.storage.local.get({ bets: [] }, (res) => {
+    api.storage.local.get({ bets: [] }, (res) => {
       const data = res.bets || [];
       if (data.length === 0) {
         alert('No bets to export.');
@@ -639,13 +678,25 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const dataStr = rows.join('\r\n');
       const filename = `sb-bets-${(new Date()).toISOString().replace(/[:.]/g, '-')}.csv`;
-      chrome.runtime.sendMessage({ action: 'export', dataStr, filename, mime: 'text/csv' }, (resp) => {});
+      console.log('📤 Sending export message for CSV...');
+      api.runtime.sendMessage({ action: 'export', dataStr, filename, mime: 'text/csv' }, (resp) => {
+        console.log('📥 Export response:', resp);
+        if (api.runtime.lastError) {
+          console.error('Export error:', api.runtime.lastError);
+          alert('Export failed: ' + api.runtime.lastError.message);
+        } else if (resp && resp.success) {
+          console.log('✅ Export successful');
+          alert('CSV exported successfully!');
+        } else if (resp && resp.error) {
+          alert('Export failed: ' + resp.error);
+        }
+      });
     });
   });
 
   btnClear.addEventListener('click', () => {
     if (!confirm('Clear all saved bets? This cannot be undone.')) return;
-    chrome.runtime.sendMessage({ action: 'clearBets' }, (resp) => {
+    api.runtime.sendMessage({ action: 'clearBets' }, (resp) => {
       if (resp && resp.success) loadAndRender();
       else alert('Clear failed.');
     });
@@ -653,7 +704,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnChart) {
     btnChart.addEventListener('click', () => {
-      chrome.storage.local.get({ bets: [] }, (res) => {
+      api.storage.local.get({ bets: [] }, (res) => {
         const bets = res.bets || [];
         if (bets.length === 0) {
           alert('No bets to chart. Save some bets first!');
@@ -686,15 +737,15 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('🔍 Check Results button clicked');
       console.log('📤 Sending message to background script...');
       
-      chrome.runtime.sendMessage({ action: 'checkResults' }, (response) => {
+      api.runtime.sendMessage({ action: 'checkResults' }, (response) => {
         console.log('📬 Message callback triggered');
         
         // Check for runtime errors
-        if (chrome.runtime.lastError) {
-          console.error('❌ Runtime error:', chrome.runtime.lastError);
+        if (api.runtime.lastError) {
+          console.error('❌ Runtime error:', api.runtime.lastError);
           btnCheckResults.disabled = false;
           btnCheckResults.textContent = '🔍 Check Results';
-          alert('Communication error: ' + chrome.runtime.lastError.message);
+          alert('Communication error: ' + api.runtime.lastError.message);
           return;
         }
         btnCheckResults.disabled = false;
@@ -761,7 +812,7 @@ See API_SETUP.md in the extension folder for detailed instructions.`;
   if (btnImportCsv) {
     btnImportCsv.addEventListener('click', () => {
       console.log('� Opening import page...');
-      browser.tabs.create({ url: browser.runtime.getURL('import.html') });
+      api.tabs.create({ url: api.runtime.getURL('import.html') });
     });
   }
 
@@ -1039,7 +1090,7 @@ See API_SETUP.md in the extension folder for detailed instructions.`;
     });
     
     // Load all bets from storage
-    chrome.storage.local.get({ bets: [] }, (res) => {
+    api.storage.local.get({ bets: [] }, (res) => {
       const bets = res.bets || [];
       console.log(`\n=== CHECKING ${bets.length} BETS ===`);
       
@@ -1094,7 +1145,7 @@ See API_SETUP.md in the extension folder for detailed instructions.`;
       
       // Save updated bets
       if (updatedBets > 0) {
-        chrome.storage.local.set({ bets }, () => {
+        api.storage.local.set({ bets }, () => {
           const fileText = fileCount > 1 ? `${fileCount} CSV files` : 'CSV';
           const details = matchDetails.length > 0 && matchDetails.length <= 10 ? '\n\nMatched bets:\n' + matchDetails.join('\n') : '';
           alert(`Successfully imported Betfair P/L from ${fileText}!\n\nCSV entries: ${plData.length}\nPending Betfair bets checked: ${pendingBetfairBets.length}\nMatched: ${matchedCount}\nUpdated: ${updatedBets}${details}\n\nCheck console (F12) for detailed logs.`);

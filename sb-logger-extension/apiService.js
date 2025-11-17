@@ -1,7 +1,7 @@
 // API service for fetching sports results
 // Uses API-Football for football/soccer and The Odds API for other sports
 
-export const API_CONFIG = {
+const API_CONFIG = {
   apiFootball: {
     baseUrl: 'https://v3.football.api-sports.io',
     // User needs to get their own key from https://www.api-football.com/
@@ -15,6 +15,15 @@ export const API_CONFIG = {
     rateLimit: 500 // requests per month
   }
 };
+
+function getBetKey(bet) {
+  if (!bet) return '';
+  if (bet.uid) return String(bet.uid);
+  const idPart = bet.id !== undefined && bet.id !== null ? String(bet.id) : '';
+  const tsPart = bet.timestamp ? String(bet.timestamp) : '';
+  if (idPart && tsPart) return `${idPart}::${tsPart}`;
+  return idPart || tsPart || '';
+}
 
 class ApiService {
   constructor() {
@@ -415,7 +424,7 @@ class ApiService {
             if (outcome !== null) {
               console.log('✅ RESULT DETERMINED:', outcome ? 'WON' : 'LOST');
               results.push({
-                betId: bet.id || bet.timestamp,
+                betId: getBetKey(bet),
                 outcome: outcome ? 'won' : 'lost',
                 confidence: 'high',
                 matchFound: true
@@ -424,7 +433,7 @@ class ApiService {
               // Match found but not finished or unknown market
               console.log('⏳ Match found but not finished or unknown market');
               results.push({
-                betId: bet.id || bet.timestamp,
+                betId: getBetKey(bet),
                 outcome: null,
                 matchFound: true,
                 notFinished: true
@@ -434,7 +443,7 @@ class ApiService {
             // No match found - increment retry
             console.log('❌ No match found - will retry later');
             results.push({
-              betId: bet.id || bet.timestamp,
+              betId: getBetKey(bet),
               outcome: null,
               matchFound: false,
               incrementRetry: true
@@ -446,7 +455,7 @@ class ApiService {
           // TODO: Implement matching for other sports
           // For now, just increment retry
           results.push({
-            betId: bet.id || bet.timestamp,
+            betId: getBetKey(bet),
             outcome: null,
             matchFound: false,
             incrementRetry: true
@@ -459,7 +468,7 @@ class ApiService {
         console.error(`Error checking bet ${bet.event}:`, error);
         // Increment retry on error
         results.push({
-          betId: bet.id || bet.timestamp,
+          betId: getBetKey(bet),
           outcome: null,
           error: error.message,
           incrementRetry: true
@@ -479,13 +488,17 @@ class ApiService {
   }
 }
 
-// Export for ES modules
-export default ApiService;
-
-// Make available globally for backward compatibility
-// This works in both popup windows and background pages
-if (typeof window !== 'undefined') {
-  window.ApiService = ApiService;
-  window.apiService = new ApiService();
+// Expose globally so MV2 background scripts and UI pages can access it
+if (typeof self !== 'undefined') {
+  self.API_CONFIG = API_CONFIG;
+  self.ApiService = ApiService;
+  if (typeof self.apiService === 'undefined') {
+    self.apiService = new ApiService();
+  }
   console.log('✅ ApiService loaded and available');
+}
+
+// Provide CommonJS fallback for tests or tooling if needed
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { ApiService, API_CONFIG };
 }

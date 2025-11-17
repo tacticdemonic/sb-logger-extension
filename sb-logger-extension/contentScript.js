@@ -3,6 +3,22 @@
   if (window.__sbLoggerInjected) return;
   window.__sbLoggerInjected = true;
 
+  const DISABLE_STORAGE_KEY = 'extensionDisabled';
+  let isInitialized = false;
+  let isDisabled = false;
+  let mutationObserver = null;
+  const clickHandlers = {
+    surebetLink: null,
+    global: null
+  };
+
+  function generateBetUid() {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    return `sb-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+  }
+
   // Run on surebet.com valuebets page OR any bookmaker site (not Surebet)
   console.log('SB Logger: Script loaded on:', location.hostname, location.pathname);
   
@@ -145,12 +161,19 @@
   `;
 
   function injectStyles() {
+    if (document.getElementById('sb-logger-style')) {
+      return;
+    }
     const style = document.createElement('style');
+    style.id = 'sb-logger-style';
     style.textContent = CSS;
     document.head.appendChild(style);
   }
 
   function showToast(text, success = true, duration = 2500) {
+    if (isDisabled) {
+      return;
+    }
     const toast = document.createElement('div');
     toast.className = 'sb-logger-toast' + (success ? '' : ' error');
     toast.textContent = text;
@@ -294,6 +317,14 @@
     if (note) {
       betData.note = note;
     }
+
+    if (!betData.timestamp) {
+      betData.timestamp = new Date().toISOString();
+    }
+
+    if (!betData.uid) {
+      betData.uid = generateBetUid();
+    }
     
     // Initialize status as pending
     betData.status = 'pending';
@@ -318,6 +349,9 @@
 
   function applyBookmakerPreset(presetName) {
     console.log('SB Logger: Applying preset:', presetName);
+    if (isDisabled) {
+      return;
+    }
     const bookmakers = BOOKMAKER_PRESETS[presetName];
     if (!bookmakers) {
       showToast('Unknown preset: ' + presetName, false);
@@ -428,6 +462,9 @@
 
   function injectPresetButtons() {
     console.log('SB Logger: === Attempting to inject preset buttons ===');
+    if (isDisabled) {
+      return;
+    }
     
     // Skip if already injected anywhere on the page
     if (document.querySelector('.sb-logger-preset-container')) {
@@ -606,6 +643,9 @@
   }
 
   function toggleLayBets() {
+    if (isDisabled) {
+      return;
+    }
     const mainTable = document.querySelector('table');
     if (!mainTable) return;
     
@@ -655,6 +695,9 @@
   }
 
   function injectHideLayButton() {
+    if (isDisabled) {
+      return;
+    }
     // Skip if button already exists
     if (document.querySelector('.sb-logger-hide-lay-btn')) {
       return;
@@ -675,6 +718,9 @@
   }
 
   function injectSaveButtons() {
+    if (isDisabled) {
+      return;
+    }
     // Find the main valuebets table only
     const mainTable = document.querySelector('table');
     if (!mainTable) {
@@ -1074,6 +1120,9 @@
   }
 
   async function injectSaveButtonOnSmarkets() {
+    if (isDisabled) {
+      return;
+    }
     // Skip if button already injected
     if (document.querySelector('.sb-logger-save-btn-smarkets')) {
       console.log('SB Logger: Save button already on Smarkets page');
@@ -1160,6 +1209,9 @@
   }
 
   function injectSaveButtonInPopup(popup) {
+    if (isDisabled) {
+      return;
+    }
     // Skip if button already injected
     if (popup.querySelector('.sb-logger-save-btn-popup')) {
       console.log('SB Logger: Save button already in popup');
@@ -1255,6 +1307,9 @@
   }
 
   function detectAndInjectIntoPopup() {
+    if (isDisabled) {
+      return;
+    }
     // Only run on Smarkets or other bookmaker sites, NOT on Surebet
     if (location.hostname.includes('surebet.com')) {
       console.log('SB Logger: On Surebet page, skipping popup detection');
@@ -1340,7 +1395,51 @@
     });
   }
 
+  function cleanupExtension() {
+    if (mutationObserver) {
+      mutationObserver.disconnect();
+      mutationObserver = null;
+    }
+
+    if (clickHandlers.surebetLink) {
+      document.removeEventListener('click', clickHandlers.surebetLink, true);
+      clickHandlers.surebetLink = null;
+    }
+
+    if (clickHandlers.global) {
+      document.removeEventListener('click', clickHandlers.global, true);
+      clickHandlers.global = null;
+    }
+
+    document.querySelectorAll('.sb-logger-save-btn, .sb-logger-save-btn-smarkets, .sb-logger-preset-container, .sb-logger-hide-lay-btn, .sb-logger-toast').forEach((node) => {
+      node.remove();
+    });
+
+    document.querySelectorAll('.sb-logger-high-stake').forEach((row) => {
+      row.classList.remove('sb-logger-high-stake');
+    });
+
+    document.querySelectorAll('.sb-logger-hidden-row').forEach((row) => {
+      row.classList.remove('sb-logger-hidden-row');
+    });
+
+    const styleEl = document.getElementById('sb-logger-style');
+    if (styleEl) {
+      styleEl.remove();
+    }
+
+    isInitialized = false;
+  }
+
   function init() {
+    if (isDisabled) {
+      console.log('SB Logger: Disabled, initialization skipped');
+      return;
+    }
+    if (isInitialized) {
+      return;
+    }
+    isInitialized = true;
     console.log('SB Logger: ===== INITIALIZING =====');
     console.log('SB Logger: URL:', location.href);
     injectStyles();
@@ -1362,19 +1461,22 @@
     setTimeout(injectHideLayButton, 500);
     
     // On Surebet: intercept clicks on valuebet links to store data
-    document.addEventListener('click', (e) => {
+    clickHandlers.surebetLink = (e) => {
+      if (isDisabled) {
+        return;
+      }
       const link = e.target.closest('a[href*="/nav/valuebet/prong/"]');
       if (link && link.href) {
         console.log('SB Logger: Surebet link clicked, storing data for later');
         const betData = parseSurebetLinkData(link.href);
         if (betData) {
-          // Store in chrome.storage.local so it persists across tabs
           chrome.storage.local.set({ pendingBet: betData }, () => {
             console.log('SB Logger: Bet data stored for bookmaker page:', betData);
           });
         }
       }
-    }, true);
+    };
+    document.addEventListener('click', clickHandlers.surebetLink, true);
     
     // Initial injection with multiple retry attempts (for Surebet)
     setTimeout(injectSaveButtons, 500);
@@ -1386,32 +1488,42 @@
     setTimeout(injectPresetButtons, 5000);
     
     // Also watch for clicks on filter buttons that might open the popup
-    document.addEventListener('click', (e) => {
+    clickHandlers.global = (e) => {
+      if (isDisabled) {
+        return;
+      }
       console.log('SB Logger: Click detected on:', e.target.tagName, e.target.className, e.target);
-      // If something was clicked that might open a filter popup, try injecting after a delay
       setTimeout(() => {
+        if (isDisabled) return;
         console.log('SB Logger: Post-click injection attempt (200ms)');
         injectPresetButtons();
-        detectAndInjectIntoPopup(); // Also check for bet popups
+        detectAndInjectIntoPopup();
       }, 200);
       setTimeout(() => {
+        if (isDisabled) return;
         console.log('SB Logger: Post-click injection attempt (500ms)');
         injectPresetButtons();
         detectAndInjectIntoPopup();
       }, 500);
       setTimeout(() => {
+        if (isDisabled) return;
         console.log('SB Logger: Post-click injection attempt (1000ms)');
         injectPresetButtons();
         detectAndInjectIntoPopup();
       }, 1000);
       setTimeout(() => {
+        if (isDisabled) return;
         console.log('SB Logger: Post-click injection attempt (1500ms)');
         detectAndInjectIntoPopup();
       }, 1500);
-    }, true);
+    };
+    document.addEventListener('click', clickHandlers.global, true);
 
     // Watch for new rows being added (auto-update feature)
-    const observer = new MutationObserver((mutations) => {
+    mutationObserver = new MutationObserver((mutations) => {
+      if (isDisabled) {
+        return;
+      }
       let shouldInject = false;
       let shouldInjectPresets = false;
       let shouldCheckPopup = false;
@@ -1442,35 +1554,79 @@
         });
       });
       
-      if (shouldInject) {
+      if (shouldInject && !isDisabled) {
         setTimeout(injectSaveButtons, 100);
         // Reapply hide lay filter if active
         setTimeout(() => {
+          if (isDisabled) return;
           const hideLayBtn = document.querySelector('.sb-logger-hide-lay-btn');
           if (hideLayBtn && hideLayBtn.classList.contains('active')) {
             toggleLayBets();
           }
         }, 150);
       }
-      if (shouldInjectPresets) {
+      if (shouldInjectPresets && !isDisabled) {
         setTimeout(injectPresetButtons, 300);
       }
-      if (shouldCheckPopup) {
+      if (shouldCheckPopup && !isDisabled) {
         setTimeout(detectAndInjectIntoPopup, 200);
       }
     });
 
     // Observe the main content area
     const mainContent = document.querySelector('main') || document.querySelector('.page-container') || document.body;
-    observer.observe(mainContent, { childList: true, subtree: true });
+    mutationObserver.observe(mainContent, { childList: true, subtree: true });
     
     console.log('SB Logger: Initialization complete, observers active');
   }
 
-  // Wait for DOM
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+  function scheduleInit() {
+    if (isDisabled) {
+      return;
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init, { once: true });
+    } else {
+      init();
+    }
+  }
+
+  function updateDisabledState(disabled) {
+    const wasDisabled = isDisabled;
+    isDisabled = disabled;
+
+    if (disabled) {
+      if (!wasDisabled) {
+        console.log('SB Logger: Disabled via action menu');
+      }
+      cleanupExtension();
+      return;
+    }
+
+    if (wasDisabled) {
+      console.log('SB Logger: Re-enabled via action menu');
+    }
+    scheduleInit();
+  }
+
+  if (chrome.runtime && chrome.runtime.onMessage) {
+    chrome.runtime.onMessage.addListener((message) => {
+      if (message && message.action === 'extension-disabled-changed') {
+        updateDisabledState(Boolean(message.disabled));
+      }
+    });
+  }
+
+  if (chrome.storage && chrome.storage.local) {
+    chrome.storage.local.get({ [DISABLE_STORAGE_KEY]: false }, (result) => {
+      const disabled = Boolean(result[DISABLE_STORAGE_KEY]);
+      if (disabled) {
+        updateDisabledState(true);
+      } else {
+        scheduleInit();
+      }
+    });
   } else {
-    init();
+    scheduleInit();
   }
 })();

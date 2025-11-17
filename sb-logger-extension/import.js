@@ -307,8 +307,14 @@ function parseSmarketsCSV(lines) {
     const details = cols[detailsIdx]?.trim();
     const inOut = parseFloat(cols[inOutIdx]?.replace(/[£€$,]/g, '') || '0');
     
-    // Only process "Market Settled" rows
-    if (event !== 'Market Settled' || !details || isNaN(inOut) || inOut === 0) continue;
+    // Process "Market Settled" and "Market Voided" rows
+    const isSettled = event === 'Market Settled';
+    const isVoided = event === 'Market Voided';
+    
+    if ((!isSettled && !isVoided) || !details || isNaN(inOut)) continue;
+    
+    // For voided markets, we want to process them even if inOut is 0
+    if (!isVoided && inOut === 0) continue;
     
     // Parse details: "Event Name / Market Name"
     // Find the main separator (usually the first major slash, not slashes within "over/under")
@@ -349,7 +355,8 @@ function parseSmarketsCSV(lines) {
       event: eventName,
       market: marketName,
       sport,
-      profitLoss: inOut
+      profitLoss: inOut,
+      isVoided: isVoided
     });
   }
   
@@ -398,7 +405,13 @@ async function processImportedData(plData, source) {
     if (match) {
       const betIndex = updatedBets.findIndex(b => b.id === match.id);
       if (betIndex !== -1) {
-        const newStatus = plEntry.profitLoss > 0 ? 'won' : plEntry.profitLoss < 0 ? 'lost' : 'void';
+        // Check if bet was voided
+        let newStatus;
+        if (plEntry.isVoided) {
+          newStatus = 'void';
+        } else {
+          newStatus = plEntry.profitLoss > 0 ? 'won' : plEntry.profitLoss < 0 ? 'lost' : 'void';
+        }
         updatedBets[betIndex].status = newStatus;
         updatedBets[betIndex].actualPL = plEntry.profitLoss;
         matchedCount++;
@@ -432,10 +445,17 @@ async function processImportedData(plData, source) {
 function matchBetWithPL(plEntry, allBets) {
   const normalizeString = (str) => {
     return str.toLowerCase()
+      // Normalize Greek transliterations
+      .replace(/olympiakos/g, 'olympiacos')
+      .replace(/olympiacos/g, 'olympiacos')  // Ensure consistent spelling
+      .replace(/piräus/g, 'piraeus')
+      .replace(/piraus/g, 'piraeus')
       // Normalize event separators: vs, v, @, at all become a single space
       .replace(/\s+(vs\.?|v\.?|versus|at)\s+/g, ' VERSUS ')
       // Remove common suffixes/prefixes
-      .replace(/\s+(fc|sc|cf|ac|bc|ii|u21|u23|women|reserves?)\b/g, '')
+      .replace(/\s+(fc|sc|cf|ac|ac|bc|ii|u21|u23|women|reserves?)\b/g, '')
+      // Remove "BC" prefix which appears inconsistently in basketball team names
+      .replace(/\bbc\s+/g, '')
       // Normalize apostrophes and quotes
       .replace(/[''`]/g, '')
       // Remove special characters but keep letters, numbers, and spaces
@@ -598,15 +618,17 @@ function matchBetWithPL(plEntry, allBets) {
     if (plEvent === betEvent) {
       eventMatches = true;
     } else {
-      // Check if events are very similar (e.g., reordered teams)
+      // Check if events are very similar (e.g., reordered teams or partial names)
       const plEventTokens = plEvent.split(/\s+/).filter(t => t.length > 2);
       const betEventTokens = betEvent.split(/\s+/).filter(t => t.length > 2);
       const commonTokens = plEventTokens.filter(t => betEventTokens.includes(t));
       
       // If most tokens match, consider it an event match
-      if (commonTokens.length >= Math.min(plEventTokens.length, betEventTokens.length) * 0.7) {
+      // Lower threshold to 60% to catch partial team names like "Wild Wings" vs "Schwenninger Wild Wings"
+      const matchRatio = commonTokens.length / Math.min(plEventTokens.length, betEventTokens.length);
+      if (matchRatio >= 0.6 && commonTokens.length >= 2) {
         eventMatches = true;
-        console.log(`🔄 Fuzzy event match: "${plEntry.event}" ≈ "${bet.event}"`);
+        console.log(`🔄 Fuzzy event match (${Math.round(matchRatio * 100)}%): "${plEntry.event}" ≈ "${bet.event}"`);
       }
     }
     

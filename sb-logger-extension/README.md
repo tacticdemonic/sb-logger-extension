@@ -44,7 +44,7 @@
    
    # Build and sign (requires Mozilla account)
    cd sb-logger-extension
-   web-ext sign --api-key=YOUR_KEY --api-secret=YOUR_SECRET
+   web-ext sign --api-key=YOUR_KEY --api-secret=YOUR_SECRET --channel=unlisted 
    ```
    - Get API credentials from: https://addons.mozilla.org/developers/addon/api/key/
 

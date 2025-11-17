@@ -1,15 +1,215 @@
 // Background script handles export/download requests and automatic result checking
-// Manifest V3 service worker
+// Compatible with MV2 background pages used by Firefox signing
 
-import ApiService from './apiService.js';
+let ApiServiceClass = null;
+let apiServiceReady = null;
+const DISABLE_STORAGE_KEY = 'extensionDisabled';
+const TOGGLE_MENU_ID = 'sb-logger-toggle';
+const IS_FIREFOX = typeof navigator !== 'undefined' && /firefox/i.test(navigator.userAgent);
+
+// Use chrome API when available (Firefox provides chrome shim), fallback to browser
+const api = typeof chrome !== 'undefined' ? chrome : browser;
+
+function loadApiService() {
+  if (apiServiceReady) {
+    return apiServiceReady;
+  }
+  apiServiceReady = (async () => {
+    try {
+      if (typeof self !== 'undefined' && typeof self.importScripts === 'function') {
+        console.log('📦 Loading ApiService via importScripts');
+        self.importScripts('apiService.js');
+        ApiServiceClass = self.ApiService;
+      } else {
+        console.log('📦 Loading ApiService via dynamic import');
+        const moduleUrl = api?.runtime?.getURL ? api.runtime.getURL('apiService.js') : 'apiService.js';
+        const module = await import(moduleUrl);
+        ApiServiceClass = module?.ApiService || module?.default || self?.ApiService || null;
+      }
+      if (!ApiServiceClass) {
+        throw new Error('ApiService class not found');
+      }
+      console.log('✅ ApiService loaded successfully');
+    } catch (error) {
+      ApiServiceClass = null;
+      console.error('❌ Failed to load ApiService:', error);
+      throw error;
+    }
+  })();
+  return apiServiceReady;
+}
+
+async function getApiServiceInstance() {
+  if (!ApiServiceClass) {
+    await loadApiService();
+  }
+  if (!ApiServiceClass) {
+    throw new Error('ApiService unavailable');
+  }
+  return new ApiServiceClass();
+}
+
+function generateBetUid() {
+  if (self.crypto && typeof self.crypto.randomUUID === 'function') {
+    return self.crypto.randomUUID();
+  }
+  return `sb-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function getBetKey(bet) {
+  if (!bet) return '';
+  if (bet.uid) return String(bet.uid);
+  const idPart = bet.id !== undefined && bet.id !== null ? String(bet.id) : '';
+  const tsPart = bet.timestamp ? String(bet.timestamp) : '';
+  if (idPart && tsPart) return `${idPart}::${tsPart}`;
+  return idPart || tsPart || '';
+}
+
+function ensureBetIdentity(bet) {
+  let changed = false;
+  if (bet && !bet.timestamp) {
+    bet.timestamp = new Date().toISOString();
+    changed = true;
+  }
+  if (bet && !bet.uid) {
+    bet.uid = generateBetUid();
+    changed = true;
+  }
+  return changed;
+}
+
+function getDisabledState(callback) {
+  api.storage.local.get({ [DISABLE_STORAGE_KEY]: false }, (result) => {
+    callback(Boolean(result[DISABLE_STORAGE_KEY]));
+  });
+}
+
+function updateActionVisuals(disabled) {
+  if (chrome.action && chrome.action.setBadgeText) {
+    chrome.action.setBadgeText({ text: disabled ? 'OFF' : '' });
+    if (disabled && chrome.action.setBadgeBackgroundColor) {
+      chrome.action.setBadgeBackgroundColor({ color: '#d9534f' });
+    }
+  }
+
+  if (chrome.action && chrome.action.setTitle) {
+    chrome.action.setTitle({ title: disabled ? 'SB Logger (Disabled)' : 'SB Logger' });
+  }
+}
+
+function createToggleContextMenu(disabled) {
+  const title = disabled ? 'Enable SB Logger' : 'Disable SB Logger';
+  const primaryContexts = IS_FIREFOX ? ['browser_action'] : ['action'];
+  const fallbackContexts = IS_FIREFOX ? ['action'] : ['browser_action'];
+
+  const createMenu = (contexts) => {
+    chrome.contextMenus.create({ id: TOGGLE_MENU_ID, title, contexts }, () => {
+      if (chrome.runtime.lastError && contexts === primaryContexts) {
+        chrome.contextMenus.remove(TOGGLE_MENU_ID, () => {
+          chrome.contextMenus.create({ id: TOGGLE_MENU_ID, title, contexts: fallbackContexts }, () => {
+            if (chrome.runtime.lastError) {
+              console.warn('⚠️ Failed to create SB Logger context menu:', chrome.runtime.lastError.message);
+            }
+          });
+        });
+      }
+    });
+  };
+
+  chrome.contextMenus.remove(TOGGLE_MENU_ID, () => {
+    if (chrome.runtime.lastError) {
+      // Ignore missing menu errors
+    }
+    createMenu(primaryContexts);
+  });
+}
+
+function syncToggleUiState() {
+  getDisabledState((disabled) => {
+    updateActionVisuals(disabled);
+    if (chrome.contextMenus && chrome.contextMenus.create) {
+      createToggleContextMenu(disabled);
+    }
+  });
+}
+
+function notifyTabsOfToggle(disabled) {
+  if (!chrome.tabs || !chrome.tabs.query) {
+    return;
+  }
+
+  chrome.tabs.query({}, (tabs) => {
+    tabs.forEach((tab) => {
+      if (typeof tab.id === 'undefined') {
+        return;
+      }
+      chrome.tabs.sendMessage(tab.id, {
+        action: 'extension-disabled-changed',
+        disabled
+      }, () => {
+        // Ignore errors for tabs without the content script
+        if (chrome.runtime.lastError) {
+          return;
+        }
+      });
+    });
+  });
+}
+
+function setDisabledState(disabled) {
+  chrome.storage.local.set({ [DISABLE_STORAGE_KEY]: disabled });
+}
+
+if (chrome.storage && chrome.storage.onChanged) {
+  chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName !== 'local') {
+      return;
+    }
+    if (!Object.prototype.hasOwnProperty.call(changes, DISABLE_STORAGE_KEY)) {
+      return;
+    }
+    const disabled = Boolean(changes[DISABLE_STORAGE_KEY].newValue);
+    updateActionVisuals(disabled);
+    if (chrome.contextMenus && chrome.contextMenus.create) {
+      createToggleContextMenu(disabled);
+    }
+    notifyTabsOfToggle(disabled);
+  });
+}
 
 // Set up alarm on extension load
 chrome.runtime.onInstalled.addListener(() => {
   console.log('🚀 Extension installed/updated');
+  chrome.storage.local.get(DISABLE_STORAGE_KEY, (result) => {
+    if (typeof result[DISABLE_STORAGE_KEY] === 'undefined') {
+      chrome.storage.local.set({ [DISABLE_STORAGE_KEY]: false }, syncToggleUiState);
+    } else {
+      syncToggleUiState();
+    }
+  });
   // Set up alarm to check results every hour
   chrome.alarms.create('checkBetResults', { periodInMinutes: 60 });
   console.log('⏰ Alarm created: checkBetResults (every 60 minutes)');
 });
+
+if (chrome.runtime.onStartup) {
+  chrome.runtime.onStartup.addListener(() => {
+    syncToggleUiState();
+  });
+}
+
+if (chrome.contextMenus && chrome.contextMenus.onClicked) {
+  chrome.contextMenus.onClicked.addListener((info) => {
+    if (info.menuItemId === TOGGLE_MENU_ID) {
+      getDisabledState((disabled) => {
+        setDisabledState(!disabled);
+      });
+    }
+  });
+}
+
+// Ensure UI state is in sync when background loads
+syncToggleUiState();
 
 // Handle alarm - automatically check results
 chrome.alarms.onAlarm.addListener((alarm) => {
@@ -18,7 +218,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
   }
 });
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+api.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('📨 Message received:', message?.action);
   
   if (!message || !message.action) {
@@ -29,13 +229,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'export') {
     const { dataStr, filename, mime } = message;
     try {
+      console.log('⬇️ Export action received, downloading:', filename);
       // Create blob URL and download it
       const blob = new Blob([dataStr], { type: mime || 'application/octet-stream' });
       const url = URL.createObjectURL(blob);
-      chrome.downloads.download({ url, filename }, (downloadId) => {
+      
+      api.downloads.download({ url, filename }, (downloadId) => {
+        console.log('✅ Download started with ID:', downloadId);
         // Revoke after a few seconds
         setTimeout(() => URL.revokeObjectURL(url), 5_000);
-        sendResponse({ success: true, downloadId });
+        if (api.runtime.lastError) {
+          console.error('Download error:', api.runtime.lastError);
+          sendResponse({ success: false, error: api.runtime.lastError.message });
+        } else {
+          sendResponse({ success: true, downloadId });
+        }
       });
       // Indicate we'll call sendResponse asynchronously
       return true;
@@ -78,8 +286,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 async function handleCheckResults() {
   console.log('🔍 handleCheckResults called');
   try {
-    console.log('✅ Creating ApiService instance...');
-    const apiService = new ApiService();
+    console.log('✅ Ensuring ApiService instance is ready...');
+    const apiService = await getApiServiceInstance();
     const config = apiService.isConfigured();
     console.log('🔧 API Config:', config);
     
@@ -96,6 +304,18 @@ async function handleCheckResults() {
     });
     const allBets = storage.bets || [];
     console.log('📊 Total bets in storage:', allBets.length);
+
+    let identityChanged = false;
+    allBets.forEach((bet) => {
+      if (ensureBetIdentity(bet)) {
+        identityChanged = true;
+      }
+    });
+
+    if (identityChanged) {
+      console.log('🆔 Added missing identifiers to stored bets, saving...');
+      await new Promise((resolve) => chrome.storage.local.set({ bets: allBets }, resolve));
+    }
     
     const pendingBets = allBets.filter(b => !b.status || b.status === 'pending');
     console.log('📊 Pending bets:', pendingBets.length);
@@ -130,7 +350,7 @@ async function handleCheckResults() {
     
     let updated = false;
     results.forEach(r => {
-      const bet = bets.find(b => (b.id || b.timestamp) === r.betId);
+      const bet = bets.find(b => getBetKey(b) === r.betId);
       if (bet) {
         // Skip if bet is no longer pending (manually marked as won/lost/void)
         if (bet.status && bet.status !== 'pending') {
@@ -169,7 +389,7 @@ async function handleCheckResults() {
     if (updated) {
       console.log('💾 Saving updated bets to storage...');
       // Log the bet being saved for debugging
-      const updatedBet = bets.find(b => results.some(r => (b.id || b.timestamp) === r.betId));
+      const updatedBet = bets.find(b => results.some(r => getBetKey(b) === r.betId));
       if (updatedBet) {
         console.log('📝 Sample updated bet:', {
           event: updatedBet.event,
@@ -184,7 +404,7 @@ async function handleCheckResults() {
           // Verify the save by reading it back
           chrome.storage.local.get({ bets: [] }, (verifyRes) => {
             const verifiedBet = (verifyRes.bets || []).find(b => 
-              updatedBet && (b.id || b.timestamp) === (updatedBet.id || updatedBet.timestamp)
+              updatedBet && getBetKey(b) === getBetKey(updatedBet)
             );
             if (verifiedBet) {
               console.log('🔍 Verified saved bet:', {
@@ -206,7 +426,7 @@ async function handleCheckResults() {
     const formatted = results
       .filter(r => r.outcome !== null)
       .map(r => {
-        const bet = pendingBets.find(b => (b.id || b.timestamp) === r.betId);
+        const bet = pendingBets.find(b => getBetKey(b) === r.betId);
         return {
           betId: r.betId,
           event: bet ? bet.event : 'Unknown',
