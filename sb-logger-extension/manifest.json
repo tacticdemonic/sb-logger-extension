@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SB Logger - Save Bets",
-  "version": "1.0.7",
+  "version": "1.0.25",
   "description": "Track and analyze value bets from surebet.com. Save bets with one click, auto-check results, view P/L charts, and export data.",
   "author": "SB Logger Team",
   "homepage_url": "https://github.com/tacticdemonic/sb-logger-extension",
@@ -10,7 +10,9 @@
       "id": "sb-logger@tacticdemonic.github.io",
       "strict_min_version": "140.0",
       "data_collection_permissions": {
-        "required": ["none"]
+        "required": [
+          "none"
+        ]
       }
     }
   },
@@ -37,12 +39,18 @@
     "default_popup": "popup.html"
   },
   "background": {
-    "scripts": ["background.js"]
+    "scripts": [
+      "background.js"
+    ]
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["contentScript.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "contentScript.js"
+      ],
       "run_at": "document_idle"
     }
   ]

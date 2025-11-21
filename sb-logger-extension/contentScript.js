@@ -11,6 +11,29 @@
     surebetLink: null,
     global: null
   };
+  const DEFAULT_STAKING_SETTINGS = {
+    bankroll: 1000,
+    baseBankroll: 1000,
+    fraction: 0.25,
+    useCommission: true,
+    customCommissionRates: {}
+  };
+  
+  const DEFAULT_COMMISSION_RATES = {
+    'betfair': 0.05,
+    'smarkets': 0.02,
+    'matchbook': 0.01,
+    'betdaq': 0.025
+  };
+
+  const DEFAULT_ROUNDING_SETTINGS = {
+    enabled: false,
+    increment: null
+  };
+  
+  let stakingSettings = { ...DEFAULT_STAKING_SETTINGS };
+  let roundingSettings = { ...DEFAULT_ROUNDING_SETTINGS };
+  let stakePanel = null;
 
   function generateBetUid() {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -158,6 +181,151 @@
     .sb-logger-hidden-row {
       display: none !important;
     }
+    .sb-logger-stake-panel {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 260px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(4px);
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      color: #222;
+      z-index: 2147483647 !important;
+      padding: 12px 14px 14px;
+    }
+    .sb-logger-stake-panel.collapsed {
+      width: auto;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+    .sb-logger-stake-panel.collapsed .sb-logger-stake-form,
+    .sb-logger-stake-panel.collapsed .sb-logger-stake-summary {
+      display: none;
+    }
+    .sb-logger-stake-panel.collapsed h3 {
+      margin-bottom: 0;
+    }
+    .sb-logger-stake-panel h3 {
+      margin: 0 0 8px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #0c5460;
+    }
+    .sb-logger-stake-header button {
+      border: none;
+      background: transparent;
+      color: #0d6efd;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 0 2px;
+    }
+    .sb-logger-stake-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .sb-logger-stake-form label {
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: #6c757d;
+    }
+    .sb-logger-stake-form input {
+      width: 100%;
+      padding: 4px 6px;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    .sb-logger-stake-actions {
+      grid-column: span 2;
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+    .sb-logger-stake-actions button {
+      border: none;
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .sb-logger-stake-save {
+      background: #28a745;
+      color: #fff;
+    }
+    .sb-logger-stake-reset {
+      background: #6c757d;
+      color: #fff;
+    }
+    .sb-logger-stake-summary {
+      font-size: 11px;
+      color: #495057;
+      background: #f8f9fa;
+      border: 1px dashed #ced4da;
+      border-radius: 6px;
+      padding: 8px;
+      line-height: 1.4;
+    }
+    .sb-logger-stake-summary strong {
+      color: #0c5460 !important;
+      font-weight: 700 !important;
+      font-size: 12px !important;
+    }
+    .sb-logger-stake-collapsed-text {
+      display: none;
+      font-size: 12px;
+      font-weight: 600;
+      color: #0c5460;
+    }
+    .sb-logger-stake-panel.collapsed .sb-logger-stake-collapsed-text {
+      display: block;
+    }
+    .sb-logger-stake-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 6px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #0d6efd;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .sb-logger-stake-indicator span {
+      font-weight: 400;
+      font-size: 10px;
+      opacity: 0.85;
+    }
+    .sb-logger-stake-indicator.muted {
+      background: #6c757d;
+    }
+    .sb-logger-commission-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 8px 0;
+      font-size: 13px;
+    }
+    .sb-logger-commission-toggle input[type="checkbox"] {
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+    }
+    .sb-logger-commission-toggle label {
+      cursor: pointer;
+      margin: 0;
+    }
   `;
 
   function injectStyles() {
@@ -168,6 +336,511 @@
     style.id = 'sb-logger-style';
     style.textContent = CSS;
     document.head.appendChild(style);
+  }
+
+  function sanitizeBankroll(value, fallback = DEFAULT_STAKING_SETTINGS.bankroll) {
+    const parsed = parseFloat(value);
+    if (!isFinite(parsed)) {
+      return fallback;
+    }
+    if (parsed <= 0) {
+      return Math.max(0, fallback);
+    }
+    return Math.min(parsed, 1000000);
+  }
+
+  function sanitizeFraction(value) {
+    const parsed = parseFloat(value);
+    if (!isFinite(parsed) || parsed <= 0) {
+      return DEFAULT_STAKING_SETTINGS.fraction;
+    }
+    return Math.min(parsed, 1);
+  }
+
+  function loadRoundingSettings() {
+    return new Promise((resolve) => {
+      if (!chrome?.storage?.local) {
+        console.warn('⚠️ [Rounding] chrome.storage.local not available, using defaults');
+        roundingSettings = { ...DEFAULT_ROUNDING_SETTINGS };
+        console.log('📏 [Rounding] Loaded settings:', roundingSettings);
+        resolve(roundingSettings);
+        return;
+      }
+      chrome.storage.local.get({ 
+        roundingSettings: DEFAULT_ROUNDING_SETTINGS
+      }, (res) => {
+        roundingSettings = { ...res.roundingSettings };
+        console.log('📏 [Rounding] Loaded settings:', roundingSettings);
+        resolve(roundingSettings);
+      });
+    });
+  }
+
+  function applyStakeRounding(stake, settings) {
+    if (!settings || !settings.enabled || !settings.increment) {
+      return stake;
+    }
+    const increment = parseFloat(settings.increment);
+    if (!isFinite(increment) || increment <= 0) {
+      return stake;
+    }
+    return Math.round(stake / increment) * increment;
+  }
+
+  function loadStakingSettings() {
+    return new Promise((resolve) => {
+      if (!chrome?.storage?.local) {
+        console.warn('⚠️ [StakePanel] chrome.storage.local not available, using defaults');
+        stakingSettings = { ...DEFAULT_STAKING_SETTINGS };
+        console.log('📊 [StakePanel] Loaded settings:', stakingSettings);
+        resolve(stakingSettings);
+        return;
+      }
+      chrome.storage.local.get({ 
+        stakingSettings: DEFAULT_STAKING_SETTINGS,
+        commission: {},
+        roundingSettings: DEFAULT_ROUNDING_SETTINGS
+      }, (res) => {
+        const stored = res.stakingSettings || DEFAULT_STAKING_SETTINGS;
+        const commissionData = res.commission || {};
+        roundingSettings = res.roundingSettings || DEFAULT_ROUNDING_SETTINGS;
+        const sanitizedBankroll = sanitizeBankroll(stored.bankroll ?? DEFAULT_STAKING_SETTINGS.bankroll, 0);
+        const sanitizedBase = sanitizeBankroll(
+          stored.baseBankroll ?? stored.bankroll ?? DEFAULT_STAKING_SETTINGS.baseBankroll,
+          DEFAULT_STAKING_SETTINGS.baseBankroll
+        ) || DEFAULT_STAKING_SETTINGS.baseBankroll;
+        const sanitized = {
+          bankroll: sanitizedBankroll,
+          baseBankroll: sanitizedBase,
+          fraction: sanitizeFraction(stored.fraction ?? DEFAULT_STAKING_SETTINGS.fraction),
+          useCommission: stored.useCommission !== false,
+          customCommissionRates: commissionData
+        };
+        stakingSettings = sanitized;
+        console.log('📊 [StakePanel] Loaded settings from storage:', stakingSettings);
+        console.log('💰 [StakePanel] Loaded commission rates (raw):', commissionData);
+        console.log('💰 [StakePanel] Commission keys:', Object.keys(commissionData));
+        console.log('💰 [StakePanel] Commission values:', Object.entries(commissionData).map(([k, v]) => `${k}=${v}%`).join(', '));
+        if (
+          sanitized.bankroll !== stored.bankroll ||
+          sanitized.baseBankroll !== stored.baseBankroll ||
+          sanitized.fraction !== stored.fraction
+        ) {
+          console.log('📊 [StakePanel] Sanitized values, saving back to storage');
+          chrome.storage.local.set({ stakingSettings: sanitized });
+        }
+        resolve(stakingSettings);
+      });
+    });
+  }
+
+  function applyStakingSettings(partial = {}, options = {}) {
+    const merged = {
+      ...DEFAULT_STAKING_SETTINGS,
+      ...stakingSettings,
+      ...partial
+    };
+    const sanitized = {
+      bankroll: sanitizeBankroll(merged.bankroll, 0),
+      baseBankroll: sanitizeBankroll(merged.baseBankroll ?? merged.bankroll, DEFAULT_STAKING_SETTINGS.baseBankroll),
+      fraction: sanitizeFraction(merged.fraction),
+      useCommission: merged.useCommission !== false,
+      customCommissionRates: merged.customCommissionRates || {}
+    };
+    stakingSettings = sanitized;
+    const afterSave = () => {
+      updateStakePanelDisplay();
+      updateStakeIndicators();
+      if (!options.silent) {
+        showToast(options.toastMessage || 'Kelly staking updated');
+      }
+    };
+    if (chrome?.storage?.local) {
+      chrome.storage.local.set({ stakingSettings: sanitized }, afterSave);
+    } else {
+      afterSave();
+    }
+  }
+
+  function getCurrencySymbol(currency = 'GBP') {
+    switch ((currency || 'GBP').toUpperCase()) {
+      case 'EUR':
+        return '€';
+      case 'USD':
+        return '$';
+      case 'AUD':
+        return 'A$';
+      case 'CAD':
+        return 'C$';
+      case 'NZD':
+        return 'NZ$';
+      default:
+        return '£';
+    }
+  }
+
+  function formatStakeAmount(amount, currency = 'GBP') {
+    const numeric = Number(amount);
+    if (!isFinite(numeric) || numeric <= 0) {
+      return `${getCurrencySymbol(currency)}0.00`;
+    }
+    return `${getCurrencySymbol(currency)}${numeric.toLocaleString('en-GB', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })}`;
+  }
+
+  async function copyTextToClipboard(text) {
+    if (!text) {
+      return false;
+    }
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch (err) {
+      console.warn('SB Logger: navigator clipboard write failed', err);
+    }
+    try {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.top = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      const result = document.execCommand('copy');
+      textarea.remove();
+      return result;
+    } catch (err) {
+      console.warn('SB Logger: execCommand copy failed', err);
+      return false;
+    }
+  }
+
+  function getCommissionRate(betData) {
+    if (!betData || !betData.bookmaker) {
+      return 0;
+    }
+    
+    const bookmaker = betData.bookmaker.toLowerCase();
+    
+    // Check for custom rate first (stored as percentages from popup, convert to decimals)
+    if (stakingSettings.customCommissionRates && stakingSettings.customCommissionRates[bookmaker]) {
+      const ratePercent = parseFloat(stakingSettings.customCommissionRates[bookmaker]) || 0;
+      const rateDecimal = ratePercent / 100;  // Convert percentage to decimal for Kelly calculation
+      console.log(`💰 [Commission] Using custom rate for ${bookmaker}: ${ratePercent}% = ${rateDecimal}`);
+      return rateDecimal;
+    }
+    
+    // Use commission from bet data if available
+    if (betData.commission && parseFloat(betData.commission) > 0) {
+      return parseFloat(betData.commission);
+    }
+    
+    // Fall back to default rates
+    console.log(`💰 [Commission] Using default rate for ${bookmaker}: ${DEFAULT_COMMISSION_RATES[bookmaker] || 0}`);
+    return DEFAULT_COMMISSION_RATES[bookmaker] || 0;
+  }
+
+  function calculateKellyStake(betData) {
+    if (!betData) {
+      return 0;
+    }
+    
+    let odds = parseFloat(betData.odds);
+    const probabilityPercent = parseFloat(betData.probability);
+    
+    if (!isFinite(odds) || odds <= 1 || !isFinite(probabilityPercent)) {
+      return 0;
+    }
+    
+    // Apply commission adjustment if enabled
+    if (stakingSettings.useCommission !== false) {
+      const commission = getCommissionRate(betData);
+      if (commission > 0) {
+        const originalOdds = odds;
+        odds = (odds - 1) * (1 - commission) + 1;
+        console.log('📊 [StakePanel] Commission adjusted odds:', {
+          original: originalOdds.toFixed(4),
+          commission: Math.round(commission * 100) + '%',
+          adjusted: odds.toFixed(4),
+          bookmaker: betData.bookmaker
+        });
+      }
+    }
+    
+    const p = probabilityPercent / 100;
+    if (p <= 0 || p >= 1) {
+      return 0;
+    }
+    
+    const b = odds - 1;
+    const q = 1 - p;
+    if (b <= 0) {
+      return 0;
+    }
+    
+    let kellyPortion = ((b * p) - q) / b;
+    if (!isFinite(kellyPortion)) {
+      return 0;
+    }
+    
+    kellyPortion = Math.max(0, kellyPortion);
+    const userFraction = Math.max(0, Math.min(1, stakingSettings.fraction || DEFAULT_STAKING_SETTINGS.fraction));
+    const bankroll = Math.max(0, stakingSettings.bankroll || DEFAULT_STAKING_SETTINGS.bankroll);
+    
+    let stake = bankroll * kellyPortion * userFraction;
+    if (betData.limit && betData.limit > 0) {
+      stake = Math.min(stake, betData.limit);
+    }
+    
+    // Round to 2 decimal places first
+    stake = Math.max(0, Math.round(stake * 100) / 100);
+    
+    // Apply stake rounding if enabled
+    stake = applyStakeRounding(stake, roundingSettings);
+    
+    return stake;
+  }
+
+  function ensureStakeIndicator(row, parentEl) {
+    if (!parentEl) {
+      return null;
+    }
+    let indicator = row.querySelector('.sb-logger-stake-indicator');
+    if (!indicator) {
+      indicator = document.createElement('span');
+      indicator.className = 'sb-logger-stake-indicator muted';
+      parentEl.appendChild(indicator);
+      indicator.addEventListener('click', async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const value = parseFloat(indicator.dataset.stakeValue);
+        if (!isFinite(value) || value <= 0) {
+          showToast('Stake not available for this bet', false);
+          return;
+        }
+        const plain = value.toFixed(2);
+        const copied = await copyTextToClipboard(plain);
+        if (copied) {
+          showToast(`Stake ${formatStakeAmount(value)} copied`);
+        } else {
+          showToast('Unable to copy stake', false);
+        }
+      });
+    }
+    return indicator;
+  }
+
+  function updateRowStakeIndicator(row, betData, stakeValue) {
+    if (!row || !betData) {
+      return;
+    }
+    const parentEl = row.querySelector('td .d-flex');
+    if (!parentEl) {
+      return;
+    }
+    const indicator = ensureStakeIndicator(row, parentEl);
+    if (!indicator) {
+      return;
+    }
+    if (stakeValue && stakeValue > 0) {
+      indicator.classList.remove('muted');
+      indicator.dataset.stakeValue = String(stakeValue);
+      indicator.innerHTML = `Stake ${formatStakeAmount(stakeValue, betData.currency || 'GBP')}<span>${Math.round((stakingSettings.fraction || DEFAULT_STAKING_SETTINGS.fraction) * 100)}% Kelly</span>`;
+    } else {
+      indicator.classList.add('muted');
+      indicator.dataset.stakeValue = '';
+      indicator.textContent = 'Stake n/a';
+    }
+  }
+
+  function updateStakeIndicators() {
+    const rows = document.querySelectorAll('tbody.valuebet_record');
+    rows.forEach((row) => {
+      if (row.__sbLoggerBetData) {
+        const stakeValue = calculateKellyStake(row.__sbLoggerBetData);
+        row.__sbLoggerRecommendedStake = stakeValue;
+        updateRowStakeIndicator(row, row.__sbLoggerBetData, stakeValue);
+      }
+    });
+  }
+
+  function toggleStakePanelCollapsed(forceValue) {
+    if (!stakePanel) {
+      return;
+    }
+    const shouldCollapse = typeof forceValue === 'boolean'
+      ? forceValue
+      : !stakePanel.classList.contains('collapsed');
+    stakePanel.classList.toggle('collapsed', shouldCollapse);
+  }
+
+  function updateStakePanelDisplay() {
+    if (!stakePanel) {
+      console.warn('⚠️ [StakePanel] updateStakePanelDisplay called but stakePanel is null/undefined');
+      return;
+    }
+    const bankrollInput = stakePanel.querySelector('#sb-logger-bankroll');
+    const fractionInput = stakePanel.querySelector('#sb-logger-fraction');
+    const useCommissionCheckbox = stakePanel.querySelector('#sb-logger-use-commission');
+    const summary = stakePanel.querySelector('.sb-logger-stake-summary');
+    const collapsedText = stakePanel.querySelector('.sb-logger-stake-collapsed-text');
+    
+    const bankroll = stakingSettings.bankroll || DEFAULT_STAKING_SETTINGS.bankroll;
+    const baseBankroll = stakingSettings.baseBankroll || bankroll;
+    const fractionPercent = Math.round((stakingSettings.fraction || DEFAULT_STAKING_SETTINGS.fraction) * 100);
+    const useCommission = stakingSettings.useCommission !== false;
+    
+    console.log('📊 [StakePanel] Updating display:', {
+      bankroll,
+      baseBankroll,
+      fractionPercent,
+      useCommission,
+      bankrollInput: !!bankrollInput,
+      fractionInput: !!fractionInput,
+      useCommissionCheckbox: !!useCommissionCheckbox,
+      summary: !!summary,
+      collapsedText: !!collapsedText
+    });
+    
+    if (bankrollInput) {
+      bankrollInput.value = baseBankroll;
+    }
+    if (fractionInput) {
+      fractionInput.value = fractionPercent;
+    }
+    if (useCommissionCheckbox) {
+      useCommissionCheckbox.checked = useCommission;
+    }
+    const commissionStatus = useCommission ? '✓' : '✗';
+    if (summary) {
+      summary.innerHTML = `Current bank <strong>${formatStakeAmount(bankroll)}</strong><br/>Starting bank <strong>${formatStakeAmount(baseBankroll)}</strong><br/>Fractional Kelly <strong>${fractionPercent}%</strong><br/>Commission accounting <strong>${commissionStatus}</strong>`;
+    }
+    if (collapsedText) {
+      collapsedText.textContent = `Kelly ${fractionPercent}% | Bank ${formatStakeAmount(bankroll)} | Comm ${commissionStatus}`;
+    }
+  }
+
+  function injectStakePanel() {
+    console.log('🎯 [StakePanel] injectStakePanel called | stakePanel exists:', !!stakePanel, '| body exists:', !!document.body);
+    
+    if (stakePanel || !document.body) {
+      console.log('⚠️ [StakePanel] Panel already exists or body missing, updating display only');
+      updateStakePanelDisplay();
+      return;
+    }
+    
+    stakePanel = document.createElement('div');
+    stakePanel.className = 'sb-logger-stake-panel';
+    stakePanel.innerHTML = `
+      <h3 class="sb-logger-stake-header">
+        <span>Kelly Stake Helper</span>
+        <button type="button" class="sb-logger-stake-toggle" aria-label="Toggle staking panel">-</button>
+      </h3>
+      <div class="sb-logger-stake-collapsed-text"></div>
+      <form class="sb-logger-stake-form">
+        <div>
+          <label for="sb-logger-bankroll">Starting Bank</label>
+          <input type="number" id="sb-logger-bankroll" min="50" step="10" />
+        </div>
+        <div>
+          <label for="sb-logger-fraction">Kelly %</label>
+          <input type="number" id="sb-logger-fraction" min="5" max="100" step="1" />
+        </div>
+        <div class="sb-logger-commission-toggle">
+          <input type="checkbox" id="sb-logger-use-commission" />
+          <label for="sb-logger-use-commission">Account for Exchange Commission</label>
+        </div>
+        <div class="sb-logger-stake-actions">
+          <button type="button" class="sb-logger-stake-reset">Reset</button>
+          <button type="submit" class="sb-logger-stake-save">Save</button>
+        </div>
+      </form>
+      <div class="sb-logger-stake-summary"></div>
+    `;
+    document.body.appendChild(stakePanel);
+    console.log('✅ [StakePanel] Panel injected successfully:', stakePanel);
+    console.log('✅ [StakePanel] Panel in DOM:', document.contains(stakePanel));
+    console.log('✅ [StakePanel] Panel computed style z-index:', window.getComputedStyle(stakePanel).zIndex);
+    console.log('📊 [StakePanel] Current stakingSettings:', stakingSettings);
+    
+    const form = stakePanel.querySelector('.sb-logger-stake-form');
+    const resetBtn = stakePanel.querySelector('.sb-logger-stake-reset');
+    const toggleBtn = stakePanel.querySelector('.sb-logger-stake-toggle');
+    
+    console.log('✅ [StakePanel] Elements found - form:', !!form, 'resetBtn:', !!resetBtn, 'toggleBtn:', !!toggleBtn);
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const bankrollValue = stakePanel.querySelector('#sb-logger-bankroll')?.value;
+        const fractionValue = stakePanel.querySelector('#sb-logger-fraction')?.value;
+        const useCommissionCheckbox = stakePanel.querySelector('#sb-logger-use-commission');
+        const bankroll = sanitizeBankroll(bankrollValue, DEFAULT_STAKING_SETTINGS.bankroll);
+        const fractionPercent = parseFloat(fractionValue) || (DEFAULT_STAKING_SETTINGS.fraction * 100);
+        const fraction = sanitizeFraction(fractionPercent / 100);
+        const useCommission = useCommissionCheckbox ? useCommissionCheckbox.checked : true;
+        applyStakingSettings({ bankroll, baseBankroll: bankroll, fraction, useCommission });
+      });
+    }
+    if (resetBtn) {
+      resetBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        applyStakingSettings({ ...DEFAULT_STAKING_SETTINGS });
+      });
+    }
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleStakePanelCollapsed();
+      });
+    }
+    stakePanel.addEventListener('click', (e) => {
+      if (stakePanel.classList.contains('collapsed') && !e.target.closest('button')) {
+        toggleStakePanelCollapsed(false);
+      }
+    });
+    updateStakePanelDisplay();
+    console.log('✅ [StakePanel] Display updated, checking values in DOM...');
+    const bankrollInputCheck = stakePanel.querySelector('#sb-logger-bankroll');
+    const fractionInputCheck = stakePanel.querySelector('#sb-logger-fraction');
+    const summaryCheck = stakePanel.querySelector('.sb-logger-stake-summary');
+    console.log('📊 [StakePanel] Input values after update:', {
+      bankroll: bankrollInputCheck?.value,
+      fraction: fractionInputCheck?.value,
+      summaryHTML: summaryCheck?.innerHTML
+    });
+    
+    // Ensure panel is not in collapsed state on initial creation
+    if (stakePanel.classList.contains('collapsed')) {
+      console.log('⚠️ [StakePanel] Panel was in collapsed state, expanding it');
+      stakePanel.classList.remove('collapsed');
+    }
+  }
+
+  function ensureStakePanelExists() {
+    const panelInDOM = document.querySelector('.sb-logger-stake-panel');
+    if (!panelInDOM) {
+      console.warn('⚠️ [StakePanel] Panel missing from DOM, re-injecting');
+      stakePanel = null;
+      injectStakePanel();
+    }
+  }
+
+  function startStakePanelMonitoring() {
+    // Check every 3 seconds if panel still exists in DOM
+    const monitorInterval = setInterval(() => {
+      if (!document.body) {
+        clearInterval(monitorInterval);
+        return;
+      }
+      ensureStakePanelExists();
+    }, 3000);
+    
+    console.log('✅ [StakePanel] DOM monitoring started (checks every 3s)');
   }
 
   function showToast(text, success = true, duration = 2500) {
@@ -248,6 +921,11 @@
         }
       }
 
+      // Detect Lay bets
+      if (data.market && /lay/i.test(data.market)) {
+        data.isLay = true;
+      }
+
       // Extract time
       const timeCell = row.querySelector('.time abbr');
       if (timeCell && timeCell.dataset.utc) {
@@ -291,8 +969,11 @@
       }
     }
 
-    // Ask for stake amount
-    const stakeStr = prompt('Enter your stake amount:', '');
+    const recommendedStake = (typeof betData.suggestedStake === 'number' ? betData.suggestedStake : calculateKellyStake(betData)) || 0;
+    if (recommendedStake > 0) {
+      betData.recommendedStake = recommendedStake;
+    }
+    const stakeStr = prompt('Enter your stake amount:', recommendedStake > 0 ? recommendedStake.toFixed(2) : '');
     if (stakeStr === null) return false; // User cancelled
 
     const stake = parseFloat(stakeStr.replace(/[^\d.]/g, ''));
@@ -300,7 +981,10 @@
       alert('Invalid stake amount');
       return false;
     }
-    betData.stake = stake;
+    
+    // Apply stake rounding if enabled
+    const roundedStake = applyStakeRounding(stake, roundingSettings);
+    betData.stake = roundedStake;
 
     // Use overvalue as EV
     if (betData.odds && betData.probability) {
@@ -308,14 +992,9 @@
       if (!betData.overvalue) {
         betData.overvalue = betData.probability - impliedProb;
       }
-      // EV is the overvalue percentage
-      betData.expectedValue = betData.overvalue;
-    }
-
-    // Optional note
-    const note = prompt('Optional note:', betData.note || '') || '';
-    if (note) {
-      betData.note = note;
+      // Expected value is stake scaled by the edge percentage
+      const edgeFraction = betData.overvalue / 100;
+      betData.expectedValue = parseFloat((roundedStake * edgeFraction).toFixed(2));
     }
 
     if (!betData.timestamp) {
@@ -741,12 +1420,13 @@
       // Try to find a link to the valuebet details
       const link = row.querySelector('a[href*="/nav/valuebet/prong/"]');
       let linkUrl = link ? link.href : null;
+      let linkData = null;
 
       // Parse stake limit from the link data
       if (link && link.href) {
         try {
           console.log('SB Logger: Parsing link for stake limit:', link.href.substring(0, 100));
-          const linkData = parseSurebetLinkData(link.href);
+          linkData = parseSurebetLinkData(link.href);
           console.log('SB Logger: Parsed link data:', linkData ? `id: ${linkData.id}, limit: ${linkData.limit}` : 'null');
           
           if (linkData && typeof linkData.limit !== 'undefined') {
@@ -767,6 +1447,14 @@
         }
       } else {
         console.log('SB Logger: No link found in row');
+      }
+
+      if (linkData) {
+        row.__sbLoggerBetData = linkData;
+        row.__sbLoggerRecommendedStake = calculateKellyStake(linkData);
+      } else {
+        row.__sbLoggerBetData = null;
+        row.__sbLoggerRecommendedStake = 0;
       }
 
       // Find the first cell with buttons
@@ -801,6 +1489,10 @@
           return;
         }
 
+        if (row.__sbLoggerRecommendedStake && row.__sbLoggerRecommendedStake > 0) {
+          betData.suggestedStake = row.__sbLoggerRecommendedStake;
+        }
+
         const saved = await saveBet(betData);
         if (saved) {
           showToast('✓ Bet saved successfully!');
@@ -817,12 +1509,18 @@
 
       // Insert button into the cell
       firstCell.appendChild(saveBtn);
+
+      if (row.__sbLoggerBetData) {
+        updateRowStakeIndicator(row, row.__sbLoggerBetData, row.__sbLoggerRecommendedStake);
+      }
     });
     
     // Play notification sound if any high stake bets were found
     if (hasHighStake) {
       playNotificationSound();
     }
+
+    updateStakeIndicators();
   }
 
   function playNotificationSound() {
@@ -1414,6 +2112,7 @@
     document.querySelectorAll('.sb-logger-save-btn, .sb-logger-save-btn-smarkets, .sb-logger-preset-container, .sb-logger-hide-lay-btn, .sb-logger-toast').forEach((node) => {
       node.remove();
     });
+    document.querySelectorAll('.sb-logger-stake-indicator').forEach((node) => node.remove());
 
     document.querySelectorAll('.sb-logger-high-stake').forEach((row) => {
       row.classList.remove('sb-logger-high-stake');
@@ -1428,10 +2127,15 @@
       styleEl.remove();
     }
 
+    if (stakePanel) {
+      stakePanel.remove();
+      stakePanel = null;
+    }
+
     isInitialized = false;
   }
 
-  function init() {
+  async function init() {
     if (isDisabled) {
       console.log('SB Logger: Disabled, initialization skipped');
       return;
@@ -1443,6 +2147,13 @@
     console.log('SB Logger: ===== INITIALIZING =====');
     console.log('SB Logger: URL:', location.href);
     injectStyles();
+    console.log('✅ SB Logger: Styles injected');
+    await loadStakingSettings();
+    console.log('✅ SB Logger: Staking settings loaded');
+    injectStakePanel();
+    console.log('✅ SB Logger: Stake panel injected');
+    startStakePanelMonitoring();
+    console.log('✅ SB Logger: Panel monitoring started');
     
     // Show a temporary toast to confirm script is running
     setTimeout(() => {
@@ -1584,10 +2295,13 @@
     if (isDisabled) {
       return;
     }
+    const startInit = () => {
+      init().catch((err) => console.error('SB Logger: Initialization failed', err));
+    };
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init, { once: true });
+      document.addEventListener('DOMContentLoaded', startInit, { once: true });
     } else {
-      init();
+      startInit();
     }
   }
 
@@ -1613,6 +2327,52 @@
     chrome.runtime.onMessage.addListener((message) => {
       if (message && message.action === 'extension-disabled-changed') {
         updateDisabledState(Boolean(message.disabled));
+      }
+    });
+  }
+
+  if (chrome?.storage?.onChanged) {
+    chrome.storage.onChanged.addListener((changes, areaName) => {
+      if (areaName !== 'local') return;
+      
+      // Handle stakingSettings changes
+      if (changes.stakingSettings?.newValue) {
+        const next = changes.stakingSettings.newValue;
+        stakingSettings = {
+          bankroll: sanitizeBankroll(next.bankroll ?? stakingSettings.bankroll ?? DEFAULT_STAKING_SETTINGS.bankroll, 0),
+          baseBankroll: sanitizeBankroll(
+            next.baseBankroll ?? next.bankroll ?? stakingSettings.baseBankroll ?? DEFAULT_STAKING_SETTINGS.baseBankroll,
+            DEFAULT_STAKING_SETTINGS.baseBankroll
+          ),
+          fraction: sanitizeFraction(next.fraction ?? stakingSettings.fraction ?? DEFAULT_STAKING_SETTINGS.fraction),
+          useCommission: next.useCommission !== false,
+          customCommissionRates: stakingSettings.customCommissionRates || {}
+        };
+        updateStakePanelDisplay();
+        updateStakeIndicators();
+      }
+      
+      // Handle commission changes from popup
+      if (changes.commission?.newValue) {
+        const newRates = changes.commission.newValue;
+        console.log('💰 [StakePanel] Commission rates updated from popup (raw):', newRates);
+        console.log('💰 [StakePanel] Updated commission keys:', Object.keys(newRates));
+        console.log('💰 [StakePanel] Updated commission values:', Object.entries(newRates).map(([k, v]) => `${k}=${v}%`).join(', '));
+        stakingSettings.customCommissionRates = newRates;
+        updateStakeIndicators();
+        showToast('Commission rates updated', true, 2000);
+      }
+
+      // Handle rounding settings changes from popup
+      if (changes.roundingSettings?.newValue) {
+        const newSettings = changes.roundingSettings.newValue;
+        roundingSettings = {
+          enabled: newSettings.enabled !== false,
+          increment: newSettings.increment || null
+        };
+        console.log('📏 [StakePanel] Rounding settings updated from popup:', roundingSettings);
+        updateStakeIndicators();
+        showToast('Rounding settings updated', true, 2000);
       }
     });
   }

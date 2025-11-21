@@ -4,7 +4,7 @@
 - **Auto-injects** a "💾 Save" button on every bet row on surebet.com/valuebets pages
 - **Bookmaker filter presets**: Quick-apply preset bookmaker filters in the filter popup
 - **Auto-captures** all bet details: bookmaker, event, market, odds, probability, overvalue
-- **Prompts for stake** and optional note when you click Save
+- **Prompts for stake** when you click Save
 - **Tracks profit**: Automatically calculates potential return and profit
 - **Expected Value (EV)**: Shows theoretical expected profit for each bet
 - **Exchange commission**: Supports commission rates for Betfair, Betdaq, Matchbook, Smarkets
@@ -54,7 +54,7 @@
 3. **Filter presets**: Click the bookmaker filter to open the popup - you'll see two preset buttons at the top:
    - **⭐ My Normal List** - Apply your standard bookmaker selection
    - **🔄 Exchanges Only** - Filter to show only betting exchanges
-4. Click Save on any bet, enter your stake amount (and optional note)
+4. Click Save on any bet, enter your stake amount
 5. Open the extension popup (click toolbar icon) to see all saved bets
 6. **Mark bets**: Click ✓ Won, ✗ Lost, or ○ Void buttons for each bet as they settle
 7. **Track performance**: See your running P/L and ROI at the top of the popup

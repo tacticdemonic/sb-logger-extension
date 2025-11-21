@@ -430,6 +430,11 @@ async function processImportedData(plData, source) {
   
   // Save updated bets
   await browser.storage.local.set({ bets: updatedBets });
+  try {
+    await browser.runtime.sendMessage({ action: 'recalculateBankroll' });
+  } catch (err) {
+    console.warn('⚠️ Unable to trigger bankroll recalc from import page:', err?.message || err);
+  }
   
   console.log(`✅ Import complete: ${matchedCount} bets updated`);
   

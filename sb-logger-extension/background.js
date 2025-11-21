@@ -7,8 +7,123 @@ const DISABLE_STORAGE_KEY = 'extensionDisabled';
 const TOGGLE_MENU_ID = 'sb-logger-toggle';
 const IS_FIREFOX = typeof navigator !== 'undefined' && /firefox/i.test(navigator.userAgent);
 
+const DEFAULT_STAKING_SETTINGS = {
+  bankroll: 1000,
+  baseBankroll: 1000,
+  fraction: 0.25
+};
+
+const DEFAULT_COMMISSION_RATES = {
+  betfair: 5.0,
+  betdaq: 2.0,
+  matchbook: 1.0,
+  smarkets: 2.0
+};
+
 // Use chrome API when available (Firefox provides chrome shim), fallback to browser
 const api = typeof chrome !== 'undefined' ? chrome : browser;
+
+function sanitizeBankroll(value, fallback = DEFAULT_STAKING_SETTINGS.bankroll) {
+  const parsed = parseFloat(value);
+  if (!isFinite(parsed)) {
+    return fallback;
+  }
+  if (parsed <= 0) {
+    return Math.max(0, fallback);
+  }
+  return Math.min(parsed, 1000000);
+}
+
+function mergeCommissionRates(rates = {}) {
+  return {
+    betfair: isFinite(parseFloat(rates.betfair)) ? parseFloat(rates.betfair) : DEFAULT_COMMISSION_RATES.betfair,
+    betdaq: isFinite(parseFloat(rates.betdaq)) ? parseFloat(rates.betdaq) : DEFAULT_COMMISSION_RATES.betdaq,
+    matchbook: isFinite(parseFloat(rates.matchbook)) ? parseFloat(rates.matchbook) : DEFAULT_COMMISSION_RATES.matchbook,
+    smarkets: isFinite(parseFloat(rates.smarkets)) ? parseFloat(rates.smarkets) : DEFAULT_COMMISSION_RATES.smarkets
+  };
+}
+
+function normalizeStatus(status) {
+  if (!status) {
+    return 'pending';
+  }
+  return String(status).trim().toLowerCase() || 'pending';
+}
+
+function getCommissionFromMap(bookmaker, rates = DEFAULT_COMMISSION_RATES) {
+  if (!bookmaker) {
+    return 0;
+  }
+  const name = bookmaker.toLowerCase();
+  if (name.includes('betfair')) return rates.betfair || 0;
+  if (name.includes('betdaq')) return rates.betdaq || 0;
+  if (name.includes('matchbook')) return rates.matchbook || 0;
+  if (name.includes('smarkets')) return rates.smarkets || 0;
+  return 0;
+}
+
+function calculateActualProfit(bet, status, commissionRates = DEFAULT_COMMISSION_RATES) {
+  const normalizedStatus = normalizeStatus(status);
+  if (!bet || normalizedStatus === 'pending' || normalizedStatus === 'void') {
+    return 0;
+  }
+  const stake = parseFloat(bet.stake);
+  const odds = parseFloat(bet.odds);
+  if (!isFinite(stake) || stake <= 0 || !isFinite(odds) || odds <= 1) {
+    return 0;
+  }
+  const commission = getCommissionFromMap(bet.bookmaker, commissionRates);
+  if (normalizedStatus === 'won') {
+    if (bet.isLay) {
+      const gross = stake;
+      const commissionAmount = commission > 0 ? (gross * commission / 100) : 0;
+      return gross - commissionAmount;
+    }
+    const grossProfit = (stake * odds) - stake;
+    const commissionAmount = commission > 0 ? (grossProfit * commission / 100) : 0;
+    return grossProfit - commissionAmount;
+  }
+  if (normalizedStatus === 'lost') {
+    if (bet.isLay) {
+      const layOdds = isFinite(parseFloat(bet.originalLayOdds)) ? parseFloat(bet.originalLayOdds) : odds;
+      return -(stake * (layOdds - 1));
+    }
+    return -stake;
+  }
+  return 0;
+}
+
+function recalculateBankrollFromStorage(callback) {
+  chrome.storage.local.get({
+    bets: [],
+    stakingSettings: DEFAULT_STAKING_SETTINGS,
+    commission: DEFAULT_COMMISSION_RATES
+  }, (res) => {
+    const commissionRates = mergeCommissionRates(res.commission);
+    const bets = res.bets || [];
+    const totalProfit = bets.reduce((sum, bet) => sum + calculateActualProfit(bet, bet.status, commissionRates), 0);
+    const currentSettings = res.stakingSettings || DEFAULT_STAKING_SETTINGS;
+    const baseBankroll = sanitizeBankroll(
+      currentSettings.baseBankroll ?? currentSettings.bankroll ?? DEFAULT_STAKING_SETTINGS.baseBankroll,
+      DEFAULT_STAKING_SETTINGS.baseBankroll
+    );
+    const updatedBankroll = sanitizeBankroll(baseBankroll + totalProfit, 0);
+    const currentBankroll = sanitizeBankroll(currentSettings.bankroll ?? baseBankroll, 0);
+    if (Math.abs(currentBankroll - updatedBankroll) < 0.01) {
+      if (typeof callback === 'function') {
+        callback(updatedBankroll);
+      }
+      return;
+    }
+    const nextSettings = { ...currentSettings, bankroll: updatedBankroll };
+    chrome.storage.local.set({ stakingSettings: nextSettings }, () => {
+      console.log('💰 Bankroll recalculated from settlements:', updatedBankroll.toFixed(2));
+      if (typeof callback === 'function') {
+        callback(updatedBankroll);
+      }
+    });
+  });
+}
 
 function loadApiService() {
   if (apiServiceReady) {
@@ -99,19 +214,14 @@ function updateActionVisuals(disabled) {
 
 function createToggleContextMenu(disabled) {
   const title = disabled ? 'Enable SB Logger' : 'Disable SB Logger';
-  const primaryContexts = IS_FIREFOX ? ['browser_action'] : ['action'];
-  const fallbackContexts = IS_FIREFOX ? ['action'] : ['browser_action'];
+  // Firefox (Manifest V3) uses 'action', Chrome uses 'action' too
+  // 'browser_action' is not valid for Manifest V3
+  const contexts = ['action'];
 
-  const createMenu = (contexts) => {
+  const createMenu = () => {
     chrome.contextMenus.create({ id: TOGGLE_MENU_ID, title, contexts }, () => {
-      if (chrome.runtime.lastError && contexts === primaryContexts) {
-        chrome.contextMenus.remove(TOGGLE_MENU_ID, () => {
-          chrome.contextMenus.create({ id: TOGGLE_MENU_ID, title, contexts: fallbackContexts }, () => {
-            if (chrome.runtime.lastError) {
-              console.warn('⚠️ Failed to create SB Logger context menu:', chrome.runtime.lastError.message);
-            }
-          });
-        });
+      if (chrome.runtime.lastError) {
+        console.warn('⚠️ Failed to create SB Logger context menu:', chrome.runtime.lastError.message);
       }
     });
   };
@@ -120,7 +230,7 @@ function createToggleContextMenu(disabled) {
     if (chrome.runtime.lastError) {
       // Ignore missing menu errors
     }
-    createMenu(primaryContexts);
+    createMenu();
   });
 }
 
@@ -256,6 +366,13 @@ api.runtime.onMessage.addListener((message, sender, sendResponse) => {
   
   if (message.action === 'clearBets') {
     chrome.storage.local.set({ bets: [] }, () => {
+      recalculateBankrollFromStorage(() => sendResponse({ success: true }));
+    });
+    return true;
+  }
+
+  if (message.action === 'recalculateBankroll') {
+    recalculateBankrollFromStorage(() => {
       sendResponse({ success: true });
     });
     return true;
@@ -417,6 +534,9 @@ async function handleCheckResults() {
             resolve();
           });
         });
+      });
+      await new Promise((resolve) => {
+        recalculateBankrollFromStorage(() => resolve());
       });
     } else {
       console.log('ℹ️ No changes to save');

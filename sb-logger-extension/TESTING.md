@@ -16,7 +16,7 @@
 3. Click any **💾 Save** button
 4. **Expected**: Prompt asking for stake amount appears
 5. Enter a test amount (e.g., "100")
-6. Optionally enter a note when prompted
+6. Enter stake when prompted
 7. **Expected**: Alert confirms bet was saved
 
 ### 3. View Saved Bets
@@ -115,7 +115,7 @@
 - ✅ Buttons only appear on surebet.com
 - ✅ MutationObserver handles dynamically loaded rows
 - ✅ Stake prompt accepts numeric input
-- ✅ Optional note prompt works
+- ✅ Stake prompt works
 - ✅ Data extraction captures all fields correctly
 
 ### popup.js
