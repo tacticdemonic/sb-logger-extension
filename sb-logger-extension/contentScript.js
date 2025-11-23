@@ -624,8 +624,31 @@
         }
         const plain = value.toFixed(2);
         const copied = await copyTextToClipboard(plain);
+        
         if (copied) {
-          showToast(`Stake ${formatStakeAmount(value)} copied`);
+          // Find the odds link in this bet row
+          const betRow = indicator.closest('tbody.valuebet_record');
+          if (betRow) {
+            const oddsLink = betRow.querySelector('a[href*="/nav/valuebet/prong/"]');
+            if (oddsLink && oddsLink.href) {
+              // Parse bet data and store it
+              const betData = parseSurebetLinkData(oddsLink.href);
+              if (betData) {
+                chrome.storage.local.set({ pendingBet: betData }, () => {
+                  console.log('SB Logger: Bet data stored for bookmaker page:', betData);
+                });
+              }
+              // Open the betting link in new tab immediately
+              window.open(oddsLink.href, '_blank');
+              showToast(`Stake ${formatStakeAmount(value)} copied, opening bookmaker...`);
+            } else {
+              showToast(`Stake ${formatStakeAmount(value)} copied`);
+              showToast('No betting link found for this row', false);
+            }
+          } else {
+            showToast(`Stake ${formatStakeAmount(value)} copied`);
+            showToast('Unable to locate bet row', false);
+          }
         } else {
           showToast('Unable to copy stake', false);
         }
