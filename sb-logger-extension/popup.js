@@ -110,6 +110,70 @@ function ensureBetIdentity(bet) {
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('📄 DOM Content Loaded - Initializing popup...');
+  
+  // Initialize liquidity calculation cache
+  let liquidityCache = {
+    bets: null,
+    tierStats: null,
+    bookmakerStats: null,
+    temporalStats: null,
+    kellyStats: null,
+    perBetMetrics: {},
+    isValid: false
+  };
+
+  function invalidateCache() {
+    liquidityCache.isValid = false;
+    console.log('💾 Liquidity cache invalidated');
+  }
+
+  function updateCache(bets, stakingSettings = DEFAULT_STAKING_SETTINGS) {
+    // Only recalculate if bets array hash changed
+    const currentHash = JSON.stringify(bets?.map(b => ({ uid: b.uid, status: b.status, limit: b.limit, stake: b.stake })));
+    const lastHash = liquidityCache.betsHash;
+    
+    if (currentHash === lastHash && liquidityCache.isValid) {
+      console.log('💾 Using cached liquidity stats');
+      return;
+    }
+
+    console.log('💾 Recalculating liquidity cache...');
+    liquidityCache.bets = bets;
+    liquidityCache.betsHash = currentHash;
+    liquidityCache.tierStats = calculateLiquidityStats(bets);
+    liquidityCache.bookmakerStats = calculateBookmakerStats(bets);
+    liquidityCache.temporalStats = calculateTemporalStats(bets);
+    liquidityCache.kellyStats = calculateKellyFillRatios(bets, stakingSettings);
+    
+    // Store per-bet metrics for quick access
+    liquidityCache.perBetMetrics = {};
+    bets.forEach(bet => {
+      const limit = parseFloat(bet.limit) || 0;
+      const limitTier = getLimitTier(limit);
+      const recommendedKelly = calculateKellyStake(bet, stakingSettings);
+      const actualStake = parseFloat(bet.stake) || 0;
+      const fillRatio = recommendedKelly > 0 ? (actualStake / recommendedKelly) * 100 : 0;
+      
+      let hoursToEvent = null;
+      if (bet.eventTime && bet.timestamp) {
+        const eventTime = new Date(bet.eventTime);
+        const timestamp = new Date(bet.timestamp);
+        hoursToEvent = (eventTime - timestamp) / (1000 * 60 * 60);
+      }
+      
+      liquidityCache.perBetMetrics[bet.uid] = {
+        limit,
+        limitTier,
+        recommendedKelly,
+        fillRatio,
+        hoursToEvent
+      };
+    });
+    
+    liquidityCache.isValid = true;
+    console.log('💾 Liquidity cache updated with', bets.length, 'bets');
+  }
+
   const container = document.getElementById('bets');
   const btnJson = document.getElementById('export-json');
   const btnCsv = document.getElementById('export-csv');
@@ -340,6 +404,334 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('✓ Event listener attached to container');
   }
 
+  // ===== LIQUIDITY ANALYSIS FUNCTIONS =====
+  
+  function getLimitTier(limit) {
+    if (!isFinite(limit)) return null;
+    if (limit < 50) return 'Low';
+    if (limit < 100) return 'Medium';
+    if (limit < 200) return 'High';
+    return 'VeryHigh';
+  }
+
+  function calculateLiquidityStats(bets) {
+    console.log('📊 Calculating liquidity stats for', bets.length, 'bets');
+    
+    // Filter to settled bets only
+    const settledBets = bets.filter(b => b.status && b.status !== 'pending');
+    console.log('  Settled bets:', settledBets.length);
+    
+    const tiers = {
+      'Low': { limit: [0, 50], bets: [], winCount: 0, totalPL: 0, totalStake: 0, totalOvervalue: 0 },
+      'Medium': { limit: [50, 100], bets: [], winCount: 0, totalPL: 0, totalStake: 0, totalOvervalue: 0 },
+      'High': { limit: [100, 200], bets: [], winCount: 0, totalPL: 0, totalStake: 0, totalOvervalue: 0 },
+      'VeryHigh': { limit: [200, Infinity], bets: [], winCount: 0, totalPL: 0, totalStake: 0, totalOvervalue: 0 }
+    };
+
+    // Segment settled bets into tiers
+    settledBets.forEach(bet => {
+      const limit = parseFloat(bet.limit) || 0;
+      const tier = getLimitTier(limit);
+      
+      if (tier && tiers[tier]) {
+        tiers[tier].bets.push(bet);
+        
+        // Track win count
+        if (bet.status === 'won') {
+          tiers[tier].winCount++;
+        }
+        
+        // Calculate actual P/L for this bet (using existing calculateExpectedValueAmount logic)
+        let actualPL = 0;
+        if (bet.status === 'won') {
+          const commission = getCommission(bet.bookmaker);
+          if (bet.isLay) {
+            const gross = parseFloat(bet.stake) || 0;
+            const commissionAmount = commission > 0 ? (gross * commission / 100) : 0;
+            actualPL = gross - commissionAmount;
+          } else {
+            const grossProfit = (parseFloat(bet.stake) * parseFloat(bet.odds)) - parseFloat(bet.stake);
+            const commissionAmount = commission > 0 ? (grossProfit * commission / 100) : 0;
+            actualPL = grossProfit - commissionAmount;
+          }
+        } else if (bet.status === 'lost') {
+          if (bet.isLay) {
+            actualPL = -(parseFloat(bet.stake) * (parseFloat(bet.odds) - 1));
+          } else {
+            actualPL = -parseFloat(bet.stake);
+          }
+        }
+        
+        tiers[tier].totalPL += actualPL;
+        tiers[tier].totalStake += parseFloat(bet.stake) || 0;
+        tiers[tier].totalOvervalue += parseFloat(bet.overvalue) || 0;
+      }
+    });
+
+    // Calculate stats for each tier
+    const stats = {};
+    Object.entries(tiers).forEach(([tierName, tierData]) => {
+      const count = tierData.bets.length;
+      const winRate = count > 0 ? (tierData.winCount / count * 100) : 0;
+      const roi = tierData.totalStake > 0 ? (tierData.totalPL / tierData.totalStake * 100) : 0;
+      const avgOvervalue = count > 0 ? tierData.totalOvervalue / count : 0;
+      const significance = count >= 20 ? '✓' : count >= 10 ? '⚠️' : '❌';
+      
+      stats[tierName] = {
+        count,
+        winCount: tierData.winCount,
+        winRate: winRate.toFixed(2),
+        totalPL: tierData.totalPL.toFixed(2),
+        avgPL: count > 0 ? (tierData.totalPL / count).toFixed(2) : '0.00',
+        roi: roi.toFixed(2),
+        avgOvervalue: avgOvervalue.toFixed(2),
+        significance,
+        significanceText: count >= 20 ? 'High' : count >= 10 ? 'Medium' : 'Low'
+      };
+    });
+
+    console.log('  Tier stats:', stats);
+    return stats;
+  }
+
+  function calculateBookmakerStats(bets) {
+    console.log('📊 Calculating bookmaker stats');
+    
+    // Filter to settled bets only
+    const settledBets = bets.filter(b => b.status && b.status !== 'pending');
+    
+    const bookmakersMap = {};
+    
+    settledBets.forEach(bet => {
+      const bookie = bet.bookmaker || 'Unknown';
+      if (!bookmakersMap[bookie]) {
+        bookmakersMap[bookie] = {
+          limits: [],
+          winCount: 0,
+          settledCount: 0,
+          totalPL: 0,
+          totalStake: 0
+        };
+      }
+      
+      const limit = parseFloat(bet.limit) || 0;
+      if (limit > 0) {
+        bookmakersMap[bookie].limits.push(limit);
+      }
+      
+      if (bet.status === 'won') {
+        bookmakersMap[bookie].winCount++;
+      }
+      bookmakersMap[bookie].settledCount++;
+      
+      // Calculate actual P/L
+      let actualPL = 0;
+      if (bet.status === 'won') {
+        const commission = getCommission(bet.bookmaker);
+        if (bet.isLay) {
+          const gross = parseFloat(bet.stake) || 0;
+          const commissionAmount = commission > 0 ? (gross * commission / 100) : 0;
+          actualPL = gross - commissionAmount;
+        } else {
+          const grossProfit = (parseFloat(bet.stake) * parseFloat(bet.odds)) - parseFloat(bet.stake);
+          const commissionAmount = commission > 0 ? (grossProfit * commission / 100) : 0;
+          actualPL = grossProfit - commissionAmount;
+        }
+      } else if (bet.status === 'lost') {
+        if (bet.isLay) {
+          actualPL = -(parseFloat(bet.stake) * (parseFloat(bet.odds) - 1));
+        } else {
+          actualPL = -parseFloat(bet.stake);
+        }
+      }
+      
+      bookmakersMap[bookie].totalPL += actualPL;
+      bookmakersMap[bookie].totalStake += parseFloat(bet.stake) || 0;
+    });
+
+    // Convert to array and calculate stats
+    const bookmakerStats = Object.entries(bookmakersMap).map(([name, data]) => {
+      const avgLimit = data.limits.length > 0 
+        ? (data.limits.reduce((a, b) => a + b, 0) / data.limits.length).toFixed(2)
+        : '0.00';
+      const winRate = data.settledCount > 0 
+        ? (data.winCount / data.settledCount * 100).toFixed(2)
+        : '0.00';
+      const roi = data.totalStake > 0
+        ? (data.totalPL / data.totalStake * 100).toFixed(2)
+        : '0.00';
+      
+      return {
+        name,
+        avgLimit: parseFloat(avgLimit),
+        winRate: parseFloat(winRate),
+        roi: parseFloat(roi),
+        totalBets: data.settledCount,
+        totalPL: data.totalPL.toFixed(2),
+        isHighPerformer: parseFloat(avgLimit) > 100 && parseFloat(winRate) > 50
+      };
+    }).sort((a, b) => b.roi - a.roi); // Sort by ROI descending
+
+    console.log('  Bookmaker stats:', bookmakerStats);
+    return bookmakerStats;
+  }
+
+  function calculateTemporalStats(bets) {
+    console.log('📊 Calculating temporal stats');
+    
+    // Filter to settled bets only with eventTime
+    const settledBets = bets.filter(b => b.status && b.status !== 'pending' && b.eventTime && b.timestamp);
+    
+    const periods = {
+      'More than 48h': { bets: [], winCount: 0, totalPL: 0, totalLimit: 0 },
+      '24-48 hours': { bets: [], winCount: 0, totalPL: 0, totalLimit: 0 },
+      '12-24 hours': { bets: [], winCount: 0, totalPL: 0, totalLimit: 0 },
+      'Less than 12h': { bets: [], winCount: 0, totalPL: 0, totalLimit: 0 }
+    };
+
+    settledBets.forEach(bet => {
+      const eventTime = new Date(bet.eventTime);
+      const timestamp = new Date(bet.timestamp);
+      const hoursToEvent = (eventTime - timestamp) / (1000 * 60 * 60);
+      
+      let period;
+      if (hoursToEvent > 48) period = 'More than 48h';
+      else if (hoursToEvent > 24) period = '24-48 hours';
+      else if (hoursToEvent > 12) period = '12-24 hours';
+      else period = 'Less than 12h';
+      
+      periods[period].bets.push(bet);
+      
+      if (bet.status === 'won') {
+        periods[period].winCount++;
+      }
+      
+      // Calculate actual P/L
+      let actualPL = 0;
+      if (bet.status === 'won') {
+        const commission = getCommission(bet.bookmaker);
+        if (bet.isLay) {
+          const gross = parseFloat(bet.stake) || 0;
+          const commissionAmount = commission > 0 ? (gross * commission / 100) : 0;
+          actualPL = gross - commissionAmount;
+        } else {
+          const grossProfit = (parseFloat(bet.stake) * parseFloat(bet.odds)) - parseFloat(bet.stake);
+          const commissionAmount = commission > 0 ? (grossProfit * commission / 100) : 0;
+          actualPL = grossProfit - commissionAmount;
+        }
+      } else if (bet.status === 'lost') {
+        if (bet.isLay) {
+          actualPL = -(parseFloat(bet.stake) * (parseFloat(bet.odds) - 1));
+        } else {
+          actualPL = -parseFloat(bet.stake);
+        }
+      }
+      
+      periods[period].totalPL += actualPL;
+      periods[period].totalLimit += parseFloat(bet.limit) || 0;
+    });
+
+    // Calculate stats for each period
+    const temporalStats = {};
+    Object.entries(periods).forEach(([periodName, periodData]) => {
+      const count = periodData.bets.length;
+      const winRate = count > 0 ? (periodData.winCount / count * 100) : 0;
+      const avgLimit = count > 0 ? (periodData.totalLimit / count).toFixed(2) : '0.00';
+      
+      temporalStats[periodName] = {
+        count,
+        winCount: periodData.winCount,
+        winRate: winRate.toFixed(2),
+        avgLimit: avgLimit,
+        totalPL: periodData.totalPL.toFixed(2)
+      };
+    });
+
+    console.log('  Temporal stats:', temporalStats);
+    return temporalStats;
+  }
+
+  function calculateKellyStake(betData, stakingSettings = DEFAULT_STAKING_SETTINGS) {
+    if (!betData) return 0;
+
+    let odds = parseFloat(betData.odds);
+    const probabilityPercent = parseFloat(betData.probability);
+
+    if (!isFinite(odds) || odds <= 1 || !isFinite(probabilityPercent)) {
+      return 0;
+    }
+
+    const p = probabilityPercent / 100;
+    if (p <= 0 || p >= 1) return 0;
+
+    const b = odds - 1;
+    const q = 1 - p;
+    if (b <= 0) return 0;
+
+    let kellyPortion = ((b * p) - q) / b;
+    if (!isFinite(kellyPortion)) return 0;
+
+    kellyPortion = Math.max(0, kellyPortion);
+    const userFraction = Math.max(0, Math.min(1, stakingSettings.fraction || DEFAULT_STAKING_SETTINGS.fraction));
+    const bankroll = Math.max(0, stakingSettings.bankroll || DEFAULT_STAKING_SETTINGS.bankroll);
+
+    let stake = bankroll * kellyPortion * userFraction;
+    if (betData.limit && betData.limit > 0) {
+      stake = Math.min(stake, betData.limit);
+    }
+
+    return Math.max(0, Math.round(stake * 100) / 100);
+  }
+
+  function calculateKellyFillRatios(bets, stakingSettings = DEFAULT_STAKING_SETTINGS) {
+    console.log('📊 Calculating Kelly fill ratios');
+
+    const kellyMetrics = bets.map(bet => {
+      const recommendedKelly = calculateKellyStake(bet, stakingSettings);
+      const actualStake = parseFloat(bet.stake) || 0;
+      const limit = parseFloat(bet.limit) || 0;
+      
+      let fillRatio = 0;
+      let exceededKelly = false;
+      
+      if (recommendedKelly > 0) {
+        fillRatio = (actualStake / recommendedKelly) * 100;
+        exceededKelly = actualStake > limit && limit > 0;
+      }
+
+      return {
+        uid: bet.uid,
+        recommendedKelly: recommendedKelly.toFixed(2),
+        actualStake: actualStake.toFixed(2),
+        limit: limit.toFixed(2),
+        fillRatio: fillRatio.toFixed(2),
+        exceededKelly,
+        hasWarning: fillRatio < 100 || exceededKelly
+      };
+    });
+
+    // Calculate overall metrics
+    const settledWithKelly = kellyMetrics.filter(m => m.recommendedKelly > 0 && bets.find(b => b.uid === m.uid && b.status && b.status !== 'pending'));
+    const exceedingKelly = kellyMetrics.filter(m => m.exceededKelly).length;
+    const fillRatioAvg = kellyMetrics.length > 0 
+      ? (kellyMetrics.reduce((sum, m) => sum + parseFloat(m.fillRatio), 0) / kellyMetrics.length).toFixed(2)
+      : '0.00';
+
+    const summary = {
+      totalBets: bets.length,
+      settledBets: settledWithKelly.length,
+      exceedingKelly,
+      exceedingKellyPercent: bets.length > 0 ? ((exceedingKelly / bets.length) * 100).toFixed(2) : '0.00',
+      avgFillRatio: fillRatioAvg,
+      perBetMetrics: kellyMetrics
+    };
+
+    console.log('  Kelly fill summary:', summary);
+    return summary;
+  }
+
+  // ===== END LIQUIDITY ANALYSIS FUNCTIONS =====
+
   function render(bets, sortBy = 'saved-desc', hideLayBets = false) {
     console.log('🎨 Rendering', bets.length, 'bets, sortBy:', sortBy, 'hideLayBets:', hideLayBets);
 
@@ -454,6 +846,19 @@ document.addEventListener('DOMContentLoaded', () => {
       // Add to total EV for all bets
       totalEV += expectedValue;
 
+      // Calculate liquidity tier and Kelly metrics for visual indicators
+      const limitVal = parseFloat(b.limit) || 0;
+      const limitTier = getLimitTier(limitVal);
+      const limitTierColors = { 'Low': '#dc3545', 'Medium': '#ffc107', 'High': '#28a745', 'VeryHigh': '#007bff' };
+      const limitTierEmojis = { 'Low': '🔴', 'Medium': '🟡', 'High': '🟢', 'VeryHigh': '🔵' };
+      const limitTierBg = limitTierColors[limitTier] || '#6c757d';
+      const limitTierEmoji = limitTierEmojis[limitTier] || '';
+      
+      const recommendedKelly = calculateKellyStake(b) || 0;
+      const actualStake = parseFloat(b.stake) || 0;
+      const kellyFillRatio = recommendedKelly > 0 ? (actualStake / recommendedKelly) * 100 : 0;
+      const kellyWarning = kellyFillRatio < 100 ? '⚠️' : '';
+
       // Calculate actual profit/loss based on status, including commission
       let actualPL = 0;
       if (b.stake && b.odds) {
@@ -562,6 +967,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="note">${escapeHtml(b.market || '')}</div>
           <div style="margin-top:4px">
             ${b.isLay ? '<span class="badge" style="background:#6f42c1;color:#fff;font-size:10px;padding:2px 6px;margin-right:4px;font-weight:700">LAY</span>' : ''}
+            ${limitTierBg ? `<span class="badge" style="background:${limitTierBg};color:#fff;font-size:10px;padding:2px 6px;margin-right:4px;font-weight:700" title="Liquidity Tier">${limitTierEmoji} ${limitTier}</span>` : ''}
+            ${kellyWarning ? `<span class="badge" style="background:#ff9800;color:#fff;font-size:10px;padding:2px 6px;margin-right:4px;font-weight:700" title="Kelly fill ratio below 100%">${kellyWarning} Kelly ${kellyFillRatio.toFixed(0)}%</span>` : ''}
             <span class="badge" style="background:#007bff;color:#fff;font-size:10px;padding:2px 6px;margin-right:4px">Odds: ${b.odds}</span>
             <span class="badge" style="background:#6c757d;color:#fff;font-size:10px;padding:2px 6px;margin-right:4px">Prob: ${b.probability}%</span>
             <span class="badge" style="background:#ffc107;color:#000;font-size:10px;padding:2px 6px">Value: +${b.overvalue}%</span>
@@ -808,8 +1215,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function loadAndRender() {
     const sortBy = document.getElementById('sort-select')?.value || 'saved-desc';
     const hideLayBets = document.getElementById('hide-lay-bets')?.checked || false;
-    api.storage.local.get({ bets: [] }, (res) => {
+    api.storage.local.get({ bets: [], stakingSettings: DEFAULT_STAKING_SETTINGS }, (res) => {
       let bets = res.bets || [];
+      const stakingSettings = res.stakingSettings || DEFAULT_STAKING_SETTINGS;
 
       // Clean up any bets with whitespace in status (migration)
       let needsCleanup = false;
@@ -836,6 +1244,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return b;
       });
 
+      // Update liquidity cache
+      updateCache(bets, stakingSettings);
+
       // Save cleaned bets if needed
       if (needsCleanup) {
         console.log('💾 Saving cleaned bets to storage...');
@@ -861,11 +1272,40 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   btnJson.addEventListener('click', async () => {
-    api.storage.local.get({ bets: [] }, (res) => {
+    api.storage.local.get({ bets: [], stakingSettings: DEFAULT_STAKING_SETTINGS }, (res) => {
       const data = res.bets || [];
-      const dataStr = JSON.stringify(data, null, 2);
+      const stakingSettings = res.stakingSettings || DEFAULT_STAKING_SETTINGS;
+      
+      // Update cache first
+      updateCache(data, stakingSettings);
+      
+      // Use cached liquidity stats
+      const tierStats = liquidityCache.tierStats;
+      const bookmakerStats = liquidityCache.bookmakerStats;
+      const temporalStats = liquidityCache.temporalStats;
+      const kellyStats = liquidityCache.kellyStats;
+      
+      // Create export object with both bet data and analysis
+      const exportData = {
+        exportDate: new Date().toISOString(),
+        bets: data,
+        analysis: {
+          liquidityTiers: tierStats,
+          bookmakerProfiling: bookmakerStats,
+          temporalAnalysis: temporalStats,
+          kellyFillRatios: {
+            totalBets: kellyStats.totalBets,
+            settledBets: kellyStats.settledBets,
+            exceedingKelly: kellyStats.exceedingKelly,
+            exceedingKellyPercent: kellyStats.exceedingKellyPercent,
+            avgFillRatio: kellyStats.avgFillRatio
+          }
+        }
+      };
+      
+      const dataStr = JSON.stringify(exportData, null, 2);
       const filename = `sb-bets-${(new Date()).toISOString().replace(/[:.]/g, '-')}.json`;
-      console.log('📤 Sending export message for JSON...');
+      console.log('📤 Sending export message for JSON with analysis...');
       api.runtime.sendMessage({ action: 'export', dataStr, filename, mime: 'application/json' }, (resp) => {
         console.log('📥 Export response:', resp);
         if (api.runtime.lastError) {
@@ -873,7 +1313,7 @@ document.addEventListener('DOMContentLoaded', () => {
           alert('Export failed: ' + api.runtime.lastError.message);
         } else if (resp && resp.success) {
           console.log('✅ Export successful');
-          alert('JSON exported successfully!');
+          alert('JSON exported successfully with liquidity analysis!');
         } else if (resp && resp.error) {
           alert('Export failed: ' + resp.error);
         }
@@ -882,15 +1322,19 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   btnCsv.addEventListener('click', async () => {
-    api.storage.local.get({ bets: [] }, (res) => {
+    api.storage.local.get({ bets: [], stakingSettings: DEFAULT_STAKING_SETTINGS }, (res) => {
       const data = res.bets || [];
+      const stakingSettings = res.stakingSettings || DEFAULT_STAKING_SETTINGS;
+      
       if (data.length === 0) {
         alert('No bets to export.');
         return;
       }
-      // Build CSV header
+      
+      // Build CSV header with new columns
       const rows = [];
-      rows.push(['timestamp', 'bookmaker', 'sport', 'event', 'tournament', 'market', 'is_lay', 'odds', 'probability', 'overvalue', 'stake', 'liability', 'commission_rate', 'commission_amount', 'potential_return', 'profit', 'expected_value', 'status', 'settled_at', 'actual_pl', 'note', 'url'].join(','));
+      rows.push(['timestamp', 'bookmaker', 'sport', 'event', 'tournament', 'market', 'is_lay', 'odds', 'probability', 'overvalue', 'stake', 'liability', 'commission_rate', 'commission_amount', 'potential_return', 'profit', 'expected_value', 'status', 'settled_at', 'actual_pl', 'note', 'url', 'limit', 'limit_tier', 'recommended_kelly_stake', 'fill_ratio_percent', 'hours_to_event'].join(','));
+      
       for (const b of data) {
         const esc = (v) => `\"${('' + (v ?? '')).replace(/\"/g, '\"\"')}\"`;
         const commission = getCommission(b.bookmaker);
@@ -948,6 +1392,23 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
 
+        // Calculate new liquidity metrics
+        const limitVal = parseFloat(b.limit) || '';
+        const limitTier = limitVal ? getLimitTier(limitVal) : '';
+        const recommendedKelly = calculateKellyStake(b, stakingSettings).toFixed(2);
+        
+        let fillRatio = '';
+        if (recommendedKelly > 0) {
+          fillRatio = ((parseFloat(b.stake) / parseFloat(recommendedKelly)) * 100).toFixed(2);
+        }
+
+        let hoursToEvent = '';
+        if (b.eventTime && b.timestamp) {
+          const eventTime = new Date(b.eventTime);
+          const timestamp = new Date(b.timestamp);
+          hoursToEvent = ((eventTime - timestamp) / (1000 * 60 * 60)).toFixed(2);
+        }
+
         rows.push([
           esc(b.timestamp),
           esc(b.bookmaker),
@@ -970,7 +1431,12 @@ document.addEventListener('DOMContentLoaded', () => {
           esc(b.settledAt || ''),
           esc(actualPL),
           esc(b.note),
-          esc(b.url)
+          esc(b.url),
+          esc(limitVal),
+          esc(limitTier),
+          esc(recommendedKelly),
+          esc(fillRatio),
+          esc(hoursToEvent)
         ].join(','));
       }
       const dataStr = rows.join('\r\n');
@@ -1009,6 +1475,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         showChart(bets);
       });
+    });
+  }
+
+  const btnLiquidityStats = document.getElementById('liquidity-stats');
+  if (btnLiquidityStats) {
+    btnLiquidityStats.addEventListener('click', () => {
+      api.storage.local.get({ bets: [], stakingSettings: DEFAULT_STAKING_SETTINGS }, (res) => {
+        const bets = res.bets || [];
+        const stakingSettings = res.stakingSettings || DEFAULT_STAKING_SETTINGS;
+        if (bets.length === 0) {
+          alert('No bets to analyze. Save some bets first!');
+          return;
+        }
+        showLiquidityStats(bets, stakingSettings);
+      });
+    });
+  }
+
+  const closeLiquidityBtn = document.getElementById('close-liquidity');
+  if (closeLiquidityBtn) {
+    closeLiquidityBtn.addEventListener('click', () => {
+      document.getElementById('liquidity-modal').style.display = 'none';
+    });
+  }
+
+  const liquidityModal = document.getElementById('liquidity-modal');
+  if (liquidityModal) {
+    liquidityModal.addEventListener('click', (e) => {
+      if (e.target.id === 'liquidity-modal') {
+        liquidityModal.style.display = 'none';
+      }
     });
   }
 
@@ -1464,6 +1961,192 @@ See API_SETUP.md in the extension folder for detailed instructions.`;
         message += '\n\nCheck the browser console (F12) for detailed matching logs.';
         alert(message);
       }
+    });
+  }
+
+  function showLiquidityStats(bets, stakingSettings = DEFAULT_STAKING_SETTINGS) {
+    console.log('📊 Showing liquidity stats modal');
+    
+    const tierStats = calculateLiquidityStats(bets);
+    const bookmakerStats = calculateBookmakerStats(bets);
+    const temporalStats = calculateTemporalStats(bets);
+    const kellyStats = calculateKellyFillRatios(bets, stakingSettings);
+    
+    const modal = document.getElementById('liquidity-modal');
+    const container = document.getElementById('liquidity-container');
+    const content = document.getElementById('liquidity-content');
+    
+    // Build tier table HTML
+    const tierHtml = `
+      <div style="font-size:12px">
+        <h3 style="color:#333;margin:15px 0 10px 0">Liquidity Tier Performance</h3>
+        <p style="color:#666;margin:0 0 10px 0">Bets segmented by market liquidity (stake limit):</p>
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <thead>
+            <tr style="background:#f0f0f0;border-bottom:2px solid #ccc">
+              <th style="padding:8px;text-align:left;border-right:1px solid #ddd">Tier</th>
+              <th style="padding:8px;text-align:center;border-right:1px solid #ddd">Limit Range</th>
+              <th style="padding:8px;text-align:center;border-right:1px solid #ddd">Bets (n)</th>
+              <th style="padding:8px;text-align:center;border-right:1px solid #ddd">Win Rate</th>
+              <th style="padding:8px;text-align:center;border-right:1px solid #ddd">ROI %</th>
+              <th style="padding:8px;text-align:center;border-right:1px solid #ddd">Total P/L</th>
+              <th style="padding:8px;text-align:center;border-right:1px solid #ddd">Avg P/L</th>
+              <th style="padding:8px;text-align:center">Significance</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${Object.entries(tierStats).map(([tier, stats]) => {
+              const ranges = { 'Low': '<£50', 'Medium': '£50-100', 'High': '£100-200', 'VeryHigh': '>£200' };
+              const roiColor = parseFloat(stats.roi) >= 0 ? '#28a745' : '#dc3545';
+              const plColor = parseFloat(stats.totalPL) >= 0 ? '#28a745' : '#dc3545';
+              return `
+                <tr style="border-bottom:1px solid #eee;${stats.count < 10 ? 'background:#fff3cd' : ''}">
+                  <td style="padding:8px;border-right:1px solid #ddd;font-weight:600">${tier}</td>
+                  <td style="padding:8px;border-right:1px solid #ddd;text-align:center">${ranges[tier]}</td>
+                  <td style="padding:8px;border-right:1px solid #ddd;text-align:center">${stats.count}</td>
+                  <td style="padding:8px;border-right:1px solid #ddd;text-align:center">${stats.winCount}/${stats.count} (${stats.winRate}%)</td>
+                  <td style="padding:8px;border-right:1px solid #ddd;text-align:center;color:${roiColor};font-weight:600">${stats.roi}%</td>
+                  <td style="padding:8px;border-right:1px solid #ddd;text-align:center;color:${plColor};font-weight:600">£${stats.totalPL}</td>
+                  <td style="padding:8px;border-right:1px solid #ddd;text-align:center">£${stats.avgPL}</td>
+                  <td style="padding:8px;text-align:center">${stats.significance} ${stats.significanceText}</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+        <p style="color:#666;font-size:11px;margin-top:10px">
+          ✓ High significance: n≥20 | ⚠️ Medium: 10≤n<20 | ❌ Low: n<10
+        </p>
+      </div>
+    `;
+
+    // Build bookmaker table HTML
+    const bookmakerHtml = `
+      <div style="font-size:12px">
+        <h3 style="color:#333;margin:15px 0 10px 0">Bookmaker Profiling</h3>
+        <p style="color:#666;margin:0 0 10px 0">Average liquidity and performance by exchange:</p>
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <thead>
+            <tr style="background:#f0f0f0;border-bottom:2px solid #ccc">
+              <th style="padding:8px;text-align:left;border-right:1px solid #ddd">Bookmaker</th>
+              <th style="padding:8px;text-align:center;border-right:1px solid #ddd">Avg Limit</th>
+              <th style="padding:8px;text-align:center;border-right:1px solid #ddd">Total Bets</th>
+              <th style="padding:8px;text-align:center;border-right:1px solid #ddd">Win Rate %</th>
+              <th style="padding:8px;text-align:center;border-right:1px solid #ddd">ROI %</th>
+              <th style="padding:8px;text-align:center">Total P/L</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${bookmakerStats.map(bookie => {
+              const winRateColor = parseFloat(bookie.winRate) > 50 ? '#28a745' : parseFloat(bookie.winRate) > 40 ? '#ffc107' : '#dc3545';
+              const roiColor = parseFloat(bookie.roi) >= 0 ? '#28a745' : '#dc3545';
+              const plColor = parseFloat(bookie.totalPL) >= 0 ? '#28a745' : '#dc3545';
+              const bgColor = bookie.isHighPerformer ? '#e8f5e9' : '';
+              return `
+                <tr style="border-bottom:1px solid #eee;background:${bgColor}">
+                  <td style="padding:8px;border-right:1px solid #ddd;font-weight:600">${bookie.name}${bookie.isHighPerformer ? ' ⭐' : ''}</td>
+                  <td style="padding:8px;border-right:1px solid #ddd;text-align:center">£${bookie.avgLimit.toFixed(2)}</td>
+                  <td style="padding:8px;border-right:1px solid #ddd;text-align:center">${bookie.totalBets}</td>
+                  <td style="padding:8px;border-right:1px solid #ddd;text-align:center;color:${winRateColor};font-weight:600">${bookie.winRate.toFixed(2)}%</td>
+                  <td style="padding:8px;border-right:1px solid #ddd;text-align:center;color:${roiColor};font-weight:600">${bookie.roi.toFixed(2)}%</td>
+                  <td style="padding:8px;text-align:center;color:${plColor};font-weight:600">£${parseFloat(bookie.totalPL).toFixed(2)}</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+        <p style="color:#666;font-size:11px;margin-top:10px">
+          ⭐ High Performer: Avg limit >£100 AND win rate >50%
+        </p>
+      </div>
+    `;
+
+    // Build temporal table HTML
+    const temporalHtml = `
+      <div style="font-size:12px">
+        <h3 style="color:#333;margin:15px 0 10px 0">Temporal Analysis</h3>
+        <p style="color:#666;margin:0 0 10px 0">Performance based on time between bet placement and event:</p>
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <thead>
+            <tr style="background:#f0f0f0;border-bottom:2px solid #ccc">
+              <th style="padding:8px;text-align:left;border-right:1px solid #ddd">Time Period</th>
+              <th style="padding:8px;text-align:center;border-right:1px solid #ddd">Bets (n)</th>
+              <th style="padding:8px;text-align:center;border-right:1px solid #ddd">Win Rate</th>
+              <th style="padding:8px;text-align:center;border-right:1px solid #ddd">Avg Limit</th>
+              <th style="padding:8px;text-align:center">Total P/L</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${Object.entries(temporalStats).map(([period, stats]) => {
+              const plColor = parseFloat(stats.totalPL) >= 0 ? '#28a745' : '#dc3545';
+              const winRate = parseFloat(stats.winRate);
+              const winRateColor = winRate > 50 ? '#28a745' : winRate > 40 ? '#ffc107' : '#dc3545';
+              return `
+                <tr style="border-bottom:1px solid #eee">
+                  <td style="padding:8px;border-right:1px solid #ddd;font-weight:600">${period}</td>
+                  <td style="padding:8px;border-right:1px solid #ddd;text-align:center">${stats.count}</td>
+                  <td style="padding:8px;border-right:1px solid #ddd;text-align:center;color:${winRateColor};font-weight:600">${stats.winCount}/${stats.count} (${stats.winRate}%)</td>
+                  <td style="padding:8px;border-right:1px solid #ddd;text-align:center">£${stats.avgLimit}</td>
+                  <td style="padding:8px;text-align:center;color:${plColor};font-weight:600">£${stats.totalPL}</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    // Build Kelly metrics HTML
+    const kellyHtml = `
+      <div style="font-size:12px">
+        <h3 style="color:#333;margin:15px 0 10px 0">Kelly Stake Fill Ratio Analysis</h3>
+        <p style="color:#666;margin:0 0 10px 0">Comparison of actual stake against recommended Kelly percentage:</p>
+        <div style="background:#f8f9fa;padding:12px;border-radius:4px;margin-bottom:15px">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:15px;text-align:center">
+            <div>
+              <div style="font-size:11px;color:#666;margin-bottom:4px">Total Bets</div>
+              <div style="font-size:18px;font-weight:600;color:#007bff">${kellyStats.totalBets}</div>
+            </div>
+            <div>
+              <div style="font-size:11px;color:#666;margin-bottom:4px">Settled Bets</div>
+              <div style="font-size:18px;font-weight:600;color:#28a745">${kellyStats.settledBets}</div>
+            </div>
+            <div>
+              <div style="font-size:11px;color:#666;margin-bottom:4px">Avg Fill Ratio</div>
+              <div style="font-size:18px;font-weight:600;color:#ffc107">${kellyStats.avgFillRatio}%</div>
+            </div>
+            <div>
+              <div style="font-size:11px;color:#666;margin-bottom:4px">Exceeding Limit</div>
+              <div style="font-size:18px;font-weight:600;color:#dc3545">${kellyStats.exceedingKelly} (${kellyStats.exceedingKellyPercent}%)</div>
+            </div>
+          </div>
+        </div>
+        <p style="color:#666;font-size:11px;margin:0">
+          <strong>Fill Ratio:</strong> (Actual Stake ÷ Recommended Kelly Stake) × 100%<br>
+          <strong>Recommended:</strong> 80-100% for balanced bet sizing<br>
+          <strong>Exceeding Limit:</strong> Bets where actual stake exceeds market liquidity (rare but important to track)
+        </p>
+      </div>
+    `;
+
+    // Set initial content
+    content.innerHTML = tierHtml;
+    modal.style.display = 'block';
+    
+    // Tab switching
+    document.querySelectorAll('.liquidity-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.liquidity-tab').forEach(b => {
+          b.style.background = '#6c757d';
+        });
+        btn.style.background = '#007bff';
+        
+        const tab = btn.dataset.tab;
+        if (tab === 'tiers') content.innerHTML = tierHtml;
+        else if (tab === 'bookmakers') content.innerHTML = bookmakerHtml;
+        else if (tab === 'temporal') content.innerHTML = temporalHtml;
+        else if (tab === 'kelly') content.innerHTML = kellyHtml;
+      });
     });
   }
 
