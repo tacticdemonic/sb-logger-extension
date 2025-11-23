@@ -22,8 +22,13 @@ const DEFAULT_ROUNDING_SETTINGS = {
   increment: null
 };
 
+const DEFAULT_UI_PREFERENCES = {
+  hideLayBets: false
+};
+
 let commissionRates = { ...DEFAULT_COMMISSION_RATES };
 let roundingSettings = { ...DEFAULT_ROUNDING_SETTINGS };
+let uiPreferences = { ...DEFAULT_UI_PREFERENCES };
 
 function loadCommissionRates(callback) {
   api.storage.local.get({ commission: DEFAULT_COMMISSION_RATES }, (res) => {
@@ -47,6 +52,20 @@ function loadRoundingSettings(callback) {
   api.storage.local.get({ roundingSettings: DEFAULT_ROUNDING_SETTINGS }, (res) => {
     roundingSettings = { ...res.roundingSettings };
     console.log('📏 Rounding settings loaded:', roundingSettings);
+    if (callback) callback();
+  });
+}
+
+function loadUIPreferences(callback) {
+  api.storage.local.get({ uiPreferences: DEFAULT_UI_PREFERENCES }, (res) => {
+    uiPreferences = { ...res.uiPreferences };
+    console.log('🎨 UI preferences loaded:', uiPreferences);
+    
+    // Apply UI preferences to DOM elements
+    if (document.getElementById('hide-lay-bets')) {
+      document.getElementById('hide-lay-bets').checked = uiPreferences.hideLayBets || false;
+    }
+    
     if (callback) callback();
   });
 }
@@ -1214,7 +1233,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function loadAndRender() {
     const sortBy = document.getElementById('sort-select')?.value || 'saved-desc';
-    const hideLayBets = document.getElementById('hide-lay-bets')?.checked || false;
+    const hideLayBets = uiPreferences.hideLayBets || false;
     api.storage.local.get({ bets: [], stakingSettings: DEFAULT_STAKING_SETTINGS }, (res) => {
       let bets = res.bets || [];
       const stakingSettings = res.stakingSettings || DEFAULT_STAKING_SETTINGS;
@@ -1268,7 +1287,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // Hide lay bets checkbox handler
   const hideLayBetsCheckbox = document.getElementById('hide-lay-bets');
   if (hideLayBetsCheckbox) {
-    hideLayBetsCheckbox.addEventListener('change', loadAndRender);
+    hideLayBetsCheckbox.addEventListener('change', () => {
+      const hideLayBets = hideLayBetsCheckbox.checked;
+      api.storage.local.set({ uiPreferences: { hideLayBets } }, () => {
+        console.log('💾 UI preference saved: hideLayBets =', hideLayBets);
+        loadAndRender();
+      });
+    });
   }
 
   btnJson.addEventListener('click', async () => {
@@ -2420,7 +2445,9 @@ See API_SETUP.md in the extension folder for detailed instructions.`;
 
   loadCommissionRates(() => {
     loadRoundingSettings(() => {
-      loadAndRender();
+      loadUIPreferences(() => {
+        loadAndRender();
+      });
     });
   });
 });

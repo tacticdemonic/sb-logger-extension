@@ -31,8 +31,13 @@
     increment: null
   };
   
+  const DEFAULT_UI_PREFERENCES = {
+    hideLayBets: false
+  };
+  
   let stakingSettings = { ...DEFAULT_STAKING_SETTINGS };
   let roundingSettings = { ...DEFAULT_ROUNDING_SETTINGS };
+  let uiPreferences = { ...DEFAULT_UI_PREFERENCES };
   let stakePanel = null;
 
   function generateBetUid() {
@@ -1410,8 +1415,32 @@
     btn.textContent = '🚫 Hide Lay Bets';
     btn.title = 'Toggle visibility of lay bets';
     
+    // Initialize button state from storage
+    const api = typeof chrome !== 'undefined' ? chrome : browser;
+    api.storage.local.get({ uiPreferences: DEFAULT_UI_PREFERENCES }, (res) => {
+      const hideLayBets = res.uiPreferences?.hideLayBets || false;
+      if (hideLayBets) {
+        btn.classList.add('active');
+        // Apply the hide effect
+        setTimeout(() => {
+          const hideLayBtn = document.querySelector('.sb-logger-hide-lay-btn');
+          if (hideLayBtn && hideLayBtn.classList.contains('active')) {
+            toggleLayBets();
+          }
+        }, 100);
+      }
+    });
+    
     btn.addEventListener('click', () => {
       btn.classList.toggle('active');
+      const hideLayBets = btn.classList.contains('active');
+      
+      // Save preference to storage
+      const api = typeof chrome !== 'undefined' ? chrome : browser;
+      api.storage.local.set({ uiPreferences: { hideLayBets } }, () => {
+        console.log('SB Logger: Hide lay bets preference saved:', hideLayBets);
+      });
+      
       toggleLayBets();
     });
     
