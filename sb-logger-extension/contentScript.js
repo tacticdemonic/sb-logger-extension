@@ -88,15 +88,23 @@
     },
     matchbook: {
       bettingSlip: [
-        '[class*="betslip"]',
-        '[class*="bet-slip"]'
+        '.Betslip-module__betslip',
+        '[class*="Betslip-module"]',
+        '[data-hook*="betslip"]',
+        '.Offers-module__offers',
+        '[class*="RightSidebar"]'
       ],
       stakeInput: [
-        'input[type="text"][class*="stake"]',
-        'input[type="number"]',
+        'input[data-hook^="betslip-stake-"]',
+        'input[name="backInput"][class*="OfferEdit-module__betslipInput"]',
+        'input[class*="OfferEdit-module__betslipInput"]',
         'input[placeholder*="stake" i]'
       ],
-      odds: '[class*="odds"], [class*="price"]',
+      odds: [
+        'input[data-hook^="betslip-back-"]',
+        'input[name="oddsInput"][class*="OfferEdit-module__betslipInput"]',
+        'input[class*="odds"], [class*="price"]'
+      ],
       selection: '[class*="selection"]'
     }
   };

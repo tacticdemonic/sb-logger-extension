@@ -94,6 +94,11 @@ When enabled, the extension automatically fills in your calculated Kelly stake a
 3. **Click a stake link** on surebet.com → your calculated stake will auto-populate on the betting slip
 4. **Review and place** your bet on the exchange
 
+**Supported Exchanges:**
+- Betfair ✓
+- Smarkets ✓
+- Matchbook ✓ (Back bets, with React/data-hook selectors)
+
 **Note**: Auto-fill requires the Surebet official plugin to find and add the bet first. Falls back to clipboard copy if auto-fill fails.
 
 ### Bookmaker Filter Presets
@@ -107,7 +112,7 @@ Customize these presets in `contentScript.js` by editing the `BOOKMAKER_PRESETS`
 ### Settings Available
 
 Click the extension icon to access:
-- **⚙️ Commission** - Set exchange commission rates (Betfair, Betdaq, Matchbook, Smarkets)
+- **⚙️ Commission** - Set exchange commission rates (Betfair, Betdaq, Matchbook 1%, Smarkets)
 - **⚙️ Rounding** - Enable stake rounding to nearest increment (e.g., £0.50)
 - **⚙️ Auto-Fill** - Configure automatic stake input (disabled by default, per-exchange toggles)
 

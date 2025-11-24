@@ -2541,26 +2541,29 @@ See API_SETUP.md in the extension folder for detailed instructions.`;
   });
 
   function openContributeDialog() {
-    const currentTab = chrome.tabs.getCurrent((tab) => {
+    chrome.tabs.query({active: true, currentWindow: true}, async (tabs) => {
+      const tab = tabs[0];
       if (!tab) {
-        alert('Could not determine current tab. Please open a betting exchange site first.');
+        alert('Could not determine current tab. Please open a betting site first.');
         return;
       }
       
       // Ask user for exchange name
-      const exchangeName = prompt('Enter the exchange name (e.g., Betfair, Smarkets, Matchbook):', '');
+      const exchangeName = prompt('Enter the site name (e.g., Betfair, Smarkets, Matchbook):', '');
       if (!exchangeName) return;
 
       // Run content script to collect DOM data on the current tab
       console.log('📋 Executing DOM collector on tab:', tab.id);
-      chrome.tabs.executeScript(tab.id, {
-        code: `
-          (function collectBetslipInfo() {
+      
+      try {
+        const results = await chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          func: function collectBetslipInfo() {
             function getClosestHtml(el, levels) {
               let html = '';
               let node = el;
               for (let i = 0; i < levels && node; i++) {
-                html += node.outerHTML + '\\n';
+                html += node.outerHTML + '\n';
                 node = node.parentElement;
               }
               return html;
@@ -2595,35 +2598,42 @@ See API_SETUP.md in the extension folder for detailed instructions.`;
             };
 
             return results;
-          })();
-        `
-      }, (results) => {
-        if (chrome.runtime.lastError) {
-          console.warn('📋 Could not collect data (may not be on a web page):', chrome.runtime.lastError);
-          alert('Error: Could not collect data. Make sure you\'re on a betting exchange website.');
+          }
+        });
+
+        if (!results || !results[0] || !results[0].result) {
+          alert('No data collected. Make sure you\'re on a betting slip page.');
           return;
         }
 
-        if (!results || !results[0]) {
-          alert('No data collected. Make sure you\'re on a betting exchange betting slip page.');
-          return;
-        }
-
-        const data = results[0];
+        const data = results[0].result;
         const stakeInputHtml = data.inputs[0]?.html || '(none found)';
-        const issueBody = '**Console JSON:**\n\n' + JSON.stringify(data, null, 2) + '\n\n**HTML of stake input (closest):**\n\n' + stakeInputHtml + '\n\n**Steps to reproduce:**\n- Open: ' + data.url + '\n- Actions: [add selection, open betslip]\n\n**Browser / OS:** ' + data.userAgent + '\n\n**Notes:** Please use the Add Exchange Support issue template.';
+        const jsonData = JSON.stringify(data, null, 2);
+        const issueBody = '**Console JSON:**\n\n' + jsonData + '\n\n**HTML of stake input (closest):**\n\n' + stakeInputHtml + '\n\n**Steps to reproduce:**\n- Open: ' + data.url + '\n- Actions: [add selection, open betslip]\n\n**Browser / OS:** ' + data.userAgent + '\n\n**Notes:** Please use the Add Exchange Support issue template.';
 
         const repoUrl = `https://github.com/tacticdemonic/sb-logger-extension/issues/new?template=add-exchange.md&title=${encodeURIComponent('Add Support for ' + exchangeName)}&body=${encodeURIComponent(issueBody)}&labels=enhancement`;
 
         // Check if body is too large
         if (issueBody.length > 8000) {
-          chrome.tabs.create({ url: `https://github.com/tacticdemonic/sb-logger-extension/issues/new?template=add-exchange.md&title=${encodeURIComponent('Add Support for ' + exchangeName)}` });
-          alert('Data collected, but too large to auto-fill. A new issue page has been opened. Please paste the JSON into the Console JSON field.');
+          // Copy JSON to clipboard
+          try {
+            await navigator.clipboard.writeText(jsonData);
+            chrome.tabs.create({ url: `https://github.com/tacticdemonic/sb-logger-extension/issues/new?template=add-exchange.md&title=${encodeURIComponent('Add Support for ' + exchangeName)}` });
+            alert('Data collected! The JSON has been copied to your clipboard. Paste it into the "Console JSON" field in the GitHub issue.');
+          } catch (clipError) {
+            console.error('Failed to copy to clipboard:', clipError);
+            console.log('JSON data:', jsonData);
+            chrome.tabs.create({ url: `https://github.com/tacticdemonic/sb-logger-extension/issues/new?template=add-exchange.md&title=${encodeURIComponent('Add Support for ' + exchangeName)}` });
+            alert('Data collected, but too large to auto-fill. The JSON is logged in the console. Please copy it from there and paste into the Console JSON field.');
+          }
         } else {
           chrome.tabs.create({ url: repoUrl });
           console.log('📋 Opened prefilled GitHub issue for ' + exchangeName);
         }
-      });
+      } catch (error) {
+        console.error('📋 Error collecting data:', error);
+        alert('Error: Could not collect data. Make sure you\'re on a betting website. Details: ' + error.message);
+      }
     });
   }
 });

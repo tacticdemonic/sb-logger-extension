@@ -1,8 +1,22 @@
-# Auto-Fill Verification Implementation
+# Auto-Fill Implementation Guide
 
-## Summary of Changes
+## Recent Updates (v1.0.45+)
 
-Enhanced the SB Logger extension with comprehensive diagnostic logging for the Smarkets auto-fill feature. The implementation adds detailed console logging at both the storage and retrieval phases to help diagnose the exact point where the auto-fill flow fails.
+### Matchbook Auto-Fill Support Added
+Enhanced the extension with production-ready Matchbook exchange auto-fill selectors. The implementation uses React module class names and data-hook patterns matching Matchbook's current DOM structure.
+
+**Matchbook Selectors**:
+- **Betting Slip Container**: Uses `Betslip-module__betslip`, `Offers-module__offers`, and data-hook wildcards
+- **Stake Input**: Primary `data-hook^="betslip-stake-"` (supports multi-bet with wildcard), fallback to `input[name="backInput"]` with OfferEdit module classes
+- **Odds Input**: `data-hook^="betslip-back-"` for consistency with Betfair pattern
+
+**Note**: Matchbook uses the same universal retry logic (10 attempts × 200ms) as Betfair/Smarkets.
+
+---
+
+## Historical: Smarkets Verification Implementation (v1.0.32)
+
+The SB Logger extension includes comprehensive diagnostic logging for Smarkets auto-fill. The implementation adds detailed console logging at both the storage and retrieval phases to help diagnose the exact point where the auto-fill flow fails.
 
 ### Version: 1.0.32
 
@@ -81,6 +95,20 @@ SB Logger: ✓ Cleared pendingBet from storage after retrieval
 - See `pendingBet exists in storage: true`
 - See "SUCCESS - Found stored bet data"
 - Stakes auto-fill on Smarkets page
+
+### Test 3: Verify Matchbook Auto-Fill
+
+1. Open surebet.com/valuebets in Developer Console (F12)
+2. **LEFT-CLICK** on a Matchbook stake indicator
+3. Check console for "Storage verification PASSED" log
+4. Navigate to Matchbook and verify stakes auto-fill in the betting slip
+5. Console should show "SB Logger: Stake placement successful" after successful auto-fill
+
+**Success Criteria**:
+- Storage verification passes on Surebet
+- Matchbook page detects betting slip using React module classes
+- Stake input found with `data-hook^="betslip-stake-"` selector
+- Stake value auto-fills without manual intervention
 
 ## Diagnostic Interpretation
 
