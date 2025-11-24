@@ -115,12 +115,26 @@
 </head>
 <body>
   <div class="container">
-    <h1 id="page-title">📥 Import Betfair P/L</h1>
+    <h1 id="page-title">📥 Import Bets</h1>
     
     <div class="instructions">
-      <strong id="instructions-title">How to import your Betfair P/L:</strong>
+      <strong id="instructions-title">Select import type:</strong>
+      <div style="margin: 15px 0; display: flex; gap: 20px;">
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: normal;">
+          <input type="radio" name="import-type" value="csv" checked style="width: 18px; height: 18px; cursor: pointer;">
+          <span>CSV file (from Betfair or other platforms)</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: normal;">
+          <input type="radio" name="import-type" value="json" style="width: 18px; height: 18px; cursor: pointer;">
+          <span>JSON file (from previous export)</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="instructions" id="type-instructions">
+      <strong id="instructions-title">How to import your CSV:</strong>
       <ul id="instructions-list">
-        <li>Download your P/L report from Betfair (CSV format)</li>
+        <li>Download your P/L report (CSV format)</li>
         <li>If you have multiple sports, download one CSV per sport</li>
         <li>Click "Choose Files" below and select your CSV file(s)</li>
         <li>The extension will automatically match bets and update their status</li>

@@ -145,6 +145,7 @@ function ensureBetIdentity(bet) {
   if (changed) {
     requestBankrollRecalc();
   }
+  return changed;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -222,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const chartModal = document.getElementById('chart-modal');
   const btnCheckResults = document.getElementById('check-results');
   const btnApiSetup = document.getElementById('api-setup');
-  const btnImportCsv = document.getElementById('import-csv');
+  const btnImportBtn = document.getElementById('import-btn');
   const btnCommissionSettings = document.getElementById('commission-settings');
   const commissionPanel = document.getElementById('commission-panel');
   const btnSaveCommission = document.getElementById('save-commission');
@@ -954,6 +955,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const actualStake = parseFloat(b.stake) || 0;
       const kellyFillRatio = recommendedKelly > 0 ? (actualStake / recommendedKelly) * 100 : 0;
       const kellyWarning = kellyFillRatio < 100 ? '⚠️' : '';
+      
+      // Create Kelly tooltip with breakdown
+      const kellyTooltip = recommendedKelly > 0 
+        ? `Kelly Breakdown:\n\n` +
+          `Recommended (Kelly %) stake: £${recommendedKelly.toFixed(2)}\n` +
+          `Actual stake: £${actualStake.toFixed(2)}\n` +
+          `Fill ratio: ${kellyFillRatio.toFixed(1)}%\n\n` +
+          `Odds: ${b.odds}\n` +
+          `Probability: ${b.probability}%\n` +
+          `Bankroll: £1000 (default)\n` +
+          `Kelly fraction: 0.25 (25%)`
+        : '';
 
       // Calculate actual profit/loss based on status, including commission
       let actualPL = 0;
@@ -1064,7 +1077,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div style="margin-top:4px">
             ${b.isLay ? '<span class="badge" style="background:#6f42c1;color:#fff;font-size:10px;padding:2px 6px;margin-right:4px;font-weight:700">LAY</span>' : ''}
             ${limitTierBg ? `<span class="badge" style="background:${limitTierBg};color:#fff;font-size:10px;padding:2px 6px;margin-right:4px;font-weight:700" title="Liquidity Tier">${limitTierEmoji} ${limitTier}</span>` : ''}
-            ${kellyWarning ? `<span class="badge" style="background:#ff9800;color:#fff;font-size:10px;padding:2px 6px;margin-right:4px;font-weight:700" title="Kelly fill ratio below 100%">${kellyWarning} Kelly ${kellyFillRatio.toFixed(0)}%</span>` : ''}
+            ${kellyWarning ? `<span class="badge" style="background:#ff9800;color:#fff;font-size:10px;padding:2px 6px;margin-right:4px;font-weight:700" title="${kellyTooltip}">${kellyWarning} Kelly <span style="white-space:nowrap">${kellyFillRatio.toFixed(0)}%</span></span>` : ''}
             <span class="badge" style="background:#007bff;color:#fff;font-size:10px;padding:2px 6px;margin-right:4px">Odds: ${b.odds}</span>
             <span class="badge" style="background:#6c757d;color:#fff;font-size:10px;padding:2px 6px;margin-right:4px">Prob: ${b.probability}%</span>
             <span class="badge" style="background:#ffc107;color:#000;font-size:10px;padding:2px 6px">Value: +${b.overvalue}%</span>
@@ -1373,199 +1386,205 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  btnJson.addEventListener('click', async () => {
-    api.storage.local.get({ bets: [], stakingSettings: DEFAULT_STAKING_SETTINGS }, (res) => {
-      const data = res.bets || [];
-      const stakingSettings = res.stakingSettings || DEFAULT_STAKING_SETTINGS;
-      
-      // Update cache first
-      updateCache(data, stakingSettings);
-      
-      // Use cached liquidity stats
-      const tierStats = liquidityCache.tierStats;
-      const bookmakerStats = liquidityCache.bookmakerStats;
-      const temporalStats = liquidityCache.temporalStats;
-      const kellyStats = liquidityCache.kellyStats;
-      
-      // Create export object with both bet data and analysis
-      const exportData = {
-        exportDate: new Date().toISOString(),
-        bets: data,
-        analysis: {
-          liquidityTiers: tierStats,
-          bookmakerProfiling: bookmakerStats,
-          temporalAnalysis: temporalStats,
-          kellyFillRatios: {
-            totalBets: kellyStats.totalBets,
-            settledBets: kellyStats.settledBets,
-            exceedingKelly: kellyStats.exceedingKelly,
-            exceedingKellyPercent: kellyStats.exceedingKellyPercent,
-            avgFillRatio: kellyStats.avgFillRatio
-          }
-        }
-      };
-      
-      const dataStr = JSON.stringify(exportData, null, 2);
-      const filename = `surebet-bets-${(new Date()).toISOString().replace(/[:.]/g, '-')}.json`;
-      console.log('📤 Sending export message for JSON with analysis...');
-      api.runtime.sendMessage({ action: 'export', dataStr, filename, mime: 'application/json' }, (resp) => {
-        console.log('📥 Export response:', resp);
-        if (api.runtime.lastError) {
-          console.error('Export error:', api.runtime.lastError);
-          alert('Export failed: ' + api.runtime.lastError.message);
-        } else if (resp && resp.success) {
-          console.log('✅ Export successful');
-          alert('JSON exported successfully with liquidity analysis!');
-        } else if (resp && resp.error) {
-          alert('Export failed: ' + resp.error);
-        }
-      });
-    });
-  });
-
-  btnCsv.addEventListener('click', async () => {
-    api.storage.local.get({ bets: [], stakingSettings: DEFAULT_STAKING_SETTINGS }, (res) => {
-      const data = res.bets || [];
-      const stakingSettings = res.stakingSettings || DEFAULT_STAKING_SETTINGS;
-      
-      if (data.length === 0) {
-        alert('No bets to export.');
-        return;
-      }
-      
-      // Build CSV header with new columns
-      const rows = [];
-      rows.push(['timestamp', 'bookmaker', 'sport', 'event', 'tournament', 'market', 'is_lay', 'odds', 'probability', 'overvalue', 'stake', 'liability', 'commission_rate', 'commission_amount', 'potential_return', 'profit', 'expected_value', 'status', 'settled_at', 'actual_pl', 'note', 'url', 'limit', 'limit_tier', 'recommended_kelly_stake', 'fill_ratio_percent', 'hours_to_event'].join(','));
-      
-      for (const b of data) {
-        const esc = (v) => `\"${('' + (v ?? '')).replace(/\"/g, '\"\"')}\"`;
-        const commission = getCommission(b.bookmaker);
-
-        // Calculate profit and liability with commission (different for back vs lay)
-        let profit = '';
-        let potential = '';
-        let commissionAmount = '';
-        let liability = '';
-
-        if (b.stake && b.odds) {
-          if (b.isLay) {
-            // LAY BET: Use original lay odds
-            const layOdds = b.originalLayOdds || b.odds;
-            liability = (parseFloat(b.stake) * (parseFloat(layOdds) - 1)).toFixed(2);
-            const grossProfit = parseFloat(b.stake);
-            const commAmt = commission > 0 ? (grossProfit * commission / 100) : 0;
-            const netProfit = grossProfit - commAmt;
-            profit = netProfit.toFixed(2);
-            potential = netProfit.toFixed(2);
-            commissionAmount = commAmt.toFixed(2);
-          } else {
-            // BACK BET
-            const grossProfit = (parseFloat(b.stake) * parseFloat(b.odds)) - parseFloat(b.stake);
-            const commAmt = commission > 0 ? (grossProfit * commission / 100) : 0;
-            const netProfit = grossProfit - commAmt;
-            profit = netProfit.toFixed(2);
-            potential = (parseFloat(b.stake) + netProfit).toFixed(2);
-            commissionAmount = commAmt.toFixed(2);
-            liability = '0';
-          }
-        }
-
-        // Calculate expected value from overvalue
-        let expectedValue = '';
-        let expectedValueAmount = calculateExpectedValueAmount(b);
-        if (expectedValueAmount || expectedValueAmount === 0) {
-          expectedValue = expectedValueAmount.toFixed(2);
-        }
-
-        // Calculate actual P/L with commission (different for back vs lay)
-        let actualPL = '';
-        if (b.stake && b.odds) {
-          if (b.status === 'won') {
-            actualPL = profit;
-          } else if (b.status === 'lost') {
-            if (b.isLay) {
-              // For lay bets, if you lose, you pay the liability
-              actualPL = '-' + liability;
-            } else {
-              actualPL = '-' + b.stake;
-            }
-          } else if (b.status === 'void') {
-            actualPL = '0';
-          }
-        }
-
-        // Calculate new liquidity metrics
-        const limitVal = parseFloat(b.limit) || '';
-        const limitTier = limitVal ? getLimitTier(limitVal) : '';
-        const recommendedKelly = calculateKellyStake(b, stakingSettings).toFixed(2);
+  if (btnJson) {
+    btnJson.addEventListener('click', async () => {
+      api.storage.local.get({ bets: [], stakingSettings: DEFAULT_STAKING_SETTINGS }, (res) => {
+        const data = res.bets || [];
+        const stakingSettings = res.stakingSettings || DEFAULT_STAKING_SETTINGS;
         
-        let fillRatio = '';
-        if (recommendedKelly > 0) {
-          fillRatio = ((parseFloat(b.stake) / parseFloat(recommendedKelly)) * 100).toFixed(2);
-        }
-
-        let hoursToEvent = '';
-        if (b.eventTime && b.timestamp) {
-          const eventTime = new Date(b.eventTime);
-          const timestamp = new Date(b.timestamp);
-          hoursToEvent = ((eventTime - timestamp) / (1000 * 60 * 60)).toFixed(2);
-        }
-
-        rows.push([
-          esc(b.timestamp),
-          esc(b.bookmaker),
-          esc(b.sport),
-          esc(b.event),
-          esc(b.tournament),
-          esc(b.market),
-          esc(b.isLay ? 'YES' : 'NO'),
-          esc(b.odds),
-          esc(b.probability),
-          esc(b.overvalue),
-          esc(b.stake),
-          esc(liability),
-          esc(commission),
-          esc(commissionAmount),
-          esc(potential),
-          esc(profit),
-          esc(expectedValue),
-          esc(b.status || 'pending'),
-          esc(b.settledAt || ''),
-          esc(actualPL),
-          esc(b.note),
-          esc(b.url),
-          esc(limitVal),
-          esc(limitTier),
-          esc(recommendedKelly),
-          esc(fillRatio),
-          esc(hoursToEvent)
-        ].join(','));
-      }
-      const dataStr = rows.join('\r\n');
-      const filename = `surebet-bets-${(new Date()).toISOString().replace(/[:.]/g, '-')}.csv`;
-      console.log('📤 Sending export message for CSV...');
-      api.runtime.sendMessage({ action: 'export', dataStr, filename, mime: 'text/csv' }, (resp) => {
-        console.log('📥 Export response:', resp);
-        if (api.runtime.lastError) {
-          console.error('Export error:', api.runtime.lastError);
-          alert('Export failed: ' + api.runtime.lastError.message);
-        } else if (resp && resp.success) {
-          console.log('✅ Export successful');
-          alert('CSV exported successfully!');
-        } else if (resp && resp.error) {
-          alert('Export failed: ' + resp.error);
-        }
+        // Update cache first
+        updateCache(data, stakingSettings);
+        
+        // Use cached liquidity stats
+        const tierStats = liquidityCache.tierStats;
+        const bookmakerStats = liquidityCache.bookmakerStats;
+        const temporalStats = liquidityCache.temporalStats;
+        const kellyStats = liquidityCache.kellyStats;
+        
+        // Create export object with both bet data and analysis
+        const exportData = {
+          exportDate: new Date().toISOString(),
+          bets: data,
+          analysis: {
+            liquidityTiers: tierStats,
+            bookmakerProfiling: bookmakerStats,
+            temporalAnalysis: temporalStats,
+            kellyFillRatios: {
+              totalBets: kellyStats.totalBets,
+              settledBets: kellyStats.settledBets,
+              exceedingKelly: kellyStats.exceedingKelly,
+              exceedingKellyPercent: kellyStats.exceedingKellyPercent,
+              avgFillRatio: kellyStats.avgFillRatio
+            }
+          }
+        };
+        
+        const dataStr = JSON.stringify(exportData, null, 2);
+        const filename = `surebet-bets-${(new Date()).toISOString().replace(/[:.]/g, '-')}.json`;
+        console.log('📤 Sending export message for JSON with analysis...');
+        api.runtime.sendMessage({ action: 'export', dataStr, filename, mime: 'application/json' }, (resp) => {
+          console.log('📥 Export response:', resp);
+          if (api.runtime.lastError) {
+            console.error('Export error:', api.runtime.lastError);
+            alert('Export failed: ' + api.runtime.lastError.message);
+          } else if (resp && resp.success) {
+            console.log('✅ Export successful');
+            alert('JSON exported successfully with liquidity analysis!');
+          } else if (resp && resp.error) {
+            alert('Export failed: ' + resp.error);
+          }
+        });
       });
     });
-  });
+  }
 
-  btnClear.addEventListener('click', () => {
-    if (!confirm('Clear all saved bets? This cannot be undone.')) return;
-    api.runtime.sendMessage({ action: 'clearBets' }, (resp) => {
-      if (resp && resp.success) loadAndRender();
-      else alert('Clear failed.');
+  if (btnCsv) {
+    btnCsv.addEventListener('click', async () => {
+      api.storage.local.get({ bets: [], stakingSettings: DEFAULT_STAKING_SETTINGS }, (res) => {
+        const data = res.bets || [];
+        const stakingSettings = res.stakingSettings || DEFAULT_STAKING_SETTINGS;
+        
+        if (data.length === 0) {
+          alert('No bets to export.');
+          return;
+        }
+        
+        // Build CSV header with new columns
+        const rows = [];
+        rows.push(['timestamp', 'bookmaker', 'sport', 'event', 'tournament', 'market', 'is_lay', 'odds', 'probability', 'overvalue', 'stake', 'liability', 'commission_rate', 'commission_amount', 'potential_return', 'profit', 'expected_value', 'status', 'settled_at', 'actual_pl', 'note', 'url', 'limit', 'limit_tier', 'recommended_kelly_stake', 'fill_ratio_percent', 'hours_to_event'].join(','));
+        
+        for (const b of data) {
+          const esc = (v) => `\"${('' + (v ?? '')).replace(/\"/g, '\"\"')}\"`;
+          const commission = getCommission(b.bookmaker);
+
+          // Calculate profit and liability with commission (different for back vs lay)
+          let profit = '';
+          let potential = '';
+          let commissionAmount = '';
+          let liability = '';
+
+          if (b.stake && b.odds) {
+            if (b.isLay) {
+              // LAY BET: Use original lay odds
+              const layOdds = b.originalLayOdds || b.odds;
+              liability = (parseFloat(b.stake) * (parseFloat(layOdds) - 1)).toFixed(2);
+              const grossProfit = parseFloat(b.stake);
+              const commAmt = commission > 0 ? (grossProfit * commission / 100) : 0;
+              const netProfit = grossProfit - commAmt;
+              profit = netProfit.toFixed(2);
+              potential = netProfit.toFixed(2);
+              commissionAmount = commAmt.toFixed(2);
+            } else {
+              // BACK BET
+              const grossProfit = (parseFloat(b.stake) * parseFloat(b.odds)) - parseFloat(b.stake);
+              const commAmt = commission > 0 ? (grossProfit * commission / 100) : 0;
+              const netProfit = grossProfit - commAmt;
+              profit = netProfit.toFixed(2);
+              potential = (parseFloat(b.stake) + netProfit).toFixed(2);
+              commissionAmount = commAmt.toFixed(2);
+              liability = '0';
+            }
+          }
+
+          // Calculate expected value from overvalue
+          let expectedValue = '';
+          let expectedValueAmount = calculateExpectedValueAmount(b);
+          if (expectedValueAmount || expectedValueAmount === 0) {
+            expectedValue = expectedValueAmount.toFixed(2);
+          }
+
+          // Calculate actual P/L with commission (different for back vs lay)
+          let actualPL = '';
+          if (b.stake && b.odds) {
+            if (b.status === 'won') {
+              actualPL = profit;
+            } else if (b.status === 'lost') {
+              if (b.isLay) {
+                // For lay bets, if you lose, you pay the liability
+                actualPL = '-' + liability;
+              } else {
+                actualPL = '-' + b.stake;
+              }
+            } else if (b.status === 'void') {
+              actualPL = '0';
+            }
+          }
+
+          // Calculate new liquidity metrics
+          const limitVal = parseFloat(b.limit) || '';
+          const limitTier = limitVal ? getLimitTier(limitVal) : '';
+          const recommendedKelly = calculateKellyStake(b, stakingSettings).toFixed(2);
+          
+          let fillRatio = '';
+          if (recommendedKelly > 0) {
+            fillRatio = ((parseFloat(b.stake) / parseFloat(recommendedKelly)) * 100).toFixed(2);
+          }
+
+          let hoursToEvent = '';
+          if (b.eventTime && b.timestamp) {
+            const eventTime = new Date(b.eventTime);
+            const timestamp = new Date(b.timestamp);
+            hoursToEvent = ((eventTime - timestamp) / (1000 * 60 * 60)).toFixed(2);
+          }
+
+          rows.push([
+            esc(b.timestamp),
+            esc(b.bookmaker),
+            esc(b.sport),
+            esc(b.event),
+            esc(b.tournament),
+            esc(b.market),
+            esc(b.isLay ? 'YES' : 'NO'),
+            esc(b.odds),
+            esc(b.probability),
+            esc(b.overvalue),
+            esc(b.stake),
+            esc(liability),
+            esc(commission),
+            esc(commissionAmount),
+            esc(potential),
+            esc(profit),
+            esc(expectedValue),
+            esc(b.status || 'pending'),
+            esc(b.settledAt || ''),
+            esc(actualPL),
+            esc(b.note),
+            esc(b.url),
+            esc(limitVal),
+            esc(limitTier),
+            esc(recommendedKelly),
+            esc(fillRatio),
+            esc(hoursToEvent)
+          ].join(','));
+        }
+        const dataStr = rows.join('\r\n');
+        const filename = `surebet-bets-${(new Date()).toISOString().replace(/[:.]/g, '-')}.csv`;
+        console.log('📤 Sending export message for CSV...');
+        api.runtime.sendMessage({ action: 'export', dataStr, filename, mime: 'text/csv' }, (resp) => {
+          console.log('📥 Export response:', resp);
+          if (api.runtime.lastError) {
+            console.error('Export error:', api.runtime.lastError);
+            alert('Export failed: ' + api.runtime.lastError.message);
+          } else if (resp && resp.success) {
+            console.log('✅ Export successful');
+            alert('CSV exported successfully!');
+          } else if (resp && resp.error) {
+            alert('Export failed: ' + resp.error);
+          }
+        });
+      });
     });
-  });
+  }
+
+  if (btnClear) {
+    btnClear.addEventListener('click', () => {
+      if (!confirm('Clear all saved bets? This cannot be undone.')) return;
+      api.runtime.sendMessage({ action: 'clearBets' }, (resp) => {
+        if (resp && resp.success) loadAndRender();
+        else alert('Clear failed.');
+      });
+    });
+  }
 
   if (btnChart) {
     btnChart.addEventListener('click', () => {
@@ -1681,45 +1700,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  if (btnApiSetup) {
-    btnApiSetup.addEventListener('click', () => {
-      const message = `API Setup Instructions:
-      
-1. Get free API keys:
-   • API-Football: https://www.api-football.com/ (100 req/day)
-   • The Odds API: https://the-odds-api.com/ (500 req/month)
-
-2. Open the extension folder:
-   surebet-helper-extension/apiService.js
-
-3. Replace the placeholder API keys at the top of the file
-
-4. Reload the extension in Firefox (about:debugging)
-
-5. Click "🔍 Check Results" to test
-
-See API_SETUP.md in the extension folder for detailed instructions.`;
-
-      alert(message);
+  // Analysis button - opens analysis.html in new tab
+  const btnAnalysis = document.getElementById('analysis-btn');
+  if (btnAnalysis) {
+    btnAnalysis.addEventListener('click', () => {
+      console.log('📊 Opening analysis page...');
+      api.tabs.create({ url: api.runtime.getURL('analysis.html#chart') });
     });
   }
 
-  // Import CSV functionality - open dedicated import page
-  if (btnImportCsv) {
-    btnImportCsv.addEventListener('click', () => {
-      console.log(' Opening import page...');
+  // Settings button - opens settings.html in new tab
+  const btnSettings = document.getElementById('settings-btn');
+  if (btnSettings) {
+    btnSettings.addEventListener('click', () => {
+      console.log('⚙️ Opening settings page...');
+      api.tabs.create({ url: api.runtime.getURL('settings.html#commission') });
+    });
+  }
+
+  // API Setup button - opens settings.html#api in new tab
+  if (btnApiSetup) {
+    btnApiSetup.addEventListener('click', () => {
+      console.log('🔑 Opening API setup page...');
+      api.tabs.create({ url: api.runtime.getURL('settings.html#api') });
+    });
+  }
+
+  // Import functionality - open dedicated import page with type selector
+  if (btnImportBtn) {
+    btnImportBtn.addEventListener('click', () => {
+      console.log('📥 Opening import page...');
       api.tabs.create({ url: api.runtime.getURL('import.html') });
     });
   }
 
-  // Import JSON functionality - opens dedicated import page
-  const btnImportJson = document.getElementById('import-json');
-  if (btnImportJson) {
-    btnImportJson.addEventListener('click', () => {
-      console.log('📥 Opening JSON import page...');
-      api.tabs.create({ url: api.runtime.getURL('import.html?type=json') });
-    });
-  }
+
 
 
 

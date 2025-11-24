@@ -1,0 +1,234 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [1.0.57] - 2025-11-24
+
+### 🎉 Major Refactor: UI Redesign & Settings Consolidation
+
+#### ✨ New Features
+- **Tab-Based Dashboard** - All analysis, settings, and imports now open in dedicated tabs instead of popups
+- **Analysis Tab** (analysis.html) - New full-screen dashboard with 6 views:
+  - 📈 P/L Chart - Interactive trend visualization
+  - 💧 Liquidity Tiers - Limit tier analysis
+  - 📊 Bookmaker Profiling - Performance by bookmaker
+  - 📅 Temporal Analysis - Time-based trends  
+  - 🎲 Kelly Metrics - Fill ratio analysis
+  - 📥 Export - JSON with analysis data + CSV with 27-column detail
+- **Settings Tab** (settings.html) - Consolidated configuration with 6 sections:
+  - 💰 Commission - Exchange rates (Betfair, Betdaq, Matchbook, Smarkets)
+  - 📏 Rounding - Stake rounding options
+  - ⚡ Auto-Fill - Exchange selection and configuration
+  - 🎲 Kelly Staking - Bankroll, fraction, and commission settings (moved from floating panel)
+  - 🔑 API Setup - Sports API key configuration
+  - 🗑️ Data - Clear all bets with double-confirmation
+- **Minimal 4-Button Popup** - Streamlined extension popup with only essential buttons:
+  - 🔍 Check Results
+  - 📊 Analysis (opens tab)
+  - ⚙️ Settings (opens tab)
+  - 📥 Import (opens tab)
+
+#### 🗑️ Removed Features
+- Removed crowded inline modals from popup (Commission, Rounding, Auto-Fill panels)
+- Removed floating Kelly Stake Helper panel from surebet.com (moved to Settings tab)
+- Removed chart/liquidity modals from popup (moved to Analysis tab)
+- Removed export buttons from popup (moved to Analysis tab)
+
+#### 🔧 Technical Changes
+- Fixed Manifest V3 CSP violations - removed inline `onclick` handlers
+- API link buttons now use `api.tabs.create()` for cross-browser compatibility
+- Kelly staking settings properly integrated with contentScript.js calculations
+- All event listeners wrapped in null-guard checks for safety
+- Fixed indentation issues in popup.js event handler callbacks
+- Added hash-based routing support for settings sections (#commission, #kelly, #api, etc.)
+
+#### 📝 UX Improvements
+- Settings now opens to relevant tab via hash routing
+- Real-time P/L summary in Kelly Staking section
+- Cleaner, more focused popup interface
+- Analysis page shows comprehensive betting performance metrics
+- CSV export includes 27 detailed columns (bankroll, limit tiers, Kelly metrics, etc.)
+
+#### 🐛 Bug Fixes
+- Fixed syntax error in btnJson/btnCsv export callbacks (missing closing braces)
+- Fixed alert indentation in CSV export error handling
+- Proper CSP compliance for API link opening
+
+#### 📦 Files Changed
+**New:**
+- `analysis.html` (5.8 KB) - Full-screen analysis dashboard
+- `analysis.js` (30.6 KB) - Chart rendering and analysis functions
+- `settings.html` (11.3 KB) - Consolidated settings interface
+- `settings.js` (10.2 KB) - Settings persistence and UI logic
+
+**Modified:**
+- `popup.html` - Reduced from 6+ buttons to 4 essential buttons
+- `popup.js` - Updated button handlers, fixed syntax errors, added new event listeners
+- `contentScript.js` - Disabled floating staking panel injection
+- `manifest.json` - Version bumped to 1.0.57
+
+---
+
+## [1.0.56] - 2025-11-24
+
+### 🔧 Configuration Changes
+- Updated API link buttons to use `api.tabs.create()` for Manifest V3 compliance
+- Fixed CSP violation with inline `onclick` handlers in settings.html
+
+---
+
+## [1.0.55] - 2025-11-23
+
+### 🐛 Bug Fixes
+- Fixed missing closing brace in btnCsv event listener callback
+- Corrected indentation in alert statements for CSV export error handling
+
+---
+
+## [1.0.54] - 2025-11-23
+
+### 🐛 Bug Fixes
+- Fixed btnJson event listener structure - added missing closing brace for addEventListener callback
+- Resolved syntax error: "missing ) after argument list popup.js:1440:3"
+
+---
+
+## [1.0.53] - 2025-11-22
+
+### ✨ Enhancement
+- Updated Kelly Criterion calculations to account for exchange commission rates
+- Improved expected value calculations for lay bets
+
+---
+
+## [1.0.52] - 2025-11-20
+
+### ✨ Features
+- Added Kelly fill ratio metrics to CSV export
+- Added recommended Kelly stake calculations to CSV output
+- Added hours-to-event calculation for temporal analysis
+
+---
+
+## [1.0.51] - 2025-11-18
+
+### ✨ Features
+- Enhanced CSV export with liquidity metrics
+- Added limit tier classification
+- Added commission accounting to profit calculations
+
+---
+
+## [1.0.50] - 2025-11-15
+
+### 📊 Analytics Improvements
+- Added liquidity tier analysis (limit stratification)
+- Added bookmaker performance profiling
+- Added temporal analysis (time-based trends)
+- Added Kelly fill ratio calculations
+
+---
+
+## [1.0.49] - 2025-11-12
+
+### ✨ Features
+- Added CSV export functionality
+- Added JSON export with analysis data
+- Implemented liquidity analysis caching
+
+---
+
+## [1.0.48] - 2025-11-10
+
+### 🔧 Technical
+- Updated to web-ext version 1.0.48
+- Improved background service worker stability
+
+---
+
+## [1.0.47] - 2025-11-08
+
+### 🐛 Bug Fixes
+- Fixed auto-fill stake calculation for lay bets
+- Improved betting slip detection on Smarkets
+
+---
+
+## [1.0.46] - 2025-11-05
+
+### ✨ Features
+- Added support for Matchbook lay bets
+- Enhanced auto-fill with React/data-hook selectors
+
+---
+
+## [1.0.45] - 2025-11-02
+
+### 🔧 Technical
+- Improved MutationObserver polling for SPA betting sites
+- Added exponential backoff for auto-fill retries
+
+---
+
+## [1.0.44] - 2025-10-30
+
+### ✨ Features
+- Added Matchbook exchange support for auto-fill
+- Improved betting slip selector robustness
+
+---
+
+## [1.0.43] - 2025-10-28
+
+### 🐛 Bug Fixes
+- Fixed Smarkets auto-fill timing issues
+- Improved odds validation for auto-filled bets
+
+---
+
+## [1.0.42] - 2025-10-25
+
+### ✨ Features
+- Added Smarkets auto-fill support
+- Improved stake input detection
+
+---
+
+## [1.0.40] - 2025-10-20
+
+### 🐛 Bug Fixes
+- Fixed background.js alarms API issues
+- Improved result checking retry logic
+
+---
+
+## [1.0.38] - 2025-10-15
+
+### 📦 Release
+- Latest stable web-ext build
+
+---
+
+## [1.0.37] - 2025-10-10
+
+### 🎉 Major Feature
+- Completed auto-fill stakes feature for Betfair, Smarkets, Matchbook
+- Full cross-origin broker pattern implementation
+- Comprehensive auto-fill documentation
+
+---
+
+## [1.0.32] - 2025-09-20
+
+### 🚀 Initial Release
+- Core functionality: Save bets, track P/L, settle results
+- Manual commission configuration
+- Basic auto-check result checking
+- Betfair P/L CSV import support
+
+---

@@ -10,27 +10,50 @@ const resultsDiv = document.getElementById('results');
 
 let selectedFiles = [];
 
-// Detect import type from URL parameter
+// Detect import type from URL parameter or radio selection
 const urlParams = new URLSearchParams(window.location.search);
-const importType = urlParams.get('type') || 'csv';
+let currentImportType = urlParams.get('type') || 'csv';
 
-// Update UI based on import type
-if (importType === 'json') {
-  document.getElementById('page-title').textContent = '📥 Import Saved Bets (JSON)';
-  document.getElementById('instructions-title').textContent = 'How to import your saved bets:';
-  document.getElementById('instructions-list').innerHTML = `
-    <li>Export bets from Surebet Helper (📥 Export JSON button)</li>
-    <li>Select your JSON file containing saved bets</li>
-    <li>The extension will merge bets and update any settled results</li>
-    <li>Duplicate bets are detected and skipped automatically</li>
-  `;
-  document.getElementById('file-label').textContent = '📁 Choose JSON File';
-  fileInput.accept = '.json';
-  fileInput.multiple = false;
-} else {
-  fileInput.accept = '.csv';
-  fileInput.multiple = true;
+// Handle radio button selection
+const radioButtons = document.querySelectorAll('input[name="import-type"]');
+radioButtons.forEach(radio => {
+  radio.addEventListener('change', (e) => {
+    currentImportType = e.target.value;
+    console.log(`📝 Import type changed to: ${currentImportType}`);
+    updateUIForType();
+  });
+});
+
+function updateUIForType() {
+  if (currentImportType === 'json') {
+    document.getElementById('page-title').textContent = '📥 Import Saved Bets (JSON)';
+    document.getElementById('instructions-title').textContent = 'How to import your saved bets:';
+    document.getElementById('instructions-list').innerHTML = `
+      <li>Export bets from Surebet Helper (📥 Export JSON button in Analysis tab)</li>
+      <li>Select your JSON file containing saved bets</li>
+      <li>The extension will merge bets and update any settled results</li>
+      <li>Duplicate bets are detected and skipped automatically</li>
+    `;
+    document.getElementById('file-label').textContent = '📁 Choose JSON File';
+    fileInput.accept = '.json';
+    fileInput.multiple = false;
+  } else {
+    document.getElementById('page-title').textContent = '📥 Import Bets';
+    document.getElementById('instructions-title').textContent = 'How to import your CSV:';
+    document.getElementById('instructions-list').innerHTML = `
+      <li>Download your P/L report (CSV format)</li>
+      <li>If you have multiple sports, download one CSV per sport</li>
+      <li>Click "Choose Files" below and select your CSV file(s)</li>
+      <li>The extension will automatically match bets and update their status</li>
+    `;
+    document.getElementById('file-label').textContent = '📁 Choose CSV File(s)';
+    fileInput.accept = '.csv';
+    fileInput.multiple = true;
+  }
 }
+
+// Update UI based on initial import type
+updateUIForType();
 
 // Listen for file selection
 fileInput.addEventListener('change', (e) => {
@@ -92,11 +115,11 @@ async function importSingleFile(file) {
         const fileText = event.target.result;
         console.log(`✅ File loaded, length: ${fileText.length}`);
         
-        // Detect file type - either JSON or CSV based on importType or file extension
+        // Detect file type - either JSON or CSV based on currentImportType or file extension
         const fileExtension = file.name.toLowerCase().endsWith('.json') ? 'json' : 'csv';
-        const currentType = importType === 'json' ? 'json' : fileExtension;
+        const fileType = currentImportType === 'json' ? 'json' : fileExtension;
         
-        if (currentType === 'json') {
+        if (fileType === 'json') {
           console.log('📋 Processing JSON file...');
           await processImportedJSON(fileText, file.name);
         } else {

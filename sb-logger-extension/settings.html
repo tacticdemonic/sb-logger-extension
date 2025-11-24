@@ -1,0 +1,294 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Settings - Surebet Helper</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; color: #222; background: #fafafa; }
+    .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { margin: 0 0 10px 0; font-size: 24px; color: #333; }
+    .nav-bar { display: flex; gap: 10px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #dee2e6; flex-wrap: wrap; }
+    .nav-btn { padding: 8px 16px; background: #6c757d; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 12px; transition: background 0.2s; }
+    .nav-btn.active { background: #007bff; }
+    .nav-btn:hover { opacity: 0.85; }
+    .section-container { display: none; }
+    .section-container.active { display: block; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; color: #666; margin-bottom: 4px; font-weight: 600; }
+    .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 3px; font-family: Arial, sans-serif; }
+    .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #007bff; box-shadow: 0 0 3px rgba(0, 123, 255, 0.5); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .form-group-checkbox { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .form-group-checkbox input { width: auto; }
+    .button-row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; }
+    button { padding: 8px 16px; font-size: 12px; cursor: pointer; border: 1px solid #ccc; background: #fff; border-radius: 3px; transition: background 0.2s; font-weight: 600; }
+    button:hover { background: #f0f0f0; }
+    .btn-save { background: #28a745; color: #fff; border-color: #28a745; }
+    .btn-save:hover { background: #218838; }
+    .btn-cancel { background: #6c757d; color: #fff; border-color: #6c757d; }
+    .btn-cancel:hover { background: #5a6268; }
+    .note { color: #666; font-size: 11px; margin-top: 8px; line-height: 1.4; }
+    .info-box { background: #e7f3ff; padding: 12px; border-left: 4px solid #0056b3; border-radius: 3px; margin-bottom: 15px; font-size: 12px; }
+    .info-box strong { color: #004085; }
+    .warning-box { background: #fff3cd; padding: 12px; border-left: 4px solid #ffc107; border-radius: 3px; margin-bottom: 15px; font-size: 12px; }
+    .link-button { color: #007bff; text-decoration: underline; cursor: pointer; background: none; border: none; padding: 0; font-size: inherit; font-weight: inherit; }
+    .link-button:hover { color: #0056b3; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚙️ Settings</h1>
+    
+    <div class="nav-bar">
+      <button class="nav-btn active" data-section="commission">💰 Commission</button>
+      <button class="nav-btn" data-section="rounding">📏 Rounding</button>
+      <button class="nav-btn" data-section="autofill">⚡ Auto-Fill</button>
+      <button class="nav-btn" data-section="kelly">🎲 Kelly Staking</button>
+      <button class="nav-btn" data-section="api">🔑 API Setup</button>
+      <button class="nav-btn" data-section="data">🗑️ Data</button>
+    </div>
+
+    <!-- Commission Section -->
+    <div id="commission-section" class="section-container active">
+      <h2>Exchange Commission Rates</h2>
+      <div class="info-box">
+        <strong>ℹ️ How Commission Works</strong><br>
+        Commission is deducted from winning bets only. Enter the percentage rate for each exchange.
+      </div>
+      
+      <div class="grid-4">
+        <div class="form-group">
+          <label for="comm-betfair">Betfair (%)</label>
+          <input type="number" id="comm-betfair" step="0.1" min="0" max="100" value="5.0" />
+        </div>
+        <div class="form-group">
+          <label for="comm-betdaq">Betdaq (%)</label>
+          <input type="number" id="comm-betdaq" step="0.1" min="0" max="100" value="2.0" />
+        </div>
+        <div class="form-group">
+          <label for="comm-matchbook">Matchbook (%)</label>
+          <input type="number" id="comm-matchbook" step="0.1" min="0" max="100" value="1.0" />
+        </div>
+        <div class="form-group">
+          <label for="comm-smarkets">Smarkets (%)</label>
+          <input type="number" id="comm-smarkets" step="0.1" min="0" max="100" value="2.0" />
+        </div>
+      </div>
+      
+      <p class="note">💡 Check your exchange account settings to verify these rates. VIP/Premium accounts may have lower commission.</p>
+      
+      <div class="button-row">
+        <button class="btn-cancel" onclick="window.close()">Cancel</button>
+        <button class="btn-save" id="save-commission-btn">Save Changes</button>
+      </div>
+    </div>
+
+    <!-- Rounding Section -->
+    <div id="rounding-section" class="section-container">
+      <h2>Stake Rounding</h2>
+      <div class="info-box">
+        <strong>ℹ️ Auto-Rounding New Bets</strong><br>
+        When enabled, new bet stakes will be automatically rounded to the nearest increment (e.g., £0.50).
+      </div>
+      
+      <div class="form-group">
+        <label class="form-group-checkbox">
+          <input type="checkbox" id="rounding-enabled" />
+          <span>Enable stake rounding for new bets</span>
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label for="rounding-increment">Rounding Increment (£)</label>
+        <input type="number" id="rounding-increment" min="0.01" max="100" step="0.01" placeholder="e.g., 0.50" />
+      </div>
+      
+      <p class="note">📝 Example: With increment £0.50, a stake of £10.23 will be rounded to £10.50. This only applies to bets saved after enabling this setting.</p>
+      
+      <div class="button-row">
+        <button class="btn-cancel" onclick="window.close()">Cancel</button>
+        <button class="btn-save" id="save-rounding-btn">Save Changes</button>
+      </div>
+    </div>
+
+    <!-- Auto-Fill Section -->
+    <div id="autofill-section" class="section-container">
+      <h2>Auto-Fill Stakes on Betting Exchanges</h2>
+      <div class="info-box">
+        <strong>ℹ️ Auto-Fill Feature</strong><br>
+        When enabled, calculated stakes will be automatically filled into betting slips on supported exchanges. Falls back to clipboard copy if auto-fill fails.
+      </div>
+      
+      <div class="form-group">
+        <label class="form-group-checkbox">
+          <input type="checkbox" id="autofill-enabled" />
+          <span>Enable automatic stake input on betting slip</span>
+        </label>
+      </div>
+
+      <div style="background: #f8f9fa; padding: 12px; border-radius: 3px; margin-bottom: 15px;">
+        <div style="font-weight: 600; margin-bottom: 12px; color: #333;">Select Exchanges:</div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <label class="form-group-checkbox">
+            <input type="checkbox" id="autofill-betfair" />
+            <span>Betfair</span>
+          </label>
+          <label class="form-group-checkbox">
+            <input type="checkbox" id="autofill-smarkets" />
+            <span>Smarkets</span>
+          </label>
+          <label class="form-group-checkbox">
+            <input type="checkbox" id="autofill-matchbook" />
+            <span>Matchbook</span>
+          </label>
+        </div>
+      </div>
+
+      <p class="note">⚠️ <strong>How to Use:</strong> LEFT-CLICK (not right-click) the stake indicator for your target exchange on surebet.com. The system will store the bet and navigate you to the exchange. Stakes will auto-fill in the betting slip.</p>
+      
+      <div class="button-row">
+        <button class="btn-cancel" onclick="window.close()">Cancel</button>
+        <button class="btn-save" id="save-autofill-btn">Save Changes</button>
+      </div>
+    </div>
+
+    <!-- Kelly Staking Section -->
+    <div id="kelly-section" class="section-container">
+      <h2>🎲 Kelly Staking Configuration</h2>
+      <div class="info-box">
+        <strong>ℹ️ What is Kelly Staking?</strong><br>
+        The Kelly Criterion calculates optimal bet sizes based on odds and probability to maximize long-term growth while minimizing risk of ruin.
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="kelly-bankroll">Starting Bankroll:</label>
+          <input type="number" id="kelly-bankroll" min="50" step="10" placeholder="1000" />
+          <p class="note">Your current betting bankroll (automatically recalculated from P/L)</p>
+        </div>
+        <div class="form-group">
+          <label for="kelly-fraction">Kelly Fraction (%):</label>
+          <input type="number" id="kelly-fraction" min="5" max="100" step="1" placeholder="25" />
+          <p class="note">Percentage of full Kelly to use (25% recommended for safety)</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-group-checkbox">
+          <input type="checkbox" id="kelly-use-commission" />
+          <span>Account for Exchange Commission in Calculations</span>
+        </label>
+        <p class="note">Adjusts odds based on commission rates when calculating Kelly stakes</p>
+      </div>
+
+      <div class="info-box">
+        <strong>📊 Current Status</strong><br>
+        <div id="kelly-summary" style="margin-top: 8px; font-size: 13px;">
+          Loading...
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button class="btn-cancel" id="reset-kelly-btn">Reset to Defaults</button>
+        <button class="btn-save" id="save-kelly-btn">Save Changes</button>
+      </div>
+    </div>
+
+    <!-- API Setup Section -->
+    <div id="api-section" class="section-container">
+      <h2>Sports APIs for Result Checking</h2>
+      <div class="warning-box">
+        <strong>⚠️ Configuration Required</strong><br>
+        To auto-check bet results, you'll need free API keys from the sports data providers below.
+      </div>
+
+      <div style="margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">Step 1: Get Free API Keys</h3>
+        
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
+          <div style="font-weight: 600; margin-bottom: 8px;">⚽ API-Football (Soccer Only)</div>
+          <p style="margin: 0 0 10px 0; font-size: 12px; color: #555;">
+            Provides football/soccer match results (100 requests per day on free plan)
+          </p>
+          <button class="link-button" id="api-football-link">
+            🔗 Visit api-football.com
+          </button>
+          <p style="margin: 8px 0 0 0; font-size: 11px; color: #666;">
+            1. Create a free account<br>
+            2. Go to Dashboard and copy your API Key<br>
+            3. Paste below
+          </p>
+        </div>
+
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 4px;">
+          <div style="font-weight: 600; margin-bottom: 8px;">🌐 The Odds API (Multiple Sports)</div>
+          <p style="margin: 0 0 10px 0; font-size: 12px; color: #555;">
+            Covers football, basketball, baseball, hockey, tennis, and more (500 requests per month on free plan)
+          </p>
+          <button class="link-button" id="odds-api-link">
+            🔗 Visit the-odds-api.com
+          </button>
+          <p style="margin: 8px 0 0 0; font-size: 11px; color: #666;">
+            1. Create a free account<br>
+            2. Copy your API Key from the dashboard<br>
+            3. Paste below
+          </p>
+        </div>
+      </div>
+
+      <h3 style="margin-top: 0; color: #333; font-size: 14px;">Step 2: Configure API Keys</h3>
+      <p style="font-size: 12px; color: #666; margin-bottom: 15px;">
+        Keys are stored locally in your browser and never sent to external servers.
+      </p>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="api-football-key">API-Football Key:</label>
+          <input type="password" id="api-football-key" placeholder="Paste your API key here" />
+          <p class="note">Format: alphanumeric string</p>
+        </div>
+        <div class="form-group">
+          <label for="api-odds-key">The Odds API Key:</label>
+          <input type="password" id="api-odds-key" placeholder="Paste your API key here" />
+          <p class="note">Format: alphanumeric string</p>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button class="btn-cancel" onclick="window.close()">Cancel</button>
+        <button class="btn-save" id="test-api-btn">Test Connection</button>
+        <button class="btn-save" id="save-api-btn">Save Changes</button>
+      </div>
+
+      <div id="api-test-result" style="margin-top: 15px; display: none; padding: 12px; border-radius: 4px; font-size: 12px;"></div>
+    </div>
+
+    <!-- Data Management Section -->
+    <div id="data-section" class="section-container">
+      <h2>Data Management</h2>
+      <div class="warning-box">
+        <strong>⚠️ Destructive Action</strong><br>
+        The following action will permanently delete all saved bets. This cannot be undone.
+      </div>
+      
+      <div style="background: #ffe6e6; padding: 15px; border-radius: 4px; border-left: 4px solid #dc3545;">
+        <div style="font-weight: 600; margin-bottom: 8px; color: #c00;">Delete All Bets</div>
+        <p style="margin: 0 0 15px 0; font-size: 12px; color: #555;">
+          This will permanently delete all saved bets, statistics, and analysis data. Export your data before proceeding if you want to keep it.
+        </p>
+        <button style="background: #dc3545; color: #fff; border-color: #dc3545; padding: 8px 16px; font-weight: 600;" id="clear-all-btn">🗑️ Delete All Bets</button>
+        <p class="note" style="color: #c00; margin-top: 10px;">This action cannot be undone.</p>
+      </div>
+      
+      <div class="button-row">
+        <button class="btn-cancel" onclick="window.close()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="settings.js"></script>
+</body>
+</html>

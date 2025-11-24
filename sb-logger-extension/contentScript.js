@@ -2701,10 +2701,9 @@ function () {
     console.log('✅ Surebet Helper: Styles injected');
     await loadStakingSettings();
     console.log('✅ Surebet Helper: Staking settings loaded');
-    injectStakePanel();
-    console.log('✅ Surebet Helper: Stake panel injected');
-    startStakePanelMonitoring();
-    console.log('✅ Surebet Helper: Panel monitoring started');
+    // Panel removed - Kelly staking now in settings tab
+    // injectStakePanel();
+    // startStakePanelMonitoring();
     
     // If on any bookmaker site, inject floating button and start auto-fill
     if (onBookmakerSite) {

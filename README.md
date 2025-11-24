@@ -15,11 +15,17 @@ A powerful browser extension for tracking and analyzing value bets from surebet.
 - **Stake Tracking**: Prompts for stake amount and optional notes when saving
 - **Bet Settlement**: Mark bets as Won ✓, Lost ✗, or Void ○ with a single click
 
-### 📊 Analytics & Performance
-- **Profit/Loss Tracking**: Real-time P/L calculation and ROI across all settled bets
-- **Expected Value (EV)**: Theoretical expected profit calculated for every bet
-- **EV vs Actual**: Compare actual results against expected value to track luck vs skill
-- **Visual Charts**: Interactive P/L graph showing your performance trends over time
+### 📊 Analytics & Dashboard
+- **Full-Screen Analysis Tab** - Opens in dedicated tab with 6 views:
+  - 📈 **P/L Chart** - Interactive profit/loss trend visualization
+  - 💧 **Liquidity Tiers** - Analyze bets by limit stratification
+  - 📊 **Bookmaker Profiling** - Performance breakdown by bookmaker
+  - 📅 **Temporal Analysis** - Identify time-based patterns
+  - 🎲 **Kelly Metrics** - Fill ratio vs recommended Kelly stakes
+  - 📥 **Export** - JSON (with analysis) + CSV (27-column detail)
+- **Real-Time P/L**: Updated automatically as bets settle
+- **Expected Value (EV)**: Theoretical profit calculation for every bet
+- **Performance Metrics**: ROI, win rate, average odds, and more
 
 ### 🤖 Automation
 - **Auto-Fill Stakes**: Automatically inputs calculated Kelly stakes into betting slips on Betfair, Smarkets, and Matchbook (configurable, disabled by default)
@@ -27,11 +33,18 @@ A powerful browser extension for tracking and analyzing value bets from surebet.
 - **Smart Retries**: Waits 30 min after event ends, retries up to 5 times with exponential backoff
 - **Hourly Background Checks**: Automatically checks eligible pending bets
 
+### 🎲 Kelly Staking Configuration
+- **Bankroll Management**: Set your starting bankroll and track current balance
+- **Fractional Kelly**: Configure Kelly fraction (25% recommended for safety)
+- **Commission Accounting**: Automatically adjust odds based on exchange commission when calculating stakes
+- **Real-Time Summary**: View current bankroll, P/L, and status in Settings tab
+
 ### 🔧 Convenience Features
 - **Bookmaker Filter Presets**: Quick-apply your favorite bookmaker combinations
 - **Exchange Commission Support**: Built-in support for Betfair, Betdaq, Matchbook, Smarkets
-- **Export Options**: Export to JSON or CSV for external analysis
-- **Data Management**: View, filter, and manage all saved bets in the popup
+- **Stake Rounding**: Optional auto-rounding to nearest increment (e.g., £0.50)
+- **Data Management**: Clear all bets with double-confirmation safety
+- **Minimal 4-Button Popup**: Streamlined interface with only essential buttons
 
 ---
 
@@ -79,17 +92,45 @@ A powerful browser extension for tracking and analyzing value bets from surebet.
 
 ### Basic Workflow
 1. **Visit** [surebet.com/valuebets](https://surebet.com/valuebets)
-2. **Click** the 💾 Save button on any bet row or click the stake indicator
+2. **Click** the 💾 Save button on any bet row
 3. **Enter** your stake amount (and optional note)
 4. **View** all saved bets by clicking the extension icon in your toolbar
 5. **Settle bets** using the ✓ Won, ✗ Lost, or ○ Void buttons
-6. **Track progress** with the P/L summary and 📊 View Chart button
-7. **Export data** using the JSON or CSV export buttons
+6. **Analyze** your performance by clicking the 📊 Analysis button
+7. **Export data** using the Analysis tab options
+
+### Extension Popup (4 Buttons)
+The minimal popup provides quick access to core features:
+
+- **🔍 Check Results** - Manually trigger result checking (or wait for hourly auto-check)
+- **📊 Analysis** - Opens full-screen analysis dashboard in new tab with 6 views
+- **⚙️ Settings** - Opens settings page with 6 configuration sections
+- **📥 Import** - Opens bulk import page for CSV/JSON files
+
+### Analysis Dashboard (analysis.html)
+Click **📊 Analysis** to open a dedicated tab with:
+
+1. **📈 P/L Chart** - Interactive graph of your cumulative profit/loss
+2. **💧 Liquidity Tiers** - Bets grouped and analyzed by limit stratification
+3. **📊 Bookmaker Profiling** - Performance statistics per bookmaker
+4. **📅 Temporal Analysis** - Time-based patterns and trends
+5. **🎲 Kelly Metrics** - Fill ratio analysis (recommended vs actual stakes)
+6. **📥 Export** - Download data as JSON (with analysis) or CSV (27 columns)
+
+### Settings Tab (settings.html)
+Click **⚙️ Settings** to configure 6 sections:
+
+1. **💰 Commission** - Set exchange commission rates
+2. **📏 Rounding** - Enable stake rounding to nearest increment
+3. **⚡ Auto-Fill** - Configure exchanges for automatic stake input
+4. **🎲 Kelly Staking** - Bankroll, Kelly fraction, and commission accounting
+5. **🔑 API Setup** - Configure sports API keys for result checking
+6. **🗑️ Data** - Clear all saved bets (with safety confirmation)
 
 ### Auto-Fill Stakes (Exchange Bets)
 When enabled, the extension automatically fills in your calculated Kelly stake after clicking a bet link:
 
-1. **Enable auto-fill** in the extension settings (⚙️ Auto-Fill tab)
+1. **Enable auto-fill** in Settings > ⚙️ Auto-Fill tab
 2. **Select exchanges** you want to use (Betfair, Smarkets, Matchbook)
 3. **Click a stake link** on surebet.com → your calculated stake will auto-populate on the betting slip
 4. **Review and place** your bet on the exchange
@@ -109,12 +150,19 @@ The extension adds quick-filter buttons to the bookmaker filter popup:
 
 Customize these presets in `contentScript.js` by editing the `BOOKMAKER_PRESETS` object.
 
-### Settings Available
+### Kelly Staking Configuration
 
-Click the extension icon to access:
-- **⚙️ Commission** - Set exchange commission rates (Betfair, Betdaq, Matchbook 1%, Smarkets)
-- **⚙️ Rounding** - Enable stake rounding to nearest increment (e.g., £0.50)
-- **⚙️ Auto-Fill** - Configure automatic stake input (disabled by default, per-exchange toggles)
+Configure your staking strategy in Settings > 🎲 Kelly Staking:
+
+1. **Starting Bankroll** - Your initial betting bank (automatically adjusted by P/L)
+2. **Kelly Fraction (%)** - Percentage of full Kelly to stake (25% recommended)
+3. **Commission Accounting** - Checkbox to adjust odds based on exchange commission
+
+The Kelly Criterion calculates optimal bet sizes based on odds and probability. Your extension automatically:
+- Calculates recommended stakes for every bet
+- Displays stakes on surebet.com value bet rows
+- Auto-fills stakes on betting exchanges (if enabled)
+- Tracks actual vs recommended stakes in analysis
 
 ---
 
@@ -206,22 +254,44 @@ Over 100+ bets, actual results should approach expected value if probabilities a
 ### Project Structure
 ```
 surebet-helper-extension/
-├── manifest.json         # Extension configuration (Manifest V3)
-├── contentScript.js      # Injects save buttons on surebet.com + auto-fill logic
-├── background.js         # Service worker for exports and auto-checking
-├── apiService.js         # Sports result API integration
-├── popup.html/js         # Extension popup interface with settings
-├── import.html/js        # Bulk import functionality
-├── icons/                # Extension icons
-└── docs/                 # Documentation files
+├── manifest.json              # Extension configuration (Manifest V3)
+├── contentScript.js           # Injects save buttons on surebet.com + auto-fill logic
+├── background.js              # Service worker for exports and auto-checking
+├── apiService.js              # Sports result API integration
+├── popup.html/js              # Minimal 4-button popup interface
+├── analysis.html/js           # Full-screen analysis dashboard
+├── settings.html/js           # Consolidated settings interface
+├── import.html/js             # Bulk import functionality
+├── icons/                     # Extension icons
+└── README.md                  # This file
 ```
 
-### Recent Updates (v1.0.29)
-- ✨ Added auto-fill stakes feature for Betfair, Smarkets, and Matchbook exchanges
-- ✨ New "⚙️ Auto-Fill" settings panel in extension popup
-- 🔍 Improved betting slip detection using MutationObserver + polling
-- 🐛 Better support for single-page application (SPA) betting sites
-- 📝 Updated documentation with auto-fill instructions
+### Recent Major Changes (v1.0.57)
+
+#### 🎉 UI Redesign - Tab-Based Interface
+- **Removed**: Crowded inline modals from popup (Commission, Rounding, Auto-Fill panels)
+- **Removed**: Floating Kelly Stake Helper panel from surebet.com
+- **Removed**: Chart and liquidity modals from popup
+- **Added**: Minimal 4-button popup (Check Results, Analysis, Settings, Import)
+- **Added**: Full-screen Analysis tab with 6 views and comprehensive export options
+- **Added**: Consolidated Settings tab with 6 configuration sections
+- **Moved**: Kelly staking configuration from floating panel to Settings tab
+
+#### 🔧 Technical Improvements
+- Fixed Manifest V3 CSP violations (removed inline `onclick` handlers)
+- API link buttons now use `api.tabs.create()` for cross-browser compatibility
+- All event listeners wrapped in null-guard checks
+- Fixed indentation issues in event handler callbacks
+- Added hash-based routing for settings sections (#commission, #kelly, #api, etc.)
+- Disabled floating staking panel injection from contentScript.js
+
+#### 📊 Analytics Enhancements
+- CSV export now includes 27 detailed columns
+- Added Kelly fill ratio analysis
+- Added liquidity tier analysis
+- Added bookmaker performance profiling
+- Added temporal trend analysis
+- Real-time P/L summary in Kelly settings
 
 ### Contributing
 We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
@@ -236,6 +306,9 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 3. Make your changes
 4. Reload the extension to test
 5. Submit a pull request
+
+### Version History
+See [CHANGELOG.md](CHANGELOG.md) for complete version history and detailed changes.
 
 ---
 
