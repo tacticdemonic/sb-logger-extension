@@ -162,7 +162,19 @@ async function getApiServiceInstance() {
   if (!ApiServiceClass) {
     throw new Error('ApiService unavailable');
   }
-  return new ApiServiceClass();
+  
+  // Load API keys from storage
+  const storageData = await new Promise((resolve) => {
+    chrome.storage.local.get({ apiKeys: {} }, resolve);
+  });
+  
+  const apiKeys = storageData.apiKeys || {};
+  const apiFootballKey = apiKeys.apiFootballKey || '';
+  const apiOddsKey = apiKeys.apiOddsKey || '';
+  
+  console.log('🔑 Loaded API keys from storage - Football:', !!apiFootballKey, 'Odds:', !!apiOddsKey);
+  
+  return new ApiServiceClass(apiFootballKey, apiOddsKey);
 }
 
 function generateBetUid() {
@@ -363,7 +375,138 @@ api.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ success: false, error: err && err.message });
       return true;
     }
-  } 
+  }
+
+  if (message.action === 'testApiKeys') {
+    console.log('🔌 testApiKeys action received');
+    
+    (async () => {
+      try {
+        const apiFootballKey = message.apiFootballKey || '';
+        const apiOddsKey = message.apiOddsKey || '';
+        
+        // Check if at least one valid key is provided (non-empty string)
+        if (!apiFootballKey.trim() && !apiOddsKey.trim()) {
+          sendResponse({ success: false, error: 'No API keys provided' });
+          return;
+        }
+
+        // Load ApiService (ensure it's loaded for future use)
+        await loadApiService();
+        
+        let footballOk = !apiFootballKey.trim(); // If empty, skip (consider OK)
+        let oddsOk = !apiOddsKey.trim(); // If empty, skip (consider OK)
+        let error = null;
+
+        // Test Football API if key provided
+        if (apiFootballKey.trim()) {
+          try {
+            console.log('🔌 Testing Football API...');
+            // Use /status endpoint which returns subscription details or errors
+            const response = await fetch('https://v3.football.api-sports.io/status', {
+              headers: {
+                'x-rapidapi-key': apiFootballKey.trim(),
+                'x-rapidapi-host': 'v3.football.api-sports.io'
+              }
+            });
+            
+            console.log('🔌 Football API HTTP status:', response.status);
+            const data = await response.json();
+            console.log('🔌 Football API response:', JSON.stringify(data));
+            
+            // Check HTTP status first
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}: ${data.message || 'Request failed'}`);
+            }
+            
+            // Check for errors object - API-Football returns { errors: { token: "Error..." } }
+            // The errors object can be empty {} for valid keys or contain error messages for invalid
+            if (data.errors && typeof data.errors === 'object' && !Array.isArray(data.errors)) {
+              const errorKeys = Object.keys(data.errors);
+              if (errorKeys.length > 0) {
+                const firstKey = errorKeys[0];
+                throw new Error(data.errors[firstKey] || 'Invalid API key');
+              }
+            }
+            
+            if (data.message) {
+                throw new Error(data.message);
+            }
+            
+            // Validate that we got a proper response with account info
+            // API-Football /status returns { response: { account: {...} } } for valid keys
+            // For invalid keys, response is an empty array []
+            if (!data.response || Array.isArray(data.response) || !data.response.account) {
+                throw new Error('Invalid API key: no account information returned');
+            }
+
+            footballOk = true;
+            console.log('✅ Football API test passed - Account:', data.response.account?.email || 'unknown');
+          } catch (err) {
+            console.warn('⚠️ Football API test failed:', err.message);
+            error = 'Football API: ' + err.message;
+            footballOk = false;
+          }
+        }
+
+        // Test Odds API if key provided
+        if (apiOddsKey.trim()) {
+          try {
+            console.log('🔌 Testing Odds API...');
+            const response = await fetch(
+              `https://api.the-odds-api.com/v4/sports?apiKey=${apiOddsKey.trim()}`,
+              {
+                headers: { 'Accept': 'application/json' }
+              }
+            );
+            
+            console.log('🔌 Odds API HTTP status:', response.status);
+            const data = await response.json();
+            console.log('🔌 Odds API response type:', typeof data, 'isArray:', Array.isArray(data));
+            
+            // Explicitly check HTTP status (Odds API returns 401 for invalid keys)
+            if (!response.ok) {
+                 const msg = data.message || data.error || `HTTP ${response.status}`;
+                 throw new Error(msg);
+            }
+            
+            if (data.message || data.error) {
+              throw new Error(data.message || data.error);
+            }
+            
+            if (!Array.isArray(data)) {
+              throw new Error('Invalid response format');
+            }
+            
+            oddsOk = true;
+            console.log('✅ Odds API test passed, found', data.length, 'sports');
+          } catch (err) {
+            console.warn('⚠️ Odds API test failed:', err.message);
+            error = error ? error + '; ' : '';
+            error += 'Odds API: ' + err.message;
+            oddsOk = false;
+          }
+        }
+
+        if (!footballOk || !oddsOk) {
+          sendResponse({ 
+            success: false, 
+            error: error || 'One or more API keys are invalid'
+          });
+        } else {
+          sendResponse({ 
+            success: true, 
+            message: 'API keys validated successfully'
+          });
+        }
+      } catch (err) {
+        console.error('❌ API test error:', err);
+        sendResponse({ success: false, error: err.message });
+      }
+    })();
+    
+    return true;
+  }
   
   if (message.action === 'clearBets') {
     chrome.storage.local.set({ bets: [] }, () => {

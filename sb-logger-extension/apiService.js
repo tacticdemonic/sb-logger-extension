@@ -4,14 +4,10 @@
 const API_CONFIG = {
   apiFootball: {
     baseUrl: 'https://v3.football.api-sports.io',
-    // User needs to get their own key from https://www.api-football.com/
-    apiKey: 'fb3802c2a4ff15544136bc8de0badf3a', // TO BE FILLED BY USER
     rateLimit: 100 // requests per day
   },
   oddsApi: {
     baseUrl: 'https://api.the-odds-api.com/v4',
-    // User needs to get their own key from https://the-odds-api.com/
-    apiKey: 'abdc8d8050a804bee6237931b5068690', // TO BE FILLED BY USER
     rateLimit: 500 // requests per month
   }
 };
@@ -26,7 +22,9 @@ function getBetKey(bet) {
 }
 
 class ApiService {
-  constructor() {
+  constructor(apiFootballKey = '', apiOddsKey = '') {
+    this.apiFootballKey = apiFootballKey || '';
+    this.apiOddsKey = apiOddsKey || '';
     this.cache = new Map();
     this.cacheExpiry = 10 * 60 * 1000; // 10 minutes
   }
@@ -34,8 +32,8 @@ class ApiService {
   // Check if APIs are configured
   isConfigured() {
     const config = {
-      football: !!API_CONFIG.apiFootball.apiKey,
-      other: !!API_CONFIG.oddsApi.apiKey
+      football: !!this.apiFootballKey,
+      other: !!this.apiOddsKey
     };
     console.log('🔧 API Configuration:', config);
     return config;
@@ -60,7 +58,7 @@ class ApiService {
 
   // Football API - fetch fixtures for a date
   async fetchFootballFixtures(date) {
-    if (!API_CONFIG.apiFootball.apiKey) {
+    if (!this.apiFootballKey) {
       throw new Error('API-Football key not configured');
     }
 
@@ -76,7 +74,7 @@ class ApiService {
         `${API_CONFIG.apiFootball.baseUrl}/fixtures?date=${dateStr}`,
         {
           headers: {
-            'x-rapidapi-key': API_CONFIG.apiFootball.apiKey,
+            'x-rapidapi-key': this.apiFootballKey,
             'x-rapidapi-host': 'v3.football.api-sports.io'
           }
         }
@@ -99,7 +97,7 @@ class ApiService {
 
   // The Odds API - fetch completed games
   async fetchOtherSportsResults(sport, date) {
-    if (!API_CONFIG.oddsApi.apiKey) {
+    if (!this.apiOddsKey) {
       throw new Error('The Odds API key not configured');
     }
 
@@ -131,7 +129,7 @@ class ApiService {
       try {
         console.log(`🌐 Making Odds API request for ${sportKey}...`);
         const response = await fetch(
-          `${API_CONFIG.oddsApi.baseUrl}/sports/${sportKey}/scores?apiKey=${API_CONFIG.oddsApi.apiKey}&daysFrom=3`,
+          `${API_CONFIG.oddsApi.baseUrl}/sports/${sportKey}/scores?apiKey=${this.apiOddsKey}&daysFrom=3`,
           {
             headers: {
               'Accept': 'application/json'
@@ -492,10 +490,7 @@ class ApiService {
 if (typeof self !== 'undefined') {
   self.API_CONFIG = API_CONFIG;
   self.ApiService = ApiService;
-  if (typeof self.apiService === 'undefined') {
-    self.apiService = new ApiService();
-  }
-  console.log('✅ ApiService loaded and available');
+  console.log('✅ ApiService class loaded and available');
 }
 
 // Provide CommonJS fallback for tests or tooling if needed

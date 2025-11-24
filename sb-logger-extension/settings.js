@@ -49,6 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
     showSection(hash);
   });
 
+  setupCloseButtons();
+
   // Load all settings
   loadAllSettings(() => {
     // Show initial section
@@ -116,6 +118,19 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       if (callback) callback();
+    });
+  }
+
+  function setupCloseButtons() {
+    document.querySelectorAll('.js-close-window').forEach(btn => {
+      btn.addEventListener('click', (event) => {
+        event.preventDefault();
+        try {
+          window.close();
+        } catch (err) {
+          console.warn('Unable to close settings window:', err);
+        }
+      });
     });
   }
 
@@ -188,7 +203,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const apiFootballKey = document.getElementById('api-football-key').value;
       const apiOddsKey = document.getElementById('api-odds-key').value;
       
+      console.log('🔌 Test clicked - Football value:', JSON.stringify(apiFootballKey), 'Odds value:', JSON.stringify(apiOddsKey));
+      
       if (!apiFootballKey && !apiOddsKey) {
+        console.log('🔌 Both empty, showing alert');
         alert('⚠️ Please enter at least one API key');
         return;
       }
@@ -196,33 +214,44 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('test-api-btn').disabled = true;
       document.getElementById('test-api-btn').textContent = '🔄 Testing...';
 
-      // Send test message to background script
-      api.runtime.sendMessage({
-        action: 'testApiKeys',
-        apiFootballKey: apiFootballKey.startsWith('•') ? null : apiFootballKey,
-        apiOddsKey: apiOddsKey.startsWith('•') ? null : apiOddsKey
-      }, (response) => {
-        document.getElementById('test-api-btn').disabled = false;
-        document.getElementById('test-api-btn').textContent = '🔌 Test Connection';
+      // Load saved keys if fields show masked values
+      api.storage.local.get({ apiKeys: {} }, (res) => {
+        const savedKeys = res.apiKeys || {};
+        
+        // Use saved key if field is masked, otherwise use the entered value
+        const footballToSend = apiFootballKey.startsWith('•') ? (savedKeys.apiFootballKey || '') : apiFootballKey;
+        const oddsToSend = apiOddsKey.startsWith('•') ? (savedKeys.apiOddsKey || '') : apiOddsKey;
+        
+        console.log('🔌 Sending to background - Football:', footballToSend ? '(key present)' : '(empty)', 'Odds:', oddsToSend ? '(key present)' : '(empty)');
 
-        const resultDiv = document.getElementById('api-test-result');
-        resultDiv.style.display = 'block';
+        // Send test message to background script
+        api.runtime.sendMessage({
+          action: 'testApiKeys',
+          apiFootballKey: footballToSend,
+          apiOddsKey: oddsToSend
+        }, (response) => {
+          document.getElementById('test-api-btn').disabled = false;
+          document.getElementById('test-api-btn').textContent = '🔌 Test Connection';
 
-        if (response.success) {
-          resultDiv.style.background = '#d4edda';
-          resultDiv.style.color = '#155724';
-          resultDiv.style.borderLeft = '4px solid #28a745';
-          resultDiv.innerHTML = '✅ <strong>Success!</strong> Both API connections are working. You can now use the "Check Results" feature.';
-        } else {
-          resultDiv.style.background = '#f8d7da';
-          resultDiv.style.color = '#721c24';
-          resultDiv.style.borderLeft = '4px solid #dc3545';
-          resultDiv.innerHTML = `❌ <strong>Connection Failed:</strong> ${response.error || 'Unknown error'}`;
-        }
+          const resultDiv = document.getElementById('api-test-result');
+          resultDiv.style.display = 'block';
 
-        setTimeout(() => {
-          resultDiv.style.display = 'none';
-        }, 5000);
+          if (response.success) {
+            resultDiv.style.background = '#d4edda';
+            resultDiv.style.color = '#155724';
+            resultDiv.style.borderLeft = '4px solid #28a745';
+            resultDiv.innerHTML = '✅ <strong>Success!</strong> API connection(s) validated. You can now use the "Check Results" feature.';
+          } else {
+            resultDiv.style.background = '#f8d7da';
+            resultDiv.style.color = '#721c24';
+            resultDiv.style.borderLeft = '4px solid #dc3545';
+            resultDiv.innerHTML = `❌ <strong>Connection Failed:</strong> ${response.error || 'Unknown error'}`;
+          }
+
+          setTimeout(() => {
+            resultDiv.style.display = 'none';
+          }, 5000);
+        });
       });
     });
 
