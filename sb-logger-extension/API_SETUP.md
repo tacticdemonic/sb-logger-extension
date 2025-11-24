@@ -1,6 +1,6 @@
 # API Setup Instructions
 
-The SB Logger extension can automatically check bet results using free sports APIs. Follow these steps to set up API access:
+The Surebet Helper extension can automatically check bet results using free sports APIs. Follow these steps to set up API access:
 
 ## Overview
 
@@ -43,7 +43,7 @@ The extension uses two APIs:
 
 ## Step 3: Configure API Keys
 
-1. Open the extension folder: `sb-logger-extension`
+1. Open the extension folder: `surebet-helper-extension`
 2. Open `apiService.js` in a text editor (Notepad, VS Code, etc.)
 3. Find these lines near the top (around line 5-15):
 
@@ -77,12 +77,12 @@ apiKey: 'xyz987uvw654rst321',  // Odds API key
 ### In Firefox:
 1. Type `about:debugging` in the address bar
 2. Click "This Firefox"
-3. Find "SB Logger - Save Bets"
+3. Find "Surebet Helper - Save Bets"
 4. Click "Reload"
 
 ### In Chrome:
 1. Type `chrome://extensions/` in the address bar
-2. Find "SB Logger - Save Bets"
+2. Find "Surebet Helper - Save Bets"
 3. Click the reload icon (circular arrow)
 
 ## Step 5: Test It
@@ -187,3 +187,6 @@ Common console messages:
 - `"Incremented retry count for [event]: X/5"` - Retry counter increased
 - `"Auto-settled [event] as won/lost"` - Result found and bet updated
 - `"API request failed: [error]"` - API error (check key, quota, network)
+
+
+

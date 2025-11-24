@@ -1,4 +1,4 @@
-# Installation Guide - SB Logger Extension
+# Installation Guide - Surebet Helper Extension
 
 This extension is now properly configured for permanent installation in all major browsers.
 
@@ -16,7 +16,7 @@ This extension is now properly configured for permanent installation in all majo
 
 3. **Load the Extension**
    - Click the "Load unpacked" button
-   - Browse to and select the `sb-logger-extension` folder
+   - Browse to and select the `surebet-helper-extension` folder
    - The extension will load with all features enabled
 
 4. **Done!** The extension is now permanently installed
@@ -28,12 +28,12 @@ This extension is now properly configured for permanent installation in all majo
 **Option 1: Temporary Installation (Quick Test)**
 1. Open `about:debugging#/runtime/this-firefox`
 2. Click "Load Temporary Add-on"
-3. Select the `manifest.json` file from the `sb-logger-extension` folder
+3. Select the `manifest.json` file from the `surebet-helper-extension` folder
 4. ⚠️ Note: Removed when Firefox restarts
 
 **Option 2: Permanent Installation (Recommended)**
 1. Install web-ext tool: `npm install -g web-ext`
-2. Navigate to the extension folder: `cd sb-logger-extension`
+2. Navigate to the extension folder: `cd surebet-helper-extension`
 3. Sign the extension through Mozilla (requires free developer account)
 4. Install the signed .xpi file
 
@@ -61,7 +61,7 @@ Once installed, you can:
 ## Troubleshooting
 
 **Extension not appearing after installation?**
-- Make sure you selected the correct folder (`sb-logger-extension`)
+- Make sure you selected the correct folder (`surebet-helper-extension`)
 - Check that Developer Mode is enabled
 - Try restarting your browser
 
@@ -78,3 +78,6 @@ Once installed, you can:
 For detailed features and API setup, see the main **README.md** file in this folder.
 
 For API configuration to auto-check bet results, see **API_SETUP.md**.
+
+
+

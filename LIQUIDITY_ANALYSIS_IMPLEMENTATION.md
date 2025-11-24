@@ -1,7 +1,7 @@
 # Liquidity Analysis Feature - Implementation Summary
 
 ## Overview
-Comprehensive liquidity analysis feature added to SB Logger extension, enabling detailed analysis of betting performance segmented by market liquidity (stake limits).
+Comprehensive liquidity analysis feature added to Surebet Helper extension, enabling detailed analysis of betting performance segmented by market liquidity (stake limits).
 
 ## Features Implemented
 
@@ -266,3 +266,5 @@ User switches tabs (instant, no recalculation)
 
 **Implementation Date:** November 23, 2025  
 **Status:** Complete and Tested ✅
+
+

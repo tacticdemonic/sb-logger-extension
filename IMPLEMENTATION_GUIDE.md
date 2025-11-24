@@ -16,7 +16,7 @@ Enhanced the extension with production-ready Matchbook exchange auto-fill select
 
 ## Historical: Smarkets Verification Implementation (v1.0.32)
 
-The SB Logger extension includes comprehensive diagnostic logging for Smarkets auto-fill. The implementation adds detailed console logging at both the storage and retrieval phases to help diagnose the exact point where the auto-fill flow fails.
+The Surebet Helper extension includes comprehensive diagnostic logging for Smarkets auto-fill. The implementation adds detailed console logging at both the storage and retrieval phases to help diagnose the exact point where the auto-fill flow fails.
 
 ### Version: 1.0.32
 
@@ -34,12 +34,12 @@ Added detailed logging for storage operations:
 
 **Expected Logs When Clicking Surebet Link**:
 ```
-SB Logger: Surebet link clicked, storing data for later
-SB Logger: [2025-11-24T10:07:00.080Z] Writing pendingBet to storage with ID: 1485188009
-SB Logger: ✓ Set callback completed without error
-SB Logger: Bet data stored for bookmaker page: {...}
-SB Logger: ✓ Storage verification PASSED - pendingBet ID 1485188009 persisted correctly
-SB Logger: Storage complete, navigating to: https://smarkets.com/...
+Surebet Helper: Surebet link clicked, storing data for later
+Surebet Helper: [2025-11-24T10:07:00.080Z] Writing pendingBet to storage with ID: 1485188009
+Surebet Helper: ✓ Set callback completed without error
+Surebet Helper: Bet data stored for bookmaker page: {...}
+Surebet Helper: ✓ Storage verification PASSED - pendingBet ID 1485188009 persisted correctly
+Surebet Helper: Storage complete, navigating to: https://smarkets.com/...
 ```
 
 ### 2. Enhanced Smarkets Retrieval Function (Line ~2175)
@@ -55,13 +55,13 @@ Added comprehensive storage enumeration and retrieval checks:
 
 **Expected Logs When Navigating to Smarkets**:
 ```
-SB Logger: [2025-11-24T10:07:05.123Z] Starting Smarkets retrieval - looking for pendingBet
-SB Logger: [Retrieval Check 1] Storage enumeration - Total keys: 8
-SB Logger: [Retrieval Check 1] All keys: [..., "pendingBet"]
-SB Logger: [Retrieval Check 1] pendingBet exists in storage: true
-SB Logger: [Retrieval Check 2] Direct pendingBet get - Keys returned: 1
-SB Logger: ✓ SUCCESS - Found stored bet data from Surebet click (ID: 1485188009)
-SB Logger: ✓ Cleared pendingBet from storage after retrieval
+Surebet Helper: [2025-11-24T10:07:05.123Z] Starting Smarkets retrieval - looking for pendingBet
+Surebet Helper: [Retrieval Check 1] Storage enumeration - Total keys: 8
+Surebet Helper: [Retrieval Check 1] All keys: [..., "pendingBet"]
+Surebet Helper: [Retrieval Check 1] pendingBet exists in storage: true
+Surebet Helper: [Retrieval Check 2] Direct pendingBet get - Keys returned: 1
+Surebet Helper: ✓ SUCCESS - Found stored bet data from Surebet click (ID: 1485188009)
+Surebet Helper: ✓ Cleared pendingBet from storage after retrieval
 ```
 
 ## Testing Instructions
@@ -102,7 +102,7 @@ SB Logger: ✓ Cleared pendingBet from storage after retrieval
 2. **LEFT-CLICK** on a Matchbook stake indicator
 3. Check console for "Storage verification PASSED" log
 4. Navigate to Matchbook and verify stakes auto-fill in the betting slip
-5. Console should show "SB Logger: Stake placement successful" after successful auto-fill
+5. Console should show "Surebet Helper: Stake placement successful" after successful auto-fill
 
 **Success Criteria**:
 - Storage verification passes on Surebet
@@ -180,3 +180,5 @@ Then test again and report if pendingBet now appears on Smarkets.
 4. If Scenario 3, test with 250ms delay
 
 The detailed logging will pinpoint the exact failure point in the auto-fill flow.
+
+

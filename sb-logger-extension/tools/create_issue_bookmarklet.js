@@ -21,10 +21,10 @@ If you want to use directly as a bookmarklet, the final line `console.log(bookma
     var results={ url:location.href, timestamp:(new Date()).toISOString(), inputs:inputs, containers:containers, dataAttributes:dataAttrs, userAgent:navigator.userAgent }
     var title=prompt('Exchange name for issue (e.g. Betfair):', location.hostname)||location.hostname
     var issueBody='**Console JSON:**\n\n\u0060\u0060\u0060json\n'+JSON.stringify(results,null,2)+'\n\u0060\u0060\u0060\n\n**HTML of stake input (closest):**\n\n' + (inputs[0]?('\u0060\u0060\u0060html\n'+inputs[0].html+'\n\u0060\u0060\u0060'):'(none found)') + '\n\n**Steps to reproduce:**\n- Open: '+location.href+'\n- Actions: [add selection, open betslip]\n\n**Browser / OS:** '+navigator.userAgent + '\n\n**Notes:** Please use the Add Exchange Support issue template.'
-    var repoUrl='https://github.com/tacticdemonic/sb-logger-extension/issues/new?template=add-exchange.md&title='+encodeURIComponent('Add Support for '+title)+'&body='+encodeURIComponent(issueBody)+'&labels=enhancement'
+    var repoUrl='https://github.com/tacticdemonic/surebet-helper-extension/issues/new?template=add-exchange.md&title='+encodeURIComponent('Add Support for '+title)+'&body='+encodeURIComponent(issueBody)+'&labels=enhancement'
     if(issueBody.length>8000){
       // Too long: open a blank issue and ask user to paste
-      window.open('https://github.com/tacticdemonic/sb-logger-extension/issues/new?template=add-exchange.md&title='+encodeURIComponent('Add Support for '+title),'_blank')
+      window.open('https://github.com/tacticdemonic/surebet-helper-extension/issues/new?template=add-exchange.md&title='+encodeURIComponent('Add Support for '+title),'_blank')
       alert('Issue body is too large to auto-fill. A new issue page has been opened — paste the JSON into the Console JSON field.')
       return
     }
@@ -34,3 +34,5 @@ If you want to use directly as a bookmarklet, the final line `console.log(bookma
   console.log('Copy the following string into a new bookmark URL to create the issue bookmarklet:');
   console.log(bookmarklet);
 })();
+
+

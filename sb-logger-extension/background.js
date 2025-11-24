@@ -5,7 +5,7 @@ let ApiServiceClass = null;
 let apiServiceReady = null;
 let global_pendingBetCache = null; // In-memory broker cache for cross-origin bet transfer
 const DISABLE_STORAGE_KEY = 'extensionDisabled';
-const TOGGLE_MENU_ID = 'sb-logger-toggle';
+const TOGGLE_MENU_ID = 'surebet-helper-toggle';
 const IS_FIREFOX = typeof navigator !== 'undefined' && /firefox/i.test(navigator.userAgent);
 
 const DEFAULT_STAKING_SETTINGS = {
@@ -169,7 +169,7 @@ function generateBetUid() {
   if (self.crypto && typeof self.crypto.randomUUID === 'function') {
     return self.crypto.randomUUID();
   }
-  return `sb-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+  return `surebet-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 function getBetKey(bet) {
@@ -209,12 +209,12 @@ function updateActionVisuals(disabled) {
   }
 
   if (chrome.action && chrome.action.setTitle) {
-    chrome.action.setTitle({ title: disabled ? 'SB Logger (Disabled)' : 'SB Logger' });
+    chrome.action.setTitle({ title: disabled ? 'Surebet Helper (Disabled)' : 'Surebet Helper' });
   }
 }
 
 function createToggleContextMenu(disabled) {
-  const title = disabled ? 'Enable SB Logger' : 'Disable SB Logger';
+  const title = disabled ? 'Enable Surebet Helper' : 'Disable Surebet Helper';
   // Firefox (Manifest V3) uses 'action', Chrome uses 'action' too
   // 'browser_action' is not valid for Manifest V3
   const contexts = ['action'];
@@ -222,7 +222,7 @@ function createToggleContextMenu(disabled) {
   const createMenu = () => {
     chrome.contextMenus.create({ id: TOGGLE_MENU_ID, title, contexts }, () => {
       if (chrome.runtime.lastError) {
-        console.warn('⚠️ Failed to create SB Logger context menu:', chrome.runtime.lastError.message);
+        console.warn('⚠️ Failed to create Surebet Helper context menu:', chrome.runtime.lastError.message);
       }
     });
   };
@@ -402,12 +402,12 @@ api.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'savePendingBet') {
     const { betData } = message;
     if (!betData || !betData.id) {
-      console.warn('SB Logger: ⚠ savePendingBet received invalid data');
+      console.warn('Surebet Helper: ⚠ savePendingBet received invalid data');
       sendResponse({ success: false, error: 'Invalid bet data' });
       return true;
     }
     
-    console.log(`SB Logger: 📬 Broker saving pendingBet (ID: ${betData.id})`);
+    console.log(`Surebet Helper: 📬 Broker saving pendingBet (ID: ${betData.id})`);
     
     // Store in memory for immediate cross-origin retrieval
     global_pendingBetCache = betData;
@@ -415,9 +415,9 @@ api.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // Also persist to chrome.storage.local as backup for crash recovery
     chrome.storage.local.set({ pendingBet: betData }, () => {
       if (chrome.runtime.lastError) {
-        console.warn('SB Logger: ⚠ Failed to persist pendingBet to storage:', chrome.runtime.lastError);
+        console.warn('Surebet Helper: ⚠ Failed to persist pendingBet to storage:', chrome.runtime.lastError);
       } else {
-        console.log('SB Logger: ✓ Persisted pendingBet to chrome.storage.local');
+        console.log('Surebet Helper: ✓ Persisted pendingBet to chrome.storage.local');
       }
       sendResponse({ success: true });
     });
@@ -428,7 +428,7 @@ api.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // Broker: Consume pending bet (retrieve and clear)
   if (message.action === 'consumePendingBet') {
     (async () => {
-      console.log('SB Logger: ?Y"? Broker consuming pendingBet');
+      console.log('Surebet Helper: ?Y"? Broker consuming pendingBet');
 
       let betData = global_pendingBetCache || null;
 
@@ -443,10 +443,10 @@ api.runtime.onMessage.addListener((message, sender, sendResponse) => {
           });
           if (storageResult && storageResult.pendingBet && storageResult.pendingBet.id) {
             betData = storageResult.pendingBet;
-            console.log(`SB Logger: ?o" Retrieved pendingBet from storage (ID: ${betData.id})`);
+            console.log(`Surebet Helper: ?o" Retrieved pendingBet from storage (ID: ${betData.id})`);
           }
         } catch (err) {
-          console.warn('SB Logger: ?s? Failed to read pendingBet from storage:', err && err.message);
+          console.warn('Surebet Helper: ?s? Failed to read pendingBet from storage:', err && err.message);
         }
       }
 
@@ -454,17 +454,17 @@ api.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (betData) {
         chrome.storage.local.remove('pendingBet', () => {
           if (chrome.runtime.lastError) {
-            console.warn('SB Logger: ?s? Failed to clear pendingBet from storage:', chrome.runtime.lastError);
+            console.warn('Surebet Helper: ?s? Failed to clear pendingBet from storage:', chrome.runtime.lastError);
           } else {
-            console.log('SB Logger: ?o" Cleared pendingBet from chrome.storage.local');
+            console.log('Surebet Helper: ?o" Cleared pendingBet from chrome.storage.local');
           }
         });
       }
 
       if (betData) {
-        console.log(`SB Logger: ?o" Broker returned pendingBet (ID: ${betData.id})`);
+        console.log(`Surebet Helper: ?o" Broker returned pendingBet (ID: ${betData.id})`);
       } else {
-        console.log('SB Logger: ?s? Broker found no pendingBet');
+        console.log('Surebet Helper: ?s? Broker found no pendingBet');
       }
 
       sendResponse({ success: true, betData });
@@ -652,7 +652,7 @@ async function autoCheckResults() {
       chrome.notifications.create({
         type: 'basic',
         iconUrl: 'icons/icon96.png',
-        title: 'SB Logger - Results Found',
+        title: 'Surebet Helper - Results Found',
         message: `Found ${result.results.length} result(s). Open extension to review.`,
         priority: 2
       });
@@ -661,3 +661,8 @@ async function autoCheckResults() {
     console.error('Auto-check error:', error);
   }
 }
+
+
+
+
+

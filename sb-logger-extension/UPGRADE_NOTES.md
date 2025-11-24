@@ -1,4 +1,4 @@
-# SB Logger Extension - Upgrade Notes
+# Surebet Helper Extension - Upgrade Notes
 
 ## v1.0.37 - Cross-Origin Broker & Auto-Fill Complete 🎉
 
@@ -177,13 +177,13 @@ Your extension has been upgraded from a temporary add-on to a **proper, producti
 1. Open `chrome://extensions/` (or equivalent)
 2. Enable "Developer mode"
 3. Click "Load unpacked"
-4. Select the `sb-logger-extension` folder
+4. Select the `surebet-helper-extension` folder
 5. **Done!** Extension is permanently installed
 
 ### Firefox Users:
 1. Open `about:debugging#/runtime/this-firefox`
 2. Click "Load Temporary Add-on"
-3. Select `manifest.json` from `sb-logger-extension` folder
+3. Select `manifest.json` from `surebet-helper-extension` folder
 4. Note: Removed on browser restart (use signing for permanent install)
 
 ## 🎯 Next Steps (Optional)
@@ -240,3 +240,5 @@ Before distribution, test these features:
 
 See **INSTALL.md** for end-user installation instructions.
 See **README.md** for full feature documentation.
+
+

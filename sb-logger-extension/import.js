@@ -752,3 +752,4 @@ function showResults(type, message) {
   fileInput.value = '';
   selectedFiles = [];
 }
+

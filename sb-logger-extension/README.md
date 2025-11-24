@@ -1,4 +1,4 @@
-# SB Logger — Firefox Extension for Surebet.com
+# Surebet Helper — Firefox Extension for Surebet.com
 
 ## What it does
 - **Auto-injects** a "💾 Save" button on every bet row on surebet.com/valuebets pages
@@ -27,14 +27,14 @@
 
 2. Enable "Developer mode" (toggle in top-right corner)
 
-3. Click "Load unpacked" and select the `sb-logger-extension` folder
+3. Click "Load unpacked" and select the `surebet-helper-extension` folder
 
 4. The extension is now permanently installed (persists across browser restarts)
 
 ### Firefox
 1. Open Firefox and navigate to `about:debugging#/runtime/this-firefox`
 
-2. Click "Load Temporary Add-on" and select the `manifest.json` file from the `sb-logger-extension` folder
+2. Click "Load Temporary Add-on" and select the `manifest.json` file from the `surebet-helper-extension` folder
    - Note: In Firefox, temporary add-ons are removed when the browser restarts
    - For permanent installation in Firefox, you would need to sign the extension through Mozilla Add-ons
 
@@ -44,7 +44,7 @@
    npm install -g web-ext
    
    # Build and sign (requires Mozilla account)
-   cd sb-logger-extension
+   cd surebet-helper-extension
    web-ext sign --api-key=YOUR_KEY --api-secret=YOUR_SECRET --channel=unlisted 
    ```
    - Get API credentials from: https://addons.mozilla.org/developers/addon/api/key/
@@ -129,13 +129,13 @@ To distribute the extension or prepare for Chrome Web Store submission:
 
 ```powershell
 # PowerShell (Windows) - Create distribution ZIP
-Compress-Archive -Path .\sb-logger-extension\* -DestinationPath .\sb-logger-extension.zip -Force
+Compress-Archive -Path .\surebet-helper-extension\* -DestinationPath .\surebet-helper-extension.zip -Force
 ```
 
 ```bash
 # Linux/Mac - Create distribution ZIP
-cd sb-logger-extension
-zip -r ../sb-logger-extension.zip . -x "*.git*" -x "*node_modules*"
+cd surebet-helper-extension
+zip -r ../surebet-helper-extension.zip . -x "*.git*" -x "*node_modules*"
 ```
 
 ### Chrome Web Store Publishing
@@ -172,7 +172,7 @@ EV = 10.3775 - 5.849 = +4.53
 ## Package (PowerShell — Windows)
 ```powershell
 # Run in the parent folder to create a zip:
-Compress-Archive -Path .\sb-logger-extension\* -DestinationPath .\sb-logger-extension.zip -Force
+Compress-Archive -Path .\surebet-helper-extension\* -DestinationPath .\surebet-helper-extension.zip -Force
 ```
 
 ## Technical details
@@ -268,7 +268,7 @@ We rely on community contributions for maintaining accurate DOM selectors for ex
 
 If you prefer a one-click approach, use our bookmarklet generator to create a bookmark that collects the necessary JSON and opens a prefilled GitHub issue:
 
-1. Open `sb-logger-extension/tools/create_issue_bookmarklet.js` in this repo and copy the single `javascript:(function(){...})();` string printed by the script.
+1. Open `surebet-helper-extension/tools/create_issue_bookmarklet.js` in this repo and copy the single `javascript:(function(){...})();` string printed by the script.
 2. Create a new browser bookmark, paste the string into the bookmark URL.
 3. When on an exchange's betting slip, click the bookmark to auto-collect DOM data and open a new GitHub issue with the JSON and HTML prefilled.
 
@@ -360,14 +360,14 @@ When opening an issue, the template will prompt you for the required fields. Her
 ### Maintainer checklist (for devs)
 
 - Add new selectors to `BETTING_SLIP_SELECTORS` in `contentScript.js` using the same pattern as other exchanges (specific selectors first, fallbacks last).
-- Verify the selector doesn't match elements inside `.sb-logger-stake-panel` and that `findElement()` will skip our UI components.
+- Verify the selector doesn't match elements inside `.surebet-helper-stake-panel` and that `findElement()` will skip our UI components.
 - Use `tools/collect_betslip_info.js` to reproduce the issue and confirm the selector targets the correct input on desktop and mobile viewports.
 - Test auto-fill by enabling the Auto-Fill feature and reproducing the save → redirect flow from surebet.com to the exchange.
 - Commit and reference the issue in the PR description for traceability.
 
 ### Developer tools
 
-In `sb-logger-extension/tools` you'll find two helper utilities:
+In `surebet-helper-extension/tools` you'll find two helper utilities:
 - `collect_betslip_info.js` — paste into an exchange betting slip console to collect DOM data (JSON copied to clipboard)
 - `bookmarklet-demo.html` — a demo page that provides a bookmarklet string and instructions for creating a one-click issue bookmarklet
 
@@ -381,4 +381,7 @@ We recommend using the bookmarklet for quick issue creation and the console help
 
 ---
 
-Thank you for helping us keep SB Logger working across exchanges!
+Thank you for helping us keep Surebet Helper working across exchanges!
+
+
+

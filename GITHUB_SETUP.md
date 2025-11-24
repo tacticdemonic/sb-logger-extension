@@ -17,7 +17,7 @@ Your project is now ready to be published on GitHub with a clean commit history!
 ### 1. Create a New GitHub Repository
 
 1. Go to https://github.com/new
-2. Choose a repository name: `sb-logger-extension` (recommended)
+2. Choose a repository name: `surebet-helper-extension` (recommended)
 3. **Important**: Do NOT initialize with README, .gitignore, or license (we already have these)
 4. Make it **Public** if you want others to use it
 5. Click "Create repository"
@@ -28,13 +28,13 @@ Replace `YOUR_USERNAME` in these files with your actual GitHub username:
 
 **Files to update:**
 - `README.md` (line with GitHub link)
-- `sb-logger-extension/manifest.json` (homepage_url field)
+- `surebet-helper-extension/manifest.json` (homepage_url field)
 - `CONTRIBUTING.md` (clone URL)
 
 **Quick PowerShell command to find where to update:**
 ```powershell
-cd "d:\Local\SB Logger"
-Select-String -Path *.md,sb-logger-extension\manifest.json -Pattern "YOUR_USERNAME"
+cd "d:\Local\Surebet Helper"
+Select-String -Path *.md,surebet-helper-extension\manifest.json -Pattern "YOUR_USERNAME"
 ```
 
 ### 3. Push to GitHub
@@ -42,10 +42,10 @@ Select-String -Path *.md,sb-logger-extension\manifest.json -Pattern "YOUR_USERNA
 After creating your GitHub repo, run these commands:
 
 ```powershell
-cd "d:\Local\SB Logger"
+cd "d:\Local\Surebet Helper"
 
 # Add your GitHub repository as remote (replace YOUR_USERNAME and REPO_NAME)
-git remote add origin https://github.com/YOUR_USERNAME/sb-logger-extension.git
+git remote add origin https://github.com/YOUR_USERNAME/surebet-helper-extension.git
 
 # Verify remote was added
 git remote -v
@@ -92,7 +92,7 @@ When ready to publish a version:
 1. Go to your GitHub repo
 2. Click "Releases" → "Create a new release"
 3. Tag: `v1.0.0`
-4. Title: `SB Logger v1.0.0 - Initial Release`
+4. Title: `Surebet Helper v1.0.0 - Initial Release`
 5. Attach a ZIP file of the extension for easy download
 6. Publish release
 
@@ -109,8 +109,8 @@ Users can download and install your extension. Create a ZIP:
 
 ```powershell
 # From the project root
-cd "d:\Local\SB Logger"
-Compress-Archive -Path .\sb-logger-extension\* -DestinationPath .\sb-logger-extension-v1.0.0.zip -Force
+cd "d:\Local\Surebet Helper"
+Compress-Archive -Path .\surebet-helper-extension\* -DestinationPath .\surebet-helper-extension-v1.0.0.zip -Force
 ```
 
 Attach this ZIP to your GitHub releases.
@@ -120,7 +120,7 @@ Attach this ZIP to your GitHub releases.
 Your clean repository now contains:
 
 ```
-sb-logger-extension/
+surebet-helper-extension/
 ├── .gitignore              # Excludes test files and artifacts
 ├── LICENSE                 # MIT License
 ├── README.md               # Main documentation
@@ -128,7 +128,7 @@ sb-logger-extension/
 ├── GITHUB_SETUP.md         # This file
 ├── screenshots/            # For visual documentation
 │   └── README.md
-└── sb-logger-extension/    # The actual extension
+└── surebet-helper-extension/    # The actual extension
     ├── manifest.json
     ├── contentScript.js
     ├── background.js
@@ -153,7 +153,7 @@ sb-logger-extension/
 Check what will be pushed:
 
 ```powershell
-cd "d:\Local\SB Logger"
+cd "d:\Local\Surebet Helper"
 git ls-files               # List all tracked files
 git log --stat             # Show commit details
 git status                 # Verify clean working tree
@@ -170,3 +170,5 @@ If you encounter issues:
 ---
 
 **Ready to share your extension with the world! 🚀**
+
+

@@ -1,6 +1,6 @@
-# Contributing to SB Logger
+# Contributing to Surebet Helper
 
-Thank you for your interest in contributing to SB Logger! This document provides guidelines for contributing to the project.
+Thank you for your interest in contributing to Surebet Helper! This document provides guidelines for contributing to the project.
 
 ## How to Contribute
 
@@ -40,8 +40,8 @@ Enhancement suggestions are welcome! Please open an issue with:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/tacticdemonic/sb-logger-extension.git
-   cd sb-logger-extension
+   git clone https://github.com/tacticdemonic/surebet-helper-extension.git
+   cd surebet-helper-extension
    ```
 
 2. Load the extension in your browser:
@@ -119,3 +119,6 @@ By contributing, you agree that your contributions will be licensed under the MI
 If you're helping to add support for a new betting exchange or fixing selectors, please follow the process in the README: use the `tools/collect_betslip_info.js` helper (copy it into the browser console) and create an issue using the "Add Exchange Support" issue template. This helps standardize submissions and provides the information maintainers need to add or fix selectors efficiently.
 
 Optional: You can also use `tools/bookmarklet-demo.html` to generate a one-click bookmarklet that opens a prefilled GitHub issue for the exchange you're testing.
+
+
+

@@ -9,16 +9,16 @@
 2. Type in address bar: `chrome://extensions/`
 3. Enable "Developer mode" (top-right toggle)
 4. Click "Load unpacked"
-5. Select the `sb-logger-extension` folder
-6. ✅ You should see "SB Logger - Save Bets" appear in the list
+5. Select the `surebet-helper-extension` folder
+6. ✅ You should see "Surebet Helper - Save Bets" appear in the list
 
 **Firefox:**
 1. Open Firefox
 2. Type in address bar: `about:debugging#/runtime/this-firefox`
 3. Click "Load Temporary Add-on"
-4. Navigate to `sb-logger-extension` folder
+4. Navigate to `surebet-helper-extension` folder
 5. Select the `manifest.json` file
-6. ✅ You should see "SB Logger - Save Bets" appear in the list
+6. ✅ You should see "Surebet Helper - Save Bets" appear in the list
 
 ---
 
@@ -33,7 +33,7 @@ After loading, check these indicators:
 ✅ **Extension Details**
 - Click "Details" (Chrome) or inspect the extension
 - Should show:
-  - Name: "SB Logger - Save Bets"
+  - Name: "Surebet Helper - Save Bets"
   - Version: 1.0.0
   - Manifest Version: 3
 
@@ -47,7 +47,7 @@ After loading, check these indicators:
 
 1. **Open Popup**
    - Click the extension icon in the toolbar
-   - Popup window should open showing "SB Logger — Saved Bets"
+   - Popup window should open showing "Surebet Helper — Saved Bets"
    - Should see buttons: Check Results, API Setup, Import, View Chart, Export
 
 2. **Test on Surebet.com**
@@ -65,7 +65,7 @@ After loading, check these indicators:
 ### Troubleshooting
 
 ❌ **"Manifest file is invalid"**
-- Make sure you selected the `sb-logger-extension` folder, not the parent folder
+- Make sure you selected the `surebet-helper-extension` folder, not the parent folder
 - Verify `manifest.json` exists in the folder
 
 ❌ **"Service worker registration failed"**
@@ -75,7 +75,7 @@ After loading, check these indicators:
 
 ❌ **Save buttons not appearing**
 - Refresh the surebet.com page after installing
-- Check that content script loaded (F12 → Console → look for SB Logger messages)
+- Check that content script loaded (F12 → Console → look for Surebet Helper messages)
 - Try disabling other extensions that might conflict
 
 ❌ **Extension removed after browser restart (Firefox)**
@@ -98,3 +98,5 @@ If all tests pass, your extension is properly installed and working!
 - Check INSTALL.md for detailed installation instructions
 - Check README.md for feature documentation
 - Check API_SETUP.md for API configuration
+
+

@@ -1,9 +1,9 @@
-# SB Logger — Browser Extension for Surebet.com
+# Surebet Helper — Browser Extension for Surebet.com
 
 A powerful browser extension for tracking and analyzing value bets from surebet.com. Save bets with one click, automatically check results, visualize your P/L, and export your data.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Browser](https://img.shields.io/badge/Browser-Chrome%20%7C%20Firefox%20%7C%20Edge-blue)](https://github.com/tacticdemonic/sb-logger-extension)
+[![Browser](https://img.shields.io/badge/Browser-Chrome%20%7C%20Firefox%20%7C%20Edge-blue)](https://github.com/tacticdemonic/surebet-helper-extension)
 
 ---
 
@@ -62,16 +62,16 @@ A powerful browser extension for tracking and analyzing value bets from surebet.
    - **Edge**: `edge://extensions/`
    - **Brave**: `brave://extensions/`
 3. Enable **"Developer mode"** (toggle in top-right)
-4. Click **"Load unpacked"** and select the `sb-logger-extension` folder
+4. Click **"Load unpacked"** and select the `surebet-helper-extension` folder
 5. The extension is now installed permanently
 
 ### Firefox
 
 1. Download or clone this repository
 2. Open Firefox and navigate to `about:debugging#/runtime/this-firefox`
-3. Click **"Load Temporary Add-on"** and select `manifest.json` from the `sb-logger-extension` folder
+3. Click **"Load Temporary Add-on"** and select `manifest.json` from the `surebet-helper-extension` folder
    - **Note**: Temporary add-ons are removed when Firefox restarts
-   - For permanent installation, see [Signing Guide](sb-logger-extension/INSTALL.md)
+   - For permanent installation, see [Signing Guide](surebet-helper-extension/INSTALL.md)
 
 ---
 
@@ -146,7 +146,7 @@ The extension can automatically verify bet results using free sports APIs. This 
 - **The Odds API** (multiple sports) - 500 requests/month free
 
 ### Setup Guide
-See **[API_SETUP.md](sb-logger-extension/API_SETUP.md)** for step-by-step instructions on:
+See **[API_SETUP.md](surebet-helper-extension/API_SETUP.md)** for step-by-step instructions on:
 - Getting free API keys
 - Configuring the extension
 - Testing automatic result checking
@@ -205,7 +205,7 @@ Over 100+ bets, actual results should approach expected value if probabilities a
 
 ### Project Structure
 ```
-sb-logger-extension/
+surebet-helper-extension/
 ├── manifest.json         # Extension configuration (Manifest V3)
 ├── contentScript.js      # Injects save buttons on surebet.com + auto-fill logic
 ├── background.js         # Service worker for exports and auto-checking
@@ -245,13 +245,13 @@ To create a distribution package for Chrome Web Store or Firefox Add-ons:
 
 ```powershell
 # Windows PowerShell
-Compress-Archive -Path .\sb-logger-extension\* -DestinationPath .\sb-logger-extension.zip -Force
+Compress-Archive -Path .\surebet-helper-extension\* -DestinationPath .\surebet-helper-extension.zip -Force
 ```
 
 ```bash
 # Linux/Mac
-cd sb-logger-extension
-zip -r ../sb-logger-extension.zip . -x "*.git*"
+cd surebet-helper-extension
+zip -r ../surebet-helper-extension.zip . -x "*.git*"
 ```
 
 ---
@@ -273,7 +273,7 @@ zip -r ../sb-logger-extension.zip . -x "*.git*"
 - Check that events have ended (30 min delay)
 - Look for error messages in extension popup
 
-For more help, see [TESTING.md](sb-logger-extension/TESTING.md) or open an issue.
+For more help, see [TESTING.md](surebet-helper-extension/TESTING.md) or open an issue.
 
 ---
 
@@ -293,12 +293,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- [Installation Guide](sb-logger-extension/INSTALL.md)
-- [API Setup Guide](sb-logger-extension/API_SETUP.md)
-- [Testing Guide](sb-logger-extension/TESTING.md)
+- [Installation Guide](surebet-helper-extension/INSTALL.md)
+- [API Setup Guide](surebet-helper-extension/API_SETUP.md)
+- [Testing Guide](surebet-helper-extension/TESTING.md)
 - [Contributing Guidelines](CONTRIBUTING.md)
-- [Report Issues](https://github.com/tacticdemonic/sb-logger-extension/issues)
+- [Report Issues](https://github.com/tacticdemonic/surebet-helper-extension/issues)
 
 ---
 
 **Made with ❤️ for value bettors**
+
+

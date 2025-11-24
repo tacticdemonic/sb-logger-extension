@@ -7,12 +7,12 @@
 3. **Look for these log messages** in order:
 
 ```
-✅ SB Logger: Styles injected
-✅ SB Logger: Staking settings loaded
-✅ SB Logger: Stake panel injected
-✅ SB Logger: Panel monitoring started
+✅ Surebet Helper: Styles injected
+✅ Surebet Helper: Staking settings loaded
+✅ Surebet Helper: Stake panel injected
+✅ Surebet Helper: Panel monitoring started
 🎯 [StakePanel] injectStakePanel called | stakePanel exists: false | body exists: true
-✅ [StakePanel] Panel injected successfully: <div class="sb-logger-stake-panel">...
+✅ [StakePanel] Panel injected successfully: <div class="surebet-helper-stake-panel">...
 📊 [StakePanel] Loaded settings from storage: { bankroll: 1000, baseBankroll: 1000, fraction: 0.25 }
 📊 [StakePanel] Updating display: { bankroll: 1000, baseBankroll: 1000, fractionPercent: 25, ... }
 📊 [StakePanel] Input values after update: { bankroll: "1000", fraction: "25", summaryHTML: "..." }
@@ -78,12 +78,12 @@ chrome.storage.local.get('stakingSettings', (res) => {
 });
 
 // Force panel update
-if (window.__sbLoggerUpdateDisplay) {
-  window.__sbLoggerUpdateDisplay();
+if (window.__surebetHelperUpdateDisplay) {
+  window.__surebetHelperUpdateDisplay();
 }
 
 // Check panel in DOM
-const panel = document.querySelector('.sb-logger-stake-panel');
+const panel = document.querySelector('.surebet-helper-stake-panel');
 console.log('Panel exists:', !!panel);
 console.log('Panel visible:', panel ? window.getComputedStyle(panel).display : 'N/A');
 console.log('Panel position:', panel ? window.getComputedStyle(panel).position : 'N/A');
@@ -91,8 +91,8 @@ console.log('Panel z-index:', panel ? window.getComputedStyle(panel).zIndex : 'N
 console.log('Panel in viewport:', panel ? panel.offsetParent !== null : 'N/A');
 
 // Check form values
-const bankrollInput = document.querySelector('#sb-logger-bankroll');
-const fractionInput = document.querySelector('#sb-logger-fraction');
+const bankrollInput = document.querySelector('#surebet-helper-bankroll');
+const fractionInput = document.querySelector('#surebet-helper-fraction');
 console.log('Bankroll input value:', bankrollInput?.value);
 console.log('Fraction input value:', fractionInput?.value);
 ```
@@ -110,3 +110,7 @@ console.log('Fraction input value:', fractionInput?.value);
 ## Version Info
 - Last Updated: Nov 21, 2025
 - Changes: Added comprehensive logging to debug panel population issues
+
+
+
+

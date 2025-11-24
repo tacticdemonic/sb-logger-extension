@@ -12,7 +12,7 @@ icon96.png
 # Personal data files
 settled*.csv
 smarkets_account_overview*.csv
-sb-bets-*.csv
+surebet-bets-*.csv
 
 # Build artifacts
 *.zip

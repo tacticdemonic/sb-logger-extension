@@ -1,5 +1,5 @@
 // Popup UI — lists bets and triggers export/clear actions.
-console.log('🚀 SB Logger Popup Script Loading...');
+console.log('🚀 Surebet Helper Popup Script Loading...');
 
 // Use chrome API when available (includes Firefox shim), fallback to browser
 const api = typeof chrome !== 'undefined' ? chrome : browser;
@@ -105,7 +105,7 @@ function generateBetUid() {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
     return crypto.randomUUID();
   }
-  return `sb-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+  return `surebet-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 function requestBankrollRecalc() {
@@ -460,7 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Set up event delegation for status buttons once
-  console.log('=== SB Logger Popup: Setting up event delegation ===');
+  console.log('=== Surebet Helper Popup: Setting up event delegation ===');
   console.log('Container element:', container);
 
   if (!container) {
@@ -1406,7 +1406,7 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       
       const dataStr = JSON.stringify(exportData, null, 2);
-      const filename = `sb-bets-${(new Date()).toISOString().replace(/[:.]/g, '-')}.json`;
+      const filename = `surebet-bets-${(new Date()).toISOString().replace(/[:.]/g, '-')}.json`;
       console.log('📤 Sending export message for JSON with analysis...');
       api.runtime.sendMessage({ action: 'export', dataStr, filename, mime: 'application/json' }, (resp) => {
         console.log('📥 Export response:', resp);
@@ -1542,7 +1542,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ].join(','));
       }
       const dataStr = rows.join('\r\n');
-      const filename = `sb-bets-${(new Date()).toISOString().replace(/[:.]/g, '-')}.csv`;
+      const filename = `surebet-bets-${(new Date()).toISOString().replace(/[:.]/g, '-')}.csv`;
       console.log('📤 Sending export message for CSV...');
       api.runtime.sendMessage({ action: 'export', dataStr, filename, mime: 'text/csv' }, (resp) => {
         console.log('📥 Export response:', resp);
@@ -1690,7 +1690,7 @@ document.addEventListener('DOMContentLoaded', () => {
    • The Odds API: https://the-odds-api.com/ (500 req/month)
 
 2. Open the extension folder:
-   sb-logger-extension/apiService.js
+   surebet-helper-extension/apiService.js
 
 3. Replace the placeholder API keys at the top of the file
 
@@ -2611,19 +2611,19 @@ See API_SETUP.md in the extension folder for detailed instructions.`;
         const jsonData = JSON.stringify(data, null, 2);
         const issueBody = '**Console JSON:**\n\n' + jsonData + '\n\n**HTML of stake input (closest):**\n\n' + stakeInputHtml + '\n\n**Steps to reproduce:**\n- Open: ' + data.url + '\n- Actions: [add selection, open betslip]\n\n**Browser / OS:** ' + data.userAgent + '\n\n**Notes:** Please use the Add Exchange Support issue template.';
 
-        const repoUrl = `https://github.com/tacticdemonic/sb-logger-extension/issues/new?template=add-exchange.md&title=${encodeURIComponent('Add Support for ' + exchangeName)}&body=${encodeURIComponent(issueBody)}&labels=enhancement`;
+        const repoUrl = `https://github.com/tacticdemonic/surebet-helper-extension/issues/new?template=add-exchange.md&title=${encodeURIComponent('Add Support for ' + exchangeName)}&body=${encodeURIComponent(issueBody)}&labels=enhancement`;
 
         // Check if body is too large
         if (issueBody.length > 8000) {
           // Copy JSON to clipboard
           try {
             await navigator.clipboard.writeText(jsonData);
-            chrome.tabs.create({ url: `https://github.com/tacticdemonic/sb-logger-extension/issues/new?template=add-exchange.md&title=${encodeURIComponent('Add Support for ' + exchangeName)}` });
+            chrome.tabs.create({ url: `https://github.com/tacticdemonic/surebet-helper-extension/issues/new?template=add-exchange.md&title=${encodeURIComponent('Add Support for ' + exchangeName)}` });
             alert('Data collected! The JSON has been copied to your clipboard. Paste it into the "Console JSON" field in the GitHub issue.');
           } catch (clipError) {
             console.error('Failed to copy to clipboard:', clipError);
             console.log('JSON data:', jsonData);
-            chrome.tabs.create({ url: `https://github.com/tacticdemonic/sb-logger-extension/issues/new?template=add-exchange.md&title=${encodeURIComponent('Add Support for ' + exchangeName)}` });
+            chrome.tabs.create({ url: `https://github.com/tacticdemonic/surebet-helper-extension/issues/new?template=add-exchange.md&title=${encodeURIComponent('Add Support for ' + exchangeName)}` });
             alert('Data collected, but too large to auto-fill. The JSON is logged in the console. Please copy it from there and paste into the Console JSON field.');
           }
         } else {
@@ -2637,3 +2637,7 @@ See API_SETUP.md in the extension folder for detailed instructions.`;
     });
   }
 });
+
+
+
+

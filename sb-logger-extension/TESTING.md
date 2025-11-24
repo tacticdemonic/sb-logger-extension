@@ -1,4 +1,4 @@
-# Testing Guide for SB Logger Extension
+# Testing Guide for Surebet Helper Extension
 
 ## Quick Start Testing
 
@@ -6,7 +6,7 @@
 1. Open Firefox
 2. Navigate to: `about:debugging#/runtime/this-firefox`
 3. Click **"Load Temporary Add-on..."**
-4. Browse to: `d:\Local\SB Logger\sb-logger-extension\`
+4. Browse to: `d:\Local\Surebet Helper\surebet-helper-extension\`
 5. Select `manifest.json`
 6. Extension should load successfully
 
@@ -20,7 +20,7 @@
 7. **Expected**: Alert confirms bet was saved
 
 ### 3. View Saved Bets
-1. Click the extension icon in Firefox toolbar (SB logo)
+1. Click the extension icon in Firefox toolbar (Surebet logo)
 2. **Expected**: Popup opens showing saved bets
 3. **Verify these fields are displayed**:
    - Timestamp
@@ -92,7 +92,7 @@
 
 ### 8. Test Export
 1. In the popup, click **"Export CSV"**
-2. **Expected**: CSV file downloads with filename like `sb-bets-2024-01-15-12-30-45.csv`
+2. **Expected**: CSV file downloads with filename like `surebet-bets-2024-01-15-12-30-45.csv`
 3. Open the CSV in Excel or text editor
 4. **Verify**: All fields including expected_value, status, settled_at, actual_pl are present
 5. **Check EV column**: Should show calculated expected value for each bet
@@ -162,12 +162,15 @@
 
 ## Console Logging
 All scripts have console.log statements. Open developer tools (F12) to see:
-- `[SB Logger]` messages from contentScript.js
+- `[Surebet Helper]` messages from contentScript.js
 - Background script logs in about:debugging > Inspect
 
 ## Reload After Changes
 After editing any file:
 1. Go to `about:debugging`
-2. Find SB Logger extension
+2. Find Surebet Helper extension
 3. Click **"Reload"**
 4. Refresh the surebet.com page
+
+
+

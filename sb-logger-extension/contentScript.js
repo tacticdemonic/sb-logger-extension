@@ -1,7 +1,8 @@
-// SB Logger - Content Script for surebet.com valuebets
-(function () {
-  if (window.__sbLoggerInjected) return;
-  window.__sbLoggerInjected = true;
+// Surebet Helper - Content Script for surebet.com valuebets
+(
+function () {
+  if (window.__surebetHelperInjected) return;
+  window.__surebetHelperInjected = true;
 
   const DISABLE_STORAGE_KEY = 'extensionDisabled';
   let isInitialized = false;
@@ -121,21 +122,21 @@
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
       return crypto.randomUUID();
     }
-    return `sb-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+    return `surebet-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
   }
 
   // Run on surebet.com valuebets page OR any bookmaker site (not Surebet)
-  console.log('SB Logger: Script loaded on:', location.hostname, location.pathname);
+  console.log('Surebet Helper: Script loaded on:', location.hostname, location.pathname);
   
   const isSurebetValuebets = location.hostname.includes('surebet.com') && location.pathname.includes('valuebets');
   const isBookmakerSite = !location.hostname.includes('surebet.com');
   
   if (!isSurebetValuebets && !isBookmakerSite) {
-    console.log('SB Logger: Not on supported page, exiting');
+    console.log('Surebet Helper: Not on supported page, exiting');
     return;
   }
   
-  console.log('SB Logger: ✓ On supported page, continuing initialization');
+  console.log('Surebet Helper: ✓ On supported page, continuing initialization');
   
   // Determine which site we're on
   const onBookmakerSite = isBookmakerSite;
@@ -155,7 +156,7 @@
   };
 
   const CSS = `
-    .sb-logger-save-btn {
+    .surebet-helper-save-btn {
       background: #28a745;
       color: #fff;
       border: none;
@@ -167,14 +168,14 @@
       margin-left: 4px;
       transition: background 0.2s;
     }
-    .sb-logger-save-btn:hover {
+    .surebet-helper-save-btn:hover {
       background: #218838;
     }
-    .sb-logger-save-btn:disabled {
+    .surebet-helper-save-btn:disabled {
       background: #6c757d;
       cursor: not-allowed;
     }
-    .sb-logger-toast {
+    .surebet-helper-toast {
       position: fixed;
       right: 16px;
       top: 80px;
@@ -188,21 +189,21 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       animation: slideIn 0.3s ease;
     }
-    .sb-logger-toast.error {
+    .surebet-helper-toast.error {
       background: #dc3545;
     }
     @keyframes slideIn {
       from { transform: translateX(400px); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
     }
-    .sb-logger-preset-container {
+    .surebet-helper-preset-container {
       display: flex;
       gap: 8px;
       margin-bottom: 16px;
       padding-bottom: 12px;
       border-bottom: 1px solid #dee2e6;
     }
-    .sb-logger-preset-btn {
+    .surebet-helper-preset-btn {
       background: #007bff;
       color: #fff;
       border: none;
@@ -215,25 +216,25 @@
       transition: all 0.2s;
       flex: 1;
     }
-    .sb-logger-preset-btn:hover {
+    .surebet-helper-preset-btn:hover {
       background: #0056b3;
       transform: translateY(-1px);
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
-    .sb-logger-preset-btn.exchanges {
+    .surebet-helper-preset-btn.exchanges {
       background: #6f42c1;
     }
-    .sb-logger-preset-btn.exchanges:hover {
+    .surebet-helper-preset-btn.exchanges:hover {
       background: #5a32a3;
     }
-    .sb-logger-high-stake {
+    .surebet-helper-high-stake {
       background-color: rgba(255, 215, 0, 0.15) !important;
       border-left: 4px solid #FFD700 !important;
     }
-    .sb-logger-high-stake:hover {
+    .surebet-helper-high-stake:hover {
       background-color: rgba(255, 215, 0, 0.25) !important;
     }
-    .sb-logger-hide-lay-btn {
+    .surebet-helper-hide-lay-btn {
       position: fixed;
       top: 10px;
       right: 10px;
@@ -250,20 +251,20 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
       transition: all 0.2s;
     }
-    .sb-logger-hide-lay-btn:hover {
+    .surebet-helper-hide-lay-btn:hover {
       background: #5a32a3;
       transform: scale(1.05);
     }
-    .sb-logger-hide-lay-btn.active {
+    .surebet-helper-hide-lay-btn.active {
       background: #dc3545;
     }
-    .sb-logger-hide-lay-btn.active:hover {
+    .surebet-helper-hide-lay-btn.active:hover {
       background: #c82333;
     }
-    .sb-logger-hidden-row {
+    .surebet-helper-hidden-row {
       display: none !important;
     }
-    .sb-logger-stake-panel {
+    .surebet-helper-stake-panel {
       position: fixed;
       bottom: 20px;
       right: 20px;
@@ -279,19 +280,19 @@
       z-index: 2147483647 !important;
       padding: 12px 14px 14px;
     }
-    .sb-logger-stake-panel.collapsed {
+    .surebet-helper-stake-panel.collapsed {
       width: auto;
       padding: 8px 10px;
       cursor: pointer;
     }
-    .sb-logger-stake-panel.collapsed .sb-logger-stake-form,
-    .sb-logger-stake-panel.collapsed .sb-logger-stake-summary {
+    .surebet-helper-stake-panel.collapsed .surebet-helper-stake-form,
+    .surebet-helper-stake-panel.collapsed .surebet-helper-stake-summary {
       display: none;
     }
-    .sb-logger-stake-panel.collapsed h3 {
+    .surebet-helper-stake-panel.collapsed h3 {
       margin-bottom: 0;
     }
-    .sb-logger-stake-panel h3 {
+    .surebet-helper-stake-panel h3 {
       margin: 0 0 8px;
       font-size: 13px;
       display: flex;
@@ -299,7 +300,7 @@
       justify-content: space-between;
       color: #0c5460;
     }
-    .sb-logger-stake-header button {
+    .surebet-helper-stake-header button {
       border: none;
       background: transparent;
       color: #0d6efd;
@@ -307,32 +308,32 @@
       cursor: pointer;
       padding: 0 2px;
     }
-    .sb-logger-stake-form {
+    .surebet-helper-stake-form {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
       margin-bottom: 8px;
     }
-    .sb-logger-stake-form label {
+    .surebet-helper-stake-form label {
       font-size: 11px;
       text-transform: uppercase;
       font-weight: 600;
       color: #6c757d;
     }
-    .sb-logger-stake-form input {
+    .surebet-helper-stake-form input {
       width: 100%;
       padding: 4px 6px;
       border: 1px solid #ced4da;
       border-radius: 4px;
       font-size: 12px;
     }
-    .sb-logger-stake-actions {
+    .surebet-helper-stake-actions {
       grid-column: span 2;
       display: flex;
       gap: 6px;
       justify-content: flex-end;
     }
-    .sb-logger-stake-actions button {
+    .surebet-helper-stake-actions button {
       border: none;
       border-radius: 4px;
       padding: 4px 10px;
@@ -340,15 +341,15 @@
       cursor: pointer;
       font-weight: 600;
     }
-    .sb-logger-stake-save {
+    .surebet-helper-stake-save {
       background: #28a745;
       color: #fff;
     }
-    .sb-logger-stake-reset {
+    .surebet-helper-stake-reset {
       background: #6c757d;
       color: #fff;
     }
-    .sb-logger-stake-summary {
+    .surebet-helper-stake-summary {
       font-size: 11px;
       color: #495057;
       background: #f8f9fa;
@@ -357,21 +358,21 @@
       padding: 8px;
       line-height: 1.4;
     }
-    .sb-logger-stake-summary strong {
+    .surebet-helper-stake-summary strong {
       color: #0c5460 !important;
       font-weight: 700 !important;
       font-size: 12px !important;
     }
-    .sb-logger-stake-collapsed-text {
+    .surebet-helper-stake-collapsed-text {
       display: none;
       font-size: 12px;
       font-weight: 600;
       color: #0c5460;
     }
-    .sb-logger-stake-panel.collapsed .sb-logger-stake-collapsed-text {
+    .surebet-helper-stake-panel.collapsed .surebet-helper-stake-collapsed-text {
       display: block;
     }
-    .sb-logger-stake-indicator {
+    .surebet-helper-stake-indicator {
       display: inline-flex;
       align-items: center;
       gap: 4px;
@@ -384,38 +385,38 @@
       font-weight: 600;
       white-space: nowrap;
     }
-    .sb-logger-stake-indicator span {
+    .surebet-helper-stake-indicator span {
       font-weight: 400;
       font-size: 10px;
       opacity: 0.85;
     }
-    .sb-logger-stake-indicator.muted {
+    .surebet-helper-stake-indicator.muted {
       background: #6c757d;
     }
-    .sb-logger-commission-toggle {
+    .surebet-helper-commission-toggle {
       display: flex;
       align-items: center;
       gap: 8px;
       margin: 8px 0;
       font-size: 13px;
     }
-    .sb-logger-commission-toggle input[type="checkbox"] {
+    .surebet-helper-commission-toggle input[type="checkbox"] {
       cursor: pointer;
       width: 16px;
       height: 16px;
     }
-    .sb-logger-commission-toggle label {
+    .surebet-helper-commission-toggle label {
       cursor: pointer;
       margin: 0;
     }
   `;
 
   function injectStyles() {
-    if (document.getElementById('sb-logger-style')) {
+    if (document.getElementById('surebet-helper-style')) {
       return;
     }
     const style = document.createElement('style');
-    style.id = 'sb-logger-style';
+    style.id = 'surebet-helper-style';
     style.textContent = CSS;
     document.head.appendChild(style);
   }
@@ -584,7 +585,7 @@
         return true;
       }
     } catch (err) {
-      console.warn('SB Logger: navigator clipboard write failed', err);
+      console.warn('Surebet Helper: navigator clipboard write failed', err);
     }
     try {
       const textarea = document.createElement('textarea');
@@ -598,7 +599,7 @@
       textarea.remove();
       return result;
     } catch (err) {
-      console.warn('SB Logger: execCommand copy failed', err);
+      console.warn('Surebet Helper: execCommand copy failed', err);
       return false;
     }
   }
@@ -693,10 +694,10 @@
     if (!parentEl) {
       return null;
     }
-    let indicator = row.querySelector('.sb-logger-stake-indicator');
+    let indicator = row.querySelector('.surebet-helper-stake-indicator');
     if (!indicator) {
       indicator = document.createElement('span');
-      indicator.className = 'sb-logger-stake-indicator muted';
+      indicator.className = 'surebet-helper-stake-indicator muted';
       parentEl.appendChild(indicator);
       indicator.addEventListener('click', async (event) => {
         event.preventDefault();
@@ -735,17 +736,17 @@
                     );
                   });
                   if (response && response.success) {
-                    console.log('SB Logger: ✓ Broker confirmed pendingBet saved (from stake indicator):', betData);
+                    console.log('Surebet Helper: ✓ Broker confirmed pendingBet saved (from stake indicator):', betData);
                   } else {
-                    console.warn('SB Logger: ⚠ Broker save failed from stake indicator, falling back to local storage');
+                    console.warn('Surebet Helper: ⚠ Broker save failed from stake indicator, falling back to local storage');
                     chrome.storage.local.set({ pendingBet: betData }, () => {
-                      console.log('SB Logger: Bet data stored for bookmaker page (fallback):', betData);
+                      console.log('Surebet Helper: Bet data stored for bookmaker page (fallback):', betData);
                     });
                   }
                 } catch (err) {
-                  console.warn('SB Logger: ⚠ Broker communication error from stake indicator:', err.message);
+                  console.warn('Surebet Helper: ⚠ Broker communication error from stake indicator:', err.message);
                   chrome.storage.local.set({ pendingBet: betData }, () => {
-                    console.log('SB Logger: Bet data stored for bookmaker page (fallback):', betData);
+                    console.log('Surebet Helper: Bet data stored for bookmaker page (fallback):', betData);
                   });
                 }
               }
@@ -797,10 +798,10 @@
   function updateStakeIndicators() {
     const rows = document.querySelectorAll('tbody.valuebet_record');
     rows.forEach((row) => {
-      if (row.__sbLoggerBetData) {
-        const stakeValue = calculateKellyStake(row.__sbLoggerBetData);
-        row.__sbLoggerRecommendedStake = stakeValue;
-        updateRowStakeIndicator(row, row.__sbLoggerBetData, stakeValue);
+      if (row.__surebetHelperBetData) {
+        const stakeValue = calculateKellyStake(row.__surebetHelperBetData);
+        row.__surebetHelperRecommendedStake = stakeValue;
+        updateRowStakeIndicator(row, row.__surebetHelperBetData, stakeValue);
       }
     });
   }
@@ -820,11 +821,11 @@
       console.warn('⚠️ [StakePanel] updateStakePanelDisplay called but stakePanel is null/undefined');
       return;
     }
-    const bankrollInput = stakePanel.querySelector('#sb-logger-bankroll');
-    const fractionInput = stakePanel.querySelector('#sb-logger-fraction');
-    const useCommissionCheckbox = stakePanel.querySelector('#sb-logger-use-commission');
-    const summary = stakePanel.querySelector('.sb-logger-stake-summary');
-    const collapsedText = stakePanel.querySelector('.sb-logger-stake-collapsed-text');
+    const bankrollInput = stakePanel.querySelector('#surebet-helper-bankroll');
+    const fractionInput = stakePanel.querySelector('#surebet-helper-fraction');
+    const useCommissionCheckbox = stakePanel.querySelector('#surebet-helper-use-commission');
+    const summary = stakePanel.querySelector('.surebet-helper-stake-summary');
+    const collapsedText = stakePanel.querySelector('.surebet-helper-stake-collapsed-text');
     
     const bankroll = stakingSettings.bankroll || DEFAULT_STAKING_SETTINGS.bankroll;
     const baseBankroll = stakingSettings.baseBankroll || bankroll;
@@ -884,32 +885,32 @@
     }
     
     stakePanel = document.createElement('div');
-    stakePanel.className = 'sb-logger-stake-panel';
+    stakePanel.className = 'surebet-helper-stake-panel';
     stakePanel.innerHTML = `
-      <h3 class="sb-logger-stake-header">
+      <h3 class="surebet-helper-stake-header">
         <span>Kelly Stake Helper</span>
-        <button type="button" class="sb-logger-stake-toggle" aria-label="Toggle staking panel">-</button>
+        <button type="button" class="surebet-helper-stake-toggle" aria-label="Toggle staking panel">-</button>
       </h3>
-      <div class="sb-logger-stake-collapsed-text"></div>
-      <form class="sb-logger-stake-form">
+      <div class="surebet-helper-stake-collapsed-text"></div>
+      <form class="surebet-helper-stake-form">
         <div>
-          <label for="sb-logger-bankroll">Starting Bank</label>
-          <input type="number" id="sb-logger-bankroll" min="50" step="10" />
+          <label for="surebet-helper-bankroll">Starting Bank</label>
+          <input type="number" id="surebet-helper-bankroll" min="50" step="10" />
         </div>
         <div>
-          <label for="sb-logger-fraction">Kelly %</label>
-          <input type="number" id="sb-logger-fraction" min="5" max="100" step="1" />
+          <label for="surebet-helper-fraction">Kelly %</label>
+          <input type="number" id="surebet-helper-fraction" min="5" max="100" step="1" />
         </div>
-        <div class="sb-logger-commission-toggle">
-          <input type="checkbox" id="sb-logger-use-commission" />
-          <label for="sb-logger-use-commission">Account for Exchange Commission</label>
+        <div class="surebet-helper-commission-toggle">
+          <input type="checkbox" id="surebet-helper-use-commission" />
+          <label for="surebet-helper-use-commission">Account for Exchange Commission</label>
         </div>
-        <div class="sb-logger-stake-actions">
-          <button type="button" class="sb-logger-stake-reset">Reset</button>
-          <button type="submit" class="sb-logger-stake-save">Save</button>
+        <div class="surebet-helper-stake-actions">
+          <button type="button" class="surebet-helper-stake-reset">Reset</button>
+          <button type="submit" class="surebet-helper-stake-save">Save</button>
         </div>
       </form>
-      <div class="sb-logger-stake-summary"></div>
+      <div class="surebet-helper-stake-summary"></div>
     `;
     document.body.appendChild(stakePanel);
     console.log('✅ [StakePanel] Panel injected successfully:', stakePanel);
@@ -917,17 +918,17 @@
     console.log('✅ [StakePanel] Panel computed style z-index:', window.getComputedStyle(stakePanel).zIndex);
     console.log('📊 [StakePanel] Current stakingSettings:', stakingSettings);
     
-    const form = stakePanel.querySelector('.sb-logger-stake-form');
-    const resetBtn = stakePanel.querySelector('.sb-logger-stake-reset');
-    const toggleBtn = stakePanel.querySelector('.sb-logger-stake-toggle');
+    const form = stakePanel.querySelector('.surebet-helper-stake-form');
+    const resetBtn = stakePanel.querySelector('.surebet-helper-stake-reset');
+    const toggleBtn = stakePanel.querySelector('.surebet-helper-stake-toggle');
     
     console.log('✅ [StakePanel] Elements found - form:', !!form, 'resetBtn:', !!resetBtn, 'toggleBtn:', !!toggleBtn);
     if (form) {
       form.addEventListener('submit', (e) => {
         e.preventDefault();
-        const bankrollValue = stakePanel.querySelector('#sb-logger-bankroll')?.value;
-        const fractionValue = stakePanel.querySelector('#sb-logger-fraction')?.value;
-        const useCommissionCheckbox = stakePanel.querySelector('#sb-logger-use-commission');
+        const bankrollValue = stakePanel.querySelector('#surebet-helper-bankroll')?.value;
+        const fractionValue = stakePanel.querySelector('#surebet-helper-fraction')?.value;
+        const useCommissionCheckbox = stakePanel.querySelector('#surebet-helper-use-commission');
         const bankroll = sanitizeBankroll(bankrollValue, DEFAULT_STAKING_SETTINGS.bankroll);
         const fractionPercent = parseFloat(fractionValue) || (DEFAULT_STAKING_SETTINGS.fraction * 100);
         const fraction = sanitizeFraction(fractionPercent / 100);
@@ -955,9 +956,9 @@
     });
     updateStakePanelDisplay();
     console.log('✅ [StakePanel] Display updated, checking values in DOM...');
-    const bankrollInputCheck = stakePanel.querySelector('#sb-logger-bankroll');
-    const fractionInputCheck = stakePanel.querySelector('#sb-logger-fraction');
-    const summaryCheck = stakePanel.querySelector('.sb-logger-stake-summary');
+    const bankrollInputCheck = stakePanel.querySelector('#surebet-helper-bankroll');
+    const fractionInputCheck = stakePanel.querySelector('#surebet-helper-fraction');
+    const summaryCheck = stakePanel.querySelector('.surebet-helper-stake-summary');
     console.log('📊 [StakePanel] Input values after update:', {
       bankroll: bankrollInputCheck?.value,
       fraction: fractionInputCheck?.value,
@@ -972,7 +973,7 @@
   }
 
   function ensureStakePanelExists() {
-    const panelInDOM = document.querySelector('.sb-logger-stake-panel');
+    const panelInDOM = document.querySelector('.surebet-helper-stake-panel');
     if (!panelInDOM) {
       console.warn('⚠️ [StakePanel] Panel missing from DOM, re-injecting');
       stakePanel = null;
@@ -998,7 +999,7 @@
       return;
     }
     const toast = document.createElement('div');
-    toast.className = 'sb-logger-toast' + (success ? '' : ' error');
+    toast.className = 'surebet-helper-toast' + (success ? '' : ' error');
     toast.textContent = text;
     document.body.appendChild(toast);
     setTimeout(() => {
@@ -1085,18 +1086,18 @@
 
       return data;
     } catch (err) {
-      console.error('SB Logger: Error parsing row data', err);
+      console.error('Surebet Helper: Error parsing row data', err);
       return null;
     }
   }
 
   async function saveBet(betData) {
-    console.log('SB Logger: saveBet called with data:', betData);
-    console.log('SB Logger: Odds check - value:', betData.odds, 'type:', typeof betData.odds, 'check result:', (!betData.odds || betData.odds === 0));
+    console.log('Surebet Helper: saveBet called with data:', betData);
+    console.log('Surebet Helper: Odds check - value:', betData.odds, 'type:', typeof betData.odds, 'check result:', (!betData.odds || betData.odds === 0));
     
     // If odds not found, prompt for it
     if (!betData.odds || betData.odds === 0) {
-      console.log('SB Logger: Odds missing, prompting user');
+      console.log('Surebet Helper: Odds missing, prompting user');
       const oddsStr = prompt('Enter the odds (decimal format, e.g., 2.5):', '');
       if (oddsStr === null) return false; // User cancelled
       
@@ -1107,7 +1108,7 @@
       }
       betData.odds = odds;
     } else {
-      console.log('SB Logger: Odds already present:', betData.odds);
+      console.log('Surebet Helper: Odds already present:', betData.odds);
     }
 
     // If market not found, prompt for it
@@ -1162,7 +1163,7 @@
     betData.apiRetryCount = 0;
     betData.lastApiCheck = null;
 
-    console.log('SB Logger: Final bet data to save:', betData);
+    console.log('Surebet Helper: Final bet data to save:', betData);
 
     // Save to storage
     return new Promise((resolve) => {
@@ -1177,7 +1178,7 @@
   }
 
   function applyBookmakerPreset(presetName) {
-    console.log('SB Logger: Applying preset:', presetName);
+    console.log('Surebet Helper: Applying preset:', presetName);
     if (isDisabled) {
       return;
     }
@@ -1197,7 +1198,7 @@
     
     if (popup) {
       checkboxes = Array.from(popup.querySelectorAll('input[type="checkbox"]'));
-      console.log('SB Logger: Found', checkboxes.length, 'checkboxes in popup');
+      console.log('Surebet Helper: Found', checkboxes.length, 'checkboxes in popup');
     }
     
     // Strategy 2: Fall back to looking anywhere for visible checkboxes
@@ -1206,7 +1207,7 @@
         const style = window.getComputedStyle(cb);
         return style.display !== 'none' && style.visibility !== 'hidden';
       });
-      console.log('SB Logger: Found', checkboxes.length, 'visible checkboxes on page');
+      console.log('Surebet Helper: Found', checkboxes.length, 'visible checkboxes on page');
     }
 
     if (checkboxes.length === 0) {
@@ -1290,14 +1291,14 @@
   }
 
   function injectPresetButtons() {
-    console.log('SB Logger: === Attempting to inject preset buttons ===');
+    console.log('Surebet Helper: === Attempting to inject preset buttons ===');
     if (isDisabled) {
       return;
     }
     
     // Skip if already injected anywhere on the page
-    if (document.querySelector('.sb-logger-preset-container')) {
-      console.log('SB Logger: Preset buttons already injected, skipping');
+    if (document.querySelector('.surebet-helper-preset-container')) {
+      console.log('Surebet Helper: Preset buttons already injected, skipping');
       return;
     }
     
@@ -1310,7 +1311,7 @@
       return style.display !== 'none' && style.visibility !== 'hidden' &&
              (!parentStyle || (parentStyle.display !== 'none' && parentStyle.visibility !== 'hidden'));
     });
-    console.log('SB Logger: Total checkboxes:', allCheckboxes.length, 'Visible:', visibleCheckboxes.length);
+    console.log('Surebet Helper: Total checkboxes:', allCheckboxes.length, 'Visible:', visibleCheckboxes.length);
     
     // Log some visible checkbox labels for debugging
     if (visibleCheckboxes.length > 0) {
@@ -1318,7 +1319,7 @@
         const label = cb.closest('label') || cb.nextElementSibling || cb.parentElement;
         return label ? label.textContent.trim().substring(0, 30) : 'no label';
       });
-      console.log('SB Logger: Sample checkbox labels:', labels);
+      console.log('Surebet Helper: Sample checkbox labels:', labels);
     }
 
     // Try multiple strategies to find the bookmaker filter popup/modal
@@ -1344,7 +1345,7 @@
         const style = window.getComputedStyle(elem);
         if (style.display !== 'none' && style.visibility !== 'hidden') {
           container = elem;
-          console.log('SB Logger: Found modal/popup filter container with selector:', selector);
+          console.log('Surebet Helper: Found modal/popup filter container with selector:', selector);
           break;
         }
       }
@@ -1370,7 +1371,7 @@
       });
       
       if (container) {
-        console.log('SB Logger: Found visible container with bookmaker checkboxes');
+        console.log('Surebet Helper: Found visible container with bookmaker checkboxes');
       }
     }
     
@@ -1383,7 +1384,7 @@
         });
       
       if (visibleCheckboxes.length > 0) {
-        console.log('SB Logger: Found', visibleCheckboxes.length, 'visible checkboxes');
+        console.log('Surebet Helper: Found', visibleCheckboxes.length, 'visible checkboxes');
         
         // Find the common parent that contains the most checkboxes
         const parents = visibleCheckboxes.map(cb => {
@@ -1404,14 +1405,14 @@
           // Sort by checkbox count and take the one with the most
           parents.sort((a, b) => b.count - a.count);
           container = parents[0].parent;
-          console.log('SB Logger: Found container with', parents[0].count, 'checkboxes');
+          console.log('Surebet Helper: Found container with', parents[0].count, 'checkboxes');
         }
       }
     }
     
     if (!container) {
-      console.log('SB Logger: ❌ Could not find bookmaker filter container');
-      console.log('SB Logger: Available visible checkboxes:', 
+      console.log('Surebet Helper: ❌ Could not find bookmaker filter container');
+      console.log('Surebet Helper: Available visible checkboxes:', 
         Array.from(document.querySelectorAll('input[type="checkbox"]'))
           .filter(cb => window.getComputedStyle(cb).display !== 'none').length);
       
@@ -1421,7 +1422,7 @@
         .filter(item => item.count >= 3)
         .sort((a, b) => b.count - a.count)
         .slice(0, 5);
-      console.log('SB Logger: Top 5 divs with checkboxes:', divsWithCheckboxes.map(i => ({
+      console.log('Surebet Helper: Top 5 divs with checkboxes:', divsWithCheckboxes.map(i => ({
         count: i.count,
         classes: i.div.className,
         visible: window.getComputedStyle(i.div).display !== 'none'
@@ -1429,17 +1430,17 @@
       return;
     }
 
-    console.log('SB Logger: ✓ Found container, injecting preset buttons');
-    console.log('SB Logger: Container classes:', container.className);
-    console.log('SB Logger: Container checkboxes:', container.querySelectorAll('input[type="checkbox"]').length);
+    console.log('Surebet Helper: ✓ Found container, injecting preset buttons');
+    console.log('Surebet Helper: Container classes:', container.className);
+    console.log('Surebet Helper: Container checkboxes:', container.querySelectorAll('input[type="checkbox"]').length);
 
     // Create preset button container
     const presetContainer = document.createElement('div');
-    presetContainer.className = 'sb-logger-preset-container';
+    presetContainer.className = 'surebet-helper-preset-container';
 
     // Create "Normal List" button
     const normalBtn = document.createElement('button');
-    normalBtn.className = 'sb-logger-preset-btn normal';
+    normalBtn.className = 'surebet-helper-preset-btn normal';
     normalBtn.textContent = '⭐ My Normal List';
     normalBtn.title = 'Apply your standard bookmaker selection';
     normalBtn.addEventListener('click', (e) => {
@@ -1450,7 +1451,7 @@
 
     // Create "Exchanges" button
     const exchangesBtn = document.createElement('button');
-    exchangesBtn.className = 'sb-logger-preset-btn exchanges';
+    exchangesBtn.className = 'surebet-helper-preset-btn exchanges';
     exchangesBtn.textContent = '🔄 Exchanges Only';
     exchangesBtn.title = 'Show only betting exchanges';
     exchangesBtn.addEventListener('click', (e) => {
@@ -1468,7 +1469,7 @@
     } else {
       container.appendChild(presetContainer);
     }
-    console.log('SB Logger: Preset buttons injected successfully at the top!');
+    console.log('Surebet Helper: Preset buttons injected successfully at the top!');
   }
 
   function toggleLayBets() {
@@ -1479,7 +1480,7 @@
     if (!mainTable) return;
     
     const rows = mainTable.querySelectorAll('tbody.valuebet_record');
-    const hideLayBtn = document.querySelector('.sb-logger-hide-lay-btn');
+    const hideLayBtn = document.querySelector('.surebet-helper-hide-lay-btn');
     const isHiding = hideLayBtn && hideLayBtn.classList.contains('active');
     
     let hiddenCount = 0;
@@ -1506,10 +1507,10 @@
       
       if (isLayBet) {
         if (isHiding) {
-          row.classList.add('sb-logger-hidden-row');
+          row.classList.add('surebet-helper-hidden-row');
           hiddenCount++;
         } else {
-          row.classList.remove('sb-logger-hidden-row');
+          row.classList.remove('surebet-helper-hidden-row');
         }
       }
     });
@@ -1528,12 +1529,12 @@
       return;
     }
     // Skip if button already exists
-    if (document.querySelector('.sb-logger-hide-lay-btn')) {
+    if (document.querySelector('.surebet-helper-hide-lay-btn')) {
       return;
     }
     
     const btn = document.createElement('button');
-    btn.className = 'sb-logger-hide-lay-btn';
+    btn.className = 'surebet-helper-hide-lay-btn';
     btn.textContent = '🚫 Hide Lay Bets';
     btn.title = 'Toggle visibility of lay bets';
     
@@ -1545,7 +1546,7 @@
         btn.classList.add('active');
         // Apply the hide effect
         setTimeout(() => {
-          const hideLayBtn = document.querySelector('.sb-logger-hide-lay-btn');
+          const hideLayBtn = document.querySelector('.surebet-helper-hide-lay-btn');
           if (hideLayBtn && hideLayBtn.classList.contains('active')) {
             toggleLayBets();
           }
@@ -1560,14 +1561,14 @@
       // Save preference to storage
       const api = typeof chrome !== 'undefined' ? chrome : browser;
       api.storage.local.set({ uiPreferences: { hideLayBets } }, () => {
-        console.log('SB Logger: Hide lay bets preference saved:', hideLayBets);
+        console.log('Surebet Helper: Hide lay bets preference saved:', hideLayBets);
       });
       
       toggleLayBets();
     });
     
     document.body.appendChild(btn);
-    console.log('SB Logger: Hide Lay Bets button injected');
+    console.log('Surebet Helper: Hide Lay Bets button injected');
   }
 
   function injectSaveButtons() {
@@ -1577,19 +1578,19 @@
     // Find the main valuebets table only
     const mainTable = document.querySelector('table');
     if (!mainTable) {
-      console.log('SB Logger: Main table not found');
+      console.log('Surebet Helper: Main table not found');
       return;
     }
     
     // Find all valuebet rows in the main table only
     const rows = mainTable.querySelectorAll('tbody.valuebet_record');
-    console.log('SB Logger: Found', rows.length, 'valuebet rows in main table');
+    console.log('Surebet Helper: Found', rows.length, 'valuebet rows in main table');
     
     let hasHighStake = false;
     
     rows.forEach(row => {
       // Skip if button already injected
-      if (row.querySelector('.sb-logger-save-btn')) return;
+      if (row.querySelector('.surebet-helper-save-btn')) return;
 
       // Try to find a link to the valuebet details
       const link = row.querySelector('a[href*="/nav/valuebet/prong/"]');
@@ -1599,36 +1600,36 @@
       // Parse stake limit from the link data
       if (link && link.href) {
         try {
-          console.log('SB Logger: Parsing link for stake limit:', link.href.substring(0, 100));
+          console.log('Surebet Helper: Parsing link for stake limit:', link.href.substring(0, 100));
           linkData = parseSurebetLinkData(link.href);
-          console.log('SB Logger: Parsed link data:', linkData ? `id: ${linkData.id}, limit: ${linkData.limit}` : 'null');
+          console.log('Surebet Helper: Parsed link data:', linkData ? `id: ${linkData.id}, limit: ${linkData.limit}` : 'null');
           
           if (linkData && typeof linkData.limit !== 'undefined') {
             const stakeLimit = linkData.limit;
-            console.log('SB Logger: Found stake limit from link:', stakeLimit);
+            console.log('Surebet Helper: Found stake limit from link:', stakeLimit);
             
             // Highlight rows with stake >= £100
             if (stakeLimit >= 100) {
-              row.classList.add('sb-logger-high-stake');
+              row.classList.add('surebet-helper-high-stake');
               hasHighStake = true;
-              console.log('SB Logger: ✓ Highlighted row with stake limit:', stakeLimit);
+              console.log('Surebet Helper: ✓ Highlighted row with stake limit:', stakeLimit);
             }
           } else {
-            console.log('SB Logger: No limit found in link data');
+            console.log('Surebet Helper: No limit found in link data');
           }
         } catch (e) {
-          console.log('SB Logger: Error parsing stake limit:', e.message);
+          console.log('Surebet Helper: Error parsing stake limit:', e.message);
         }
       } else {
-        console.log('SB Logger: No link found in row');
+        console.log('Surebet Helper: No link found in row');
       }
 
       if (linkData) {
-        row.__sbLoggerBetData = linkData;
-        row.__sbLoggerRecommendedStake = calculateKellyStake(linkData);
+        row.__surebetHelperBetData = linkData;
+        row.__surebetHelperRecommendedStake = calculateKellyStake(linkData);
       } else {
-        row.__sbLoggerBetData = null;
-        row.__sbLoggerRecommendedStake = 0;
+        row.__surebetHelperBetData = null;
+        row.__surebetHelperRecommendedStake = 0;
       }
 
       // Find the first cell with buttons
@@ -1637,7 +1638,7 @@
 
       // Create save button
       const saveBtn = document.createElement('button');
-      saveBtn.className = 'sb-logger-save-btn';
+      saveBtn.className = 'surebet-helper-save-btn';
       saveBtn.textContent = '💾 Save';
       saveBtn.title = 'Save this bet to your log';
 
@@ -1652,7 +1653,7 @@
         
         // Parse from link only
         if (linkUrl) {
-          console.log('SB Logger: Parsing from link:', linkUrl);
+          console.log('Surebet Helper: Parsing from link:', linkUrl);
           betData = parseSurebetLinkData(linkUrl);
         }
         
@@ -1663,8 +1664,8 @@
           return;
         }
 
-        if (row.__sbLoggerRecommendedStake && row.__sbLoggerRecommendedStake > 0) {
-          betData.suggestedStake = row.__sbLoggerRecommendedStake;
+        if (row.__surebetHelperRecommendedStake && row.__surebetHelperRecommendedStake > 0) {
+          betData.suggestedStake = row.__surebetHelperRecommendedStake;
         }
 
         const saved = await saveBet(betData);
@@ -1684,8 +1685,8 @@
       // Insert button into the cell
       firstCell.appendChild(saveBtn);
 
-      if (row.__sbLoggerBetData) {
-        updateRowStakeIndicator(row, row.__sbLoggerBetData, row.__sbLoggerRecommendedStake);
+      if (row.__surebetHelperBetData) {
+        updateRowStakeIndicator(row, row.__surebetHelperBetData, row.__surebetHelperRecommendedStake);
       }
     });
     
@@ -1719,35 +1720,35 @@
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.3);
       
-      console.log('SB Logger: ♪ Notification sound played for high stake bet(s)');
+      console.log('Surebet Helper: ♪ Notification sound played for high stake bet(s)');
     } catch (e) {
-      console.log('SB Logger: Could not play notification sound:', e.message);
+      console.log('Surebet Helper: Could not play notification sound:', e.message);
     }
   }
 
   function parseSurebetLinkData(url) {
     try {
-      console.log('SB Logger: Parsing Surebet link data from URL');
+      console.log('Surebet Helper: Parsing Surebet link data from URL');
       
       // Extract the JSON data from the URL parameter
       const urlObj = new URL(url);
       const jsonBody = urlObj.searchParams.get('json_body[prongs][]');
       
       if (!jsonBody) {
-        console.log('SB Logger: No JSON data found in URL');
+        console.log('Surebet Helper: No JSON data found in URL');
         return null;
       }
       
       // Decode and parse the JSON
       const jsonData = JSON.parse(decodeURIComponent(jsonBody));
-      console.log('SB Logger: Parsed JSON from link:', jsonData);
-      console.log('SB Logger: Raw odds value:', jsonData.value, 'Type:', typeof jsonData.value);
-      console.log('SB Logger: Is lay bet?', jsonData.type?.back === false);
-      console.log('SB Logger: Probability:', jsonData.probability);
-      console.log('SB Logger: Overvalue:', jsonData.overvalue);
+      console.log('Surebet Helper: Parsed JSON from link:', jsonData);
+      console.log('Surebet Helper: Raw odds value:', jsonData.value, 'Type:', typeof jsonData.value);
+      console.log('Surebet Helper: Is lay bet?', jsonData.type?.back === false);
+      console.log('Surebet Helper: Probability:', jsonData.probability);
+      console.log('Surebet Helper: Overvalue:', jsonData.overvalue);
       
       const parsedOdds = parseFloat(jsonData.value);
-      console.log('SB Logger: Parsed odds:', parsedOdds, 'isNaN:', isNaN(parsedOdds), 'Final:', parsedOdds || 0);
+      console.log('Surebet Helper: Parsed odds:', parsedOdds, 'isNaN:', isNaN(parsedOdds), 'Final:', parsedOdds || 0);
       
       const isLayBet = jsonData.type?.back === false || false;
       
@@ -1790,18 +1791,18 @@
         }
       }
       
-      console.log('SB Logger: Extracted data from link:', data);
-      console.log('SB Logger: Final odds value:', data.odds, 'Type:', typeof data.odds);
+      console.log('Surebet Helper: Extracted data from link:', data);
+      console.log('Surebet Helper: Final odds value:', data.odds, 'Type:', typeof data.odds);
       return data;
     } catch (err) {
-      console.error('SB Logger: Error parsing Surebet link data', err);
+      console.error('Surebet Helper: Error parsing Surebet link data', err);
       return null;
     }
   }
 
   function parseSmarketsPageData() {
     try {
-      console.log('SB Logger: Parsing bookmaker page data');
+      console.log('Surebet Helper: Parsing bookmaker page data');
       
       // Try to detect bookmaker from hostname
       const hostname = location.hostname.toLowerCase();
@@ -1854,7 +1855,7 @@
       // Try to find odds buttons on the page (look for back/lay odds)
       // Smarkets typically shows odds in buttons or clickable elements
       const oddsButtons = document.querySelectorAll('[class*="odd"], [class*="price"], button[class*="back"], button[class*="lay"]');
-      console.log('SB Logger: Found', oddsButtons.length, 'potential odds elements');
+      console.log('Surebet Helper: Found', oddsButtons.length, 'potential odds elements');
       
       // Log some samples for debugging
       if (oddsButtons.length > 0) {
@@ -1863,23 +1864,23 @@
           classes: btn.className,
           dataAttrs: Object.keys(btn.dataset)
         }));
-        console.log('SB Logger: Sample odds elements:', samples);
+        console.log('Surebet Helper: Sample odds elements:', samples);
       }
 
       // Add a note that user should manually select market and odds
       data.note = 'Manual odds entry - please specify market and odds';
 
-      console.log('SB Logger: Parsed Smarkets data:', data);
+      console.log('Surebet Helper: Parsed Smarkets data:', data);
       return data;
     } catch (err) {
-      console.error('SB Logger: Error parsing Smarkets data', err);
+      console.error('Surebet Helper: Error parsing Smarkets data', err);
       return null;
     }
   }
 
   function parseBetPopupData(popup) {
     try {
-      console.log('SB Logger: Parsing bet popup data');
+      console.log('Surebet Helper: Parsing bet popup data');
       const data = {
         timestamp: new Date().toISOString(),
         url: location.href
@@ -1932,10 +1933,10 @@
         data.overvalue = parseFloat(overvalueMatch[1]);
       }
 
-      console.log('SB Logger: Parsed popup data:', data);
+      console.log('Surebet Helper: Parsed popup data:', data);
       return data;
     } catch (err) {
-      console.error('SB Logger: Error parsing popup data', err);
+      console.error('Surebet Helper: Error parsing popup data', err);
       return null;
     }
   }
@@ -1959,26 +1960,26 @@
         if (element) {
           // Never return elements from the extension's own UI
           try {
-            if (element.closest && element.closest('.sb-logger-stake-panel')) {
-              console.log('SB Logger: Found element but it belongs to extension panel, skipping:', selector);
+            if (element.closest && element.closest('.surebet-helper-stake-panel')) {
+              console.log('Surebet Helper: Found element but it belongs to extension panel, skipping:', selector);
               continue;
             }
           } catch (e) {
             // ignore
           }
-          if (element.id && element.id.includes('sb-logger')) {
-            console.log('SB Logger: Found element but it has sb-logger id, skipping:', selector);
+          if (element.id && element.id.includes('surebet-helper')) {
+            console.log('Surebet Helper: Found element but it has surebet-helper id, skipping:', selector);
             continue;
           }
-          if (element.className && String(element.className).includes('sb-logger')) {
-            console.log('SB Logger: Found element but it has sb-logger class, skipping:', selector);
+          if (element.className && String(element.className).includes('surebet-helper')) {
+            console.log('Surebet Helper: Found element but it has surebet-helper class, skipping:', selector);
             continue;
           }
-          console.log('SB Logger: Found element with selector:', selector);
+          console.log('Surebet Helper: Found element with selector:', selector);
           return element;
         }
       } catch (e) {
-        console.warn('SB Logger: Invalid selector:', selector, e);
+        console.warn('Surebet Helper: Invalid selector:', selector, e);
       }
     }
     return null;
@@ -2007,14 +2008,14 @@
     const hasOdds = oddsElement && oddsElement.textContent.trim() && !oddsElement.textContent.includes('---');
     const hasSelection = selectionElement && selectionElement.textContent.trim();
     
-    console.log('SB Logger: Betting slip population check - odds:', hasOdds, 'selection:', hasSelection);
+    console.log('Surebet Helper: Betting slip population check - odds:', hasOdds, 'selection:', hasSelection);
     return hasOdds || hasSelection || bettingSlipElement.textContent.trim().length > 50;
   }
 
   function findStakeInput(exchange, isLay = false) {
     const selectors = BETTING_SLIP_SELECTORS[exchange];
     if (!selectors) {
-      console.warn('SB Logger: No selectors defined for exchange:', exchange);
+      console.warn('Surebet Helper: No selectors defined for exchange:', exchange);
       return null;
     }
 
@@ -2046,40 +2047,40 @@
   async function waitForBettingSlip(exchange, maxAttempts = 20, pollDelay = 500) {
     const selectors = BETTING_SLIP_SELECTORS[exchange];
     if (!selectors) {
-      console.error('SB Logger: Unknown exchange:', exchange);
+      console.error('Surebet Helper: Unknown exchange:', exchange);
       return null;
     }
 
-    console.log('SB Logger: Waiting for betting slip on', exchange);
+    console.log('Surebet Helper: Waiting for betting slip on', exchange);
     
     return new Promise((resolve) => {
       let attempts = 0;
 
       const checkBettingSlip = () => {
         attempts++;
-        console.log(`SB Logger: Betting slip check attempt ${attempts}/${maxAttempts}`);
+        console.log(`Surebet Helper: Betting slip check attempt ${attempts}/${maxAttempts}`);
 
         // Try to find the betting slip container
         const bettingSlip = findElement(selectors.bettingSlip);
         
         if (bettingSlip && isElementVisible(bettingSlip) && isBettingSlipPopulated(bettingSlip, exchange)) {
-          console.log('SB Logger: ✓ Betting slip found and populated');
+          console.log('Surebet Helper: ✓ Betting slip found and populated');
           
           // Find stake input within betting slip
           const stakeInput = findStakeInput(exchange);
           if (stakeInput && isElementVisible(stakeInput)) {
-            console.log('SB Logger: ✓ Stake input found and visible');
+            console.log('Surebet Helper: ✓ Stake input found and visible');
             resolve({ bettingSlip, stakeInput });
             return;
           } else {
-            console.log('SB Logger: Stake input not yet ready');
+            console.log('Surebet Helper: Stake input not yet ready');
           }
         } else {
-          console.log('SB Logger: Betting slip not yet populated');
+          console.log('Surebet Helper: Betting slip not yet populated');
         }
 
         if (attempts >= maxAttempts) {
-          console.warn('SB Logger: Betting slip detection timeout after', maxAttempts * pollDelay, 'ms');
+          console.warn('Surebet Helper: Betting slip detection timeout after', maxAttempts * pollDelay, 'ms');
           resolve(null);
           return;
         }
@@ -2096,7 +2097,7 @@
     if (!input) return false;
     
     const stake = String(stakeValue).trim();
-    console.log('SB Logger: Filling stake input with value:', stake);
+    console.log('Surebet Helper: Filling stake input with value:', stake);
 
     // Set the value
     input.value = stake;
@@ -2112,44 +2113,44 @@
       try {
         input.dispatchEvent(event);
       } catch (e) {
-        console.warn('SB Logger: Error dispatching event:', e);
+        console.warn('Surebet Helper: Error dispatching event:', e);
       }
     });
 
-    console.log('SB Logger: ✓ Stake value filled and events dispatched');
+    console.log('Surebet Helper: ✓ Stake value filled and events dispatched');
     return true;
   }
 
   async function autoFillBetSlip(betData) {
     if (!autoFillSettings.enabled) {
-      console.log('SB Logger: Auto-fill is disabled');
+      console.log('Surebet Helper: Auto-fill is disabled');
       return false;
     }
 
     if (!betData || !betData.stake) {
-      console.warn('SB Logger: No bet data or stake available');
+      console.warn('Surebet Helper: No bet data or stake available');
       return false;
     }
 
     const exchange = getExchangeFromHostname();
     if (!exchange) {
-      console.warn('SB Logger: Could not detect exchange');
+      console.warn('Surebet Helper: Could not detect exchange');
       return false;
     }
 
     if (!autoFillSettings.bookmakers[exchange]) {
-      console.log('SB Logger: Auto-fill disabled for', exchange);
+      console.log('Surebet Helper: Auto-fill disabled for', exchange);
       return false;
     }
 
-    console.log('SB Logger: Starting auto-fill for', exchange, 'stake:', betData.stake);
+    console.log('Surebet Helper: Starting auto-fill for', exchange, 'stake:', betData.stake);
 
     // Start MutationObserver to detect betting slip
     return new Promise((resolve) => {
       let detected = false;
       const timeout = setTimeout(() => {
         if (detected) return;
-        console.warn('SB Logger: Auto-fill timeout reached');
+        console.warn('Surebet Helper: Auto-fill timeout reached');
         if (bettingSlipDetector) {
           bettingSlipDetector.disconnect();
           bettingSlipDetector = null;
@@ -2167,7 +2168,7 @@
               const selectors = BETTING_SLIP_SELECTORS[exchange];
               for (const slipSelector of selectors.bettingSlip) {
                 if (node.matches?.(slipSelector) || node.querySelector?.(slipSelector)) {
-                  console.log('SB Logger: Betting slip detected via MutationObserver');
+                  console.log('Surebet Helper: Betting slip detected via MutationObserver');
                   detected = true;
                   performAutoFill();
                   return;
@@ -2192,7 +2193,7 @@
         
         const result = await waitForBettingSlip(exchange, 1, 0);
         if (result && result.stakeInput) {
-          console.log('SB Logger: Betting slip detected via polling');
+          console.log('Surebet Helper: Betting slip detected via polling');
           detected = true;
           performAutoFill();
         }
@@ -2218,7 +2219,7 @@
                 const currentOdds = parseFloat(oddsInputs[0].value);
                 const expectedOdds = parseFloat(betData.odds);
                 if (Math.abs(currentOdds - expectedOdds) > 0.01) {
-                  console.warn(`SB Logger: ⚠️ Odds changed! Expected ${expectedOdds.toFixed(2)}, found ${currentOdds.toFixed(2)}`);
+                  console.warn(`Surebet Helper: ⚠️ Odds changed! Expected ${expectedOdds.toFixed(2)}, found ${currentOdds.toFixed(2)}`);
                   showToast(`⚠️ Odds changed! Expected ${expectedOdds.toFixed(2)}, now ${currentOdds.toFixed(2)}`, false);
                 }
               }
@@ -2230,15 +2231,15 @@
               showToast(`✓ Stake auto-filled: ${betData.currency || '£'}${betData.stake}`, true, 2000);
               resolve(true);
             } else {
-              console.warn('SB Logger: Failed to fill stake input');
+              console.warn('Surebet Helper: Failed to fill stake input');
               resolve(false);
             }
           } else {
-            console.warn('SB Logger: Could not locate betting slip or stake input');
+            console.warn('Surebet Helper: Could not locate betting slip or stake input');
             resolve(false);
           }
         } catch (e) {
-          console.error('SB Logger: Error during auto-fill:', e);
+          console.error('Surebet Helper: Error during auto-fill:', e);
           resolve(false);
         }
       }
@@ -2247,17 +2248,17 @@
 
   async function getSurebetDataFromReferrer() {
     const retrievalTimestamp = new Date().toISOString();
-    console.log(`SB Logger: [${retrievalTimestamp}] Starting Smarkets retrieval - querying broker for pendingBet`);
+    console.log(`Surebet Helper: [${retrievalTimestamp}] Starting Smarkets retrieval - querying broker for pendingBet`);
     
     // Use cached promise if already in flight (prevents multiple consumers from consuming twice)
     if (cachedPendingBetPromise) {
-      console.log('SB Logger: ℹ Reusing in-flight broker query');
+      console.log('Surebet Helper: ℹ Reusing in-flight broker query');
       return cachedPendingBetPromise;
     }
     
     // If already cached, return immediately
     if (cachedPendingBet !== null) {
-      console.log(`SB Logger: ℹ Returning cached pendingBet (ID: ${cachedPendingBet ? cachedPendingBet.id : 'none'})`);
+      console.log(`Surebet Helper: ℹ Returning cached pendingBet (ID: ${cachedPendingBet ? cachedPendingBet.id : 'none'})`);
       return cachedPendingBet;
     }
     
@@ -2285,14 +2286,14 @@
         
         if (brokerResult && brokerResult.betData) {
           cachedPendingBet = brokerResult.betData;
-          console.log(`SB Logger: ✓ Broker returned pendingBet (ID: ${cachedPendingBet.id})`);
-          console.log('SB Logger: Retrieved bet data from broker:', cachedPendingBet);
+          console.log(`Surebet Helper: ✓ Broker returned pendingBet (ID: ${cachedPendingBet.id})`);
+          console.log('Surebet Helper: Retrieved bet data from broker:', cachedPendingBet);
           return cachedPendingBet;
         } else {
-          console.log('SB Logger: Broker found no pendingBet, trying fallbacks');
+          console.log('Surebet Helper: Broker found no pendingBet, trying fallbacks');
         }
       } catch (err) {
-        console.warn(`SB Logger: ⚠ Broker query failed (${err.message}), trying fallbacks`);
+        console.warn(`Surebet Helper: ⚠ Broker query failed (${err.message}), trying fallbacks`);
       }
       
       // 2. FALLBACK: Try chrome.storage.local (async)
@@ -2311,30 +2312,30 @@
         
         if (result) {
           cachedPendingBet = result;
-          console.log(`SB Logger: ✓ Found pendingBet in chrome.storage.local (ID: ${result.id})`);
-          console.log('SB Logger: Retrieved bet data from storage:', result);
+          console.log(`Surebet Helper: ✓ Found pendingBet in chrome.storage.local (ID: ${result.id})`);
+          console.log('Surebet Helper: Retrieved bet data from storage:', result);
           
           // Clear after retrieval
           chrome.storage.local.remove('pendingBet', () => {
-            console.log('SB Logger: ✓ Cleared pendingBet from chrome.storage.local');
+            console.log('Surebet Helper: ✓ Cleared pendingBet from chrome.storage.local');
           });
           
           return result;
         }
       } catch (err) {
-        console.warn(`SB Logger: ⚠ Storage fallback failed (${err.message})`);
+        console.warn(`Surebet Helper: ⚠ Storage fallback failed (${err.message})`);
       }
       
       // 3. FALLBACK: Try document.referrer
       if (document.referrer && document.referrer.includes('/nav/valuebet/prong/')) {
-        console.log('SB Logger: Referrer detected from surebet.com');
+        console.log('Surebet Helper: Referrer detected from surebet.com');
         const betData = parseSurebetLinkData(document.referrer);
         if (betData) {
           cachedPendingBet = betData;
-          console.log(`SB Logger: ✓ Parsed data from referrer (ID: ${betData.id})`);
+          console.log(`Surebet Helper: ✓ Parsed data from referrer (ID: ${betData.id})`);
           return betData;
         } else {
-          console.warn('SB Logger: ⚠ Failed to parse referrer data (may be truncated by browser)');
+          console.warn('Surebet Helper: ⚠ Failed to parse referrer data (may be truncated by browser)');
         }
       }
       
@@ -2344,16 +2345,16 @@
           const betData = parseSurebetLinkData(window.top.location.href);
           if (betData) {
             cachedPendingBet = betData;
-            console.log(`SB Logger: ✓ Found bet data from parent frame (ID: ${betData.id})`);
+            console.log(`Surebet Helper: ✓ Found bet data from parent frame (ID: ${betData.id})`);
             return betData;
           }
         }
       } catch (e) {
-        console.log('SB Logger: Cannot access parent frame (cross-origin):', e.message);
+        console.log('Surebet Helper: Cannot access parent frame (cross-origin):', e.message);
       }
       
       // No data found anywhere
-      console.log('SB Logger: ⚠ No pending bet data found - user will need to manually enter stakes');
+      console.log('Surebet Helper: ⚠ No pending bet data found - user will need to manually enter stakes');
       cachedPendingBet = null;
       return null;
     })();
@@ -2372,19 +2373,19 @@
       return;
     }
     // Skip if button already injected
-    if (document.querySelector('.sb-logger-save-btn-smarkets')) {
-      console.log('SB Logger: Save button already on Smarkets page');
+    if (document.querySelector('.surebet-helper-save-btn-smarkets')) {
+      console.log('Surebet Helper: Save button already on Smarkets page');
       return;
     }
 
-    console.log('SB Logger: Injecting save button on Smarkets page');
+    console.log('Surebet Helper: Injecting save button on Smarkets page');
 
     // Try to get data from Surebet click
     const surebetData = await getSurebetDataFromReferrer();
 
     // Create a floating save button
     const saveBtn = document.createElement('button');
-    saveBtn.className = 'sb-logger-save-btn-smarkets';
+    saveBtn.className = 'surebet-helper-save-btn-smarkets';
     saveBtn.style.cssText = `
       position: fixed;
       bottom: 20px;
@@ -2453,7 +2454,7 @@
     });
 
     document.body.appendChild(saveBtn);
-    console.log('SB Logger: Floating save button added to Smarkets page');
+    console.log('Surebet Helper: Floating save button added to Smarkets page');
   }
 
   function injectSaveButtonInPopup(popup) {
@@ -2461,16 +2462,16 @@
       return;
     }
     // Skip if button already injected
-    if (popup.querySelector('.sb-logger-save-btn-popup')) {
-      console.log('SB Logger: Save button already in popup');
+    if (popup.querySelector('.surebet-helper-save-btn-popup')) {
+      console.log('Surebet Helper: Save button already in popup');
       return;
     }
 
-    console.log('SB Logger: Injecting save button into bet popup');
+    console.log('Surebet Helper: Injecting save button into bet popup');
 
     // Create save button
     const saveBtn = document.createElement('button');
-    saveBtn.className = 'sb-logger-save-btn sb-logger-save-btn-popup';
+    saveBtn.className = 'surebet-helper-save-btn surebet-helper-save-btn-popup';
     saveBtn.style.cssText = `
       background: #28a745;
       color: #fff;
@@ -2551,7 +2552,7 @@
       }
     }
 
-    console.log('SB Logger: Save button injected into popup successfully');
+    console.log('Surebet Helper: Save button injected into popup successfully');
   }
 
   function detectAndInjectIntoPopup() {
@@ -2560,11 +2561,11 @@
     }
     // Only run on Smarkets or other bookmaker sites, NOT on Surebet
     if (location.hostname.includes('surebet.com')) {
-      console.log('SB Logger: On Surebet page, skipping popup detection');
+      console.log('Surebet Helper: On Surebet page, skipping popup detection');
       return;
     }
     
-    console.log('SB Logger: === Detecting bet popup ===');
+    console.log('Surebet Helper: === Detecting bet popup ===');
     
     // Look for various types of popup/modal containers that might contain bet details
     const popupSelectors = [
@@ -2584,7 +2585,7 @@
     
     for (const selector of popupSelectors) {
       const popups = document.querySelectorAll(selector);
-      console.log(`SB Logger: Found ${popups.length} elements matching "${selector}"`);
+      console.log(`Surebet Helper: Found ${popups.length} elements matching "${selector}"`);
       
       popups.forEach(popup => {
         const style = window.getComputedStyle(popup);
@@ -2592,7 +2593,7 @@
         
         if (isVisible) {
           const text = popup.textContent.toLowerCase();
-          console.log(`SB Logger: Checking visible popup:`, {
+          console.log(`Surebet Helper: Checking visible popup:`, {
             selector,
             classes: popup.className,
             hasOdd: text.includes('odd'),
@@ -2606,7 +2607,7 @@
           if (text.includes('odd') || text.includes('bet') || text.includes('match') || 
               text.includes('event') || text.includes('coef') || text.includes('value') ||
               popup.querySelector('[class*="odd"], [class*="coef"], [data-value]')) {
-            console.log('SB Logger: ✓ Found bet popup with selector:', selector);
+            console.log('Surebet Helper: ✓ Found bet popup with selector:', selector);
             candidates.push(popup);
           }
         }
@@ -2623,7 +2624,7 @@
         const text = div.textContent.toLowerCase();
         if ((text.includes('odd') || text.includes('coef') || text.includes('value')) && 
             text.length > 20 && text.length < 5000) {
-          console.log('SB Logger: Found positioned div that might be popup:', {
+          console.log('Surebet Helper: Found positioned div that might be popup:', {
             position: style.position,
             zIndex: style.zIndex,
             classes: div.className
@@ -2635,7 +2636,7 @@
       }
     });
     
-    console.log(`SB Logger: Total popup candidates found: ${candidates.length}`);
+    console.log(`Surebet Helper: Total popup candidates found: ${candidates.length}`);
     
     // Inject into all candidates
     candidates.forEach(popup => {
@@ -2659,20 +2660,20 @@
       clickHandlers.global = null;
     }
 
-    document.querySelectorAll('.sb-logger-save-btn, .sb-logger-save-btn-smarkets, .sb-logger-preset-container, .sb-logger-hide-lay-btn, .sb-logger-toast').forEach((node) => {
+    document.querySelectorAll('.surebet-helper-save-btn, .surebet-helper-save-btn-smarkets, .surebet-helper-preset-container, .surebet-helper-hide-lay-btn, .surebet-helper-toast').forEach((node) => {
       node.remove();
     });
-    document.querySelectorAll('.sb-logger-stake-indicator').forEach((node) => node.remove());
+    document.querySelectorAll('.surebet-helper-stake-indicator').forEach((node) => node.remove());
 
-    document.querySelectorAll('.sb-logger-high-stake').forEach((row) => {
-      row.classList.remove('sb-logger-high-stake');
+    document.querySelectorAll('.surebet-helper-high-stake').forEach((row) => {
+      row.classList.remove('surebet-helper-high-stake');
     });
 
-    document.querySelectorAll('.sb-logger-hidden-row').forEach((row) => {
-      row.classList.remove('sb-logger-hidden-row');
+    document.querySelectorAll('.surebet-helper-hidden-row').forEach((row) => {
+      row.classList.remove('surebet-helper-hidden-row');
     });
 
-    const styleEl = document.getElementById('sb-logger-style');
+    const styleEl = document.getElementById('surebet-helper-style');
     if (styleEl) {
       styleEl.remove();
     }
@@ -2687,45 +2688,40 @@
 
   async function init() {
     if (isDisabled) {
-      console.log('SB Logger: Disabled, initialization skipped');
+      console.log('Surebet Helper: Disabled, initialization skipped');
       return;
     }
     if (isInitialized) {
       return;
     }
     isInitialized = true;
-    console.log('SB Logger: ===== INITIALIZING =====');
-    console.log('SB Logger: URL:', location.href);
+    console.log('Surebet Helper: ===== INITIALIZING =====');
+    console.log('Surebet Helper: URL:', location.href);
     injectStyles();
-    console.log('✅ SB Logger: Styles injected');
+    console.log('✅ Surebet Helper: Styles injected');
     await loadStakingSettings();
-    console.log('✅ SB Logger: Staking settings loaded');
+    console.log('✅ Surebet Helper: Staking settings loaded');
     injectStakePanel();
-    console.log('✅ SB Logger: Stake panel injected');
+    console.log('✅ Surebet Helper: Stake panel injected');
     startStakePanelMonitoring();
-    console.log('✅ SB Logger: Panel monitoring started');
-    
-    // Show a temporary toast to confirm script is running
-    setTimeout(() => {
-      showToast('SB Logger Active!', true, 1500);
-    }, 1000);
+    console.log('✅ Surebet Helper: Panel monitoring started');
     
     // If on any bookmaker site, inject floating button and start auto-fill
     if (onBookmakerSite) {
-      console.log('SB Logger: On bookmaker site, injecting floating save button');
+      console.log('Surebet Helper: On bookmaker site, injecting floating save button');
       
       // Try auto-fill if enabled
       setTimeout(async () => {
         const betData = await getSurebetDataFromReferrer();
         if (betData) {
-          console.log('SB Logger: Bet data available, attempting auto-fill');
+          console.log('Surebet Helper: Bet data available, attempting auto-fill');
           betData.stake = calculateKellyStake(betData);
-          console.log(`SB Logger: Calculated Kelly stake: ${betData.stake}`);
+          console.log(`Surebet Helper: Calculated Kelly stake: ${betData.stake}`);
           const success = await autoFillBetSlip(betData);
           if (success) {
-            console.log('SB Logger: ✓ Auto-fill completed successfully');
+            console.log('Surebet Helper: ✓ Auto-fill completed successfully');
           } else {
-            console.log('SB Logger: Auto-fill did not complete, clipboard fallback available');
+            console.log('Surebet Helper: Auto-fill did not complete, clipboard fallback available');
           }
         }
       }, 500);
@@ -2747,11 +2743,11 @@
       if (link && link.href) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('SB Logger: Surebet link clicked, sending bet data to broker');
+        console.log('Surebet Helper: Surebet link clicked, sending bet data to broker');
         const betData = parseSurebetLinkData(link.href);
         if (betData) {
           const timestamp = new Date().toISOString();
-          console.log(`SB Logger: [${timestamp}] Broker saving pendingBet with ID: ${betData.id}`);
+          console.log(`Surebet Helper: [${timestamp}] Broker saving pendingBet with ID: ${betData.id}`);
           
           // Send to background broker (cross-origin safe)
           try {
@@ -2774,16 +2770,16 @@
             });
             
             if (response && response.success) {
-              console.log(`SB Logger: ✓ Broker confirmed pendingBet saved (ID: ${betData.id})`);
-              console.log('SB Logger: Bet data stored for bookmaker page:', betData);
+              console.log(`Surebet Helper: ✓ Broker confirmed pendingBet saved (ID: ${betData.id})`);
+              console.log('Surebet Helper: Bet data stored for bookmaker page:', betData);
               // Navigate to bookmaker
               window.location.href = link.href;
             } else {
-              console.warn('SB Logger: ⚠ Broker save failed, navigating anyway');
+              console.warn('Surebet Helper: ⚠ Broker save failed, navigating anyway');
               window.location.href = link.href;
             }
           } catch (err) {
-            console.error('SB Logger: ⚠ Broker communication error:', err.message);
+            console.error('Surebet Helper: ⚠ Broker communication error:', err.message);
             // Navigate anyway to not block user
             window.location.href = link.href;
           }
@@ -2806,28 +2802,28 @@
       if (isDisabled) {
         return;
       }
-      console.log('SB Logger: Click detected on:', e.target.tagName, e.target.className, e.target);
+      console.log('Surebet Helper: Click detected on:', e.target.tagName, e.target.className, e.target);
       setTimeout(() => {
         if (isDisabled) return;
-        console.log('SB Logger: Post-click injection attempt (200ms)');
+        console.log('Surebet Helper: Post-click injection attempt (200ms)');
         injectPresetButtons();
         detectAndInjectIntoPopup();
       }, 200);
       setTimeout(() => {
         if (isDisabled) return;
-        console.log('SB Logger: Post-click injection attempt (500ms)');
+        console.log('Surebet Helper: Post-click injection attempt (500ms)');
         injectPresetButtons();
         detectAndInjectIntoPopup();
       }, 500);
       setTimeout(() => {
         if (isDisabled) return;
-        console.log('SB Logger: Post-click injection attempt (1000ms)');
+        console.log('Surebet Helper: Post-click injection attempt (1000ms)');
         injectPresetButtons();
         detectAndInjectIntoPopup();
       }, 1000);
       setTimeout(() => {
         if (isDisabled) return;
-        console.log('SB Logger: Post-click injection attempt (1500ms)');
+        console.log('Surebet Helper: Post-click injection attempt (1500ms)');
         detectAndInjectIntoPopup();
       }, 1500);
     };
@@ -2873,7 +2869,7 @@
         // Reapply hide lay filter if active
         setTimeout(() => {
           if (isDisabled) return;
-          const hideLayBtn = document.querySelector('.sb-logger-hide-lay-btn');
+          const hideLayBtn = document.querySelector('.surebet-helper-hide-lay-btn');
           if (hideLayBtn && hideLayBtn.classList.contains('active')) {
             toggleLayBets();
           }
@@ -2891,7 +2887,7 @@
     const mainContent = document.querySelector('main') || document.querySelector('.page-container') || document.body;
     mutationObserver.observe(mainContent, { childList: true, subtree: true });
     
-    console.log('SB Logger: Initialization complete, observers active');
+    console.log('Surebet Helper: Initialization complete, observers active');
   }
 
   function scheduleInit() {
@@ -2899,7 +2895,7 @@
       return;
     }
     const startInit = () => {
-      init().catch((err) => console.error('SB Logger: Initialization failed', err));
+      init().catch((err) => console.error('Surebet Helper: Initialization failed', err));
     };
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', startInit, { once: true });
@@ -2914,14 +2910,14 @@
 
     if (disabled) {
       if (!wasDisabled) {
-        console.log('SB Logger: Disabled via action menu');
+        console.log('Surebet Helper: Disabled via action menu');
       }
       cleanupExtension();
       return;
     }
 
     if (wasDisabled) {
-      console.log('SB Logger: Re-enabled via action menu');
+      console.log('Surebet Helper: Re-enabled via action menu');
     }
     scheduleInit();
   }
@@ -3006,3 +3002,11 @@
     scheduleInit();
   }
 })();
+
+
+
+
+
+
+
+
