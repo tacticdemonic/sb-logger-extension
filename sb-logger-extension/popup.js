@@ -1712,6 +1712,206 @@ See API_SETUP.md in the extension folder for detailed instructions.`;
     });
   }
 
+  // Import JSON functionality
+  const btnImportJson = document.getElementById('import-json');
+  if (btnImportJson) {
+    btnImportJson.addEventListener('click', () => {
+      console.log('📥 Initiating JSON import...');
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = '.json';
+      
+      fileInput.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        // Show loading state
+        btnImportJson.disabled = true;
+        btnImportJson.textContent = 'Importing...';
+        
+        try {
+          await importJsonFile(file);
+        } catch (error) {
+          console.error('❌ JSON import error:', error);
+          alert(`Import failed: ${error.message}`);
+        } finally {
+          btnImportJson.disabled = false;
+          btnImportJson.textContent = '📥 Import JSON';
+        }
+      };
+      
+      fileInput.onerror = () => {
+        alert('Failed to read file');
+      };
+      
+      fileInput.click();
+    });
+  }
+
+  // Validate and fix imported bet data (permissive mode)
+  function validateImportedBet(bet) {
+    if (!bet || typeof bet !== 'object') return null;
+    
+    // Required fields check
+    if (!bet.event || !bet.odds || bet.stake === undefined || !bet.bookmaker) {
+      console.warn('⚠️ Skipping bet missing required fields:', bet);
+      return null;
+    }
+    
+    // Create clean bet object with type coercion
+    const cleanBet = {
+      ...bet,
+      odds: parseFloat(bet.odds) || 1.01,
+      stake: parseFloat(bet.stake) || 0,
+      probability: parseFloat(bet.probability) || 0,
+      overvalue: parseFloat(bet.overvalue) || 0,
+      isLay: bet.isLay === true || bet.isLay === 'true',
+      status: bet.status || 'pending',
+      event: String(bet.event).trim(),
+      bookmaker: String(bet.bookmaker).trim(),
+      sport: String(bet.sport || '').trim(),
+      tournament: String(bet.tournament || '').trim(),
+      market: String(bet.market || '').trim(),
+      note: String(bet.note || '').trim()
+    };
+    
+    // Ensure identity fields for deduplication
+    ensureBetIdentity(cleanBet);
+    
+    return cleanBet;
+  }
+
+  // Merge imported bets with existing bets (deduplication)
+  function mergeImportedBets(existingBets, importedBets) {
+    const merged = [...existingBets];
+    let addedCount = 0;
+    let updatedCount = 0;
+    let skippedCount = 0;
+    
+    importedBets.forEach(importedBet => {
+      const cleanBet = validateImportedBet(importedBet);
+      if (!cleanBet) {
+        skippedCount++;
+        return;
+      }
+      
+      const importedKey = getBetKey(cleanBet);
+      const existingIndex = merged.findIndex(b => getBetKey(b) === importedKey);
+      
+      if (existingIndex === -1) {
+        // New bet - add it
+        merged.push(cleanBet);
+        addedCount++;
+        console.log(`✅ Added new bet: ${cleanBet.event}`);
+      } else {
+        // Existing bet - check if we should update
+        const existing = merged[existingIndex];
+        
+        // Update if: imported is settled and existing is pending
+        if (cleanBet.status !== 'pending' && existing.status === 'pending') {
+          merged[existingIndex] = {
+            ...existing,
+            ...cleanBet,
+            timestamp: existing.timestamp // Preserve original timestamp
+          };
+          updatedCount++;
+          console.log(`🔄 Updated pending bet with settlement: ${cleanBet.event} - Status: ${cleanBet.status}`);
+        } else {
+          skippedCount++;
+          console.log(`⏭️ Skipped duplicate bet: ${cleanBet.event}`);
+        }
+      }
+    });
+    
+    return { merged, addedCount, updatedCount, skippedCount };
+  }
+
+  // Main JSON import function
+  async function importJsonFile(file) {
+    console.log(`📁 Reading JSON file: ${file.name}`);
+    
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = async (event) => {
+        try {
+          const jsonText = event.target.result;
+          let importData;
+          
+          try {
+            importData = JSON.parse(jsonText);
+          } catch (parseError) {
+            throw new Error(`Invalid JSON format: ${parseError.message}`);
+          }
+          
+          // Handle both new export format {bets: [], analysis: {}} and legacy flat array
+          let betsArray = [];
+          if (Array.isArray(importData)) {
+            // Legacy flat array format
+            betsArray = importData;
+            console.log('📋 Detected legacy flat array format');
+          } else if (importData && Array.isArray(importData.bets)) {
+            // New export format with analysis
+            betsArray = importData.bets;
+            console.log('📋 Detected new export format with analysis');
+          } else {
+            throw new Error('Invalid JSON structure: must contain array of bets or {bets: [...]}');
+          }
+          
+          if (!Array.isArray(betsArray) || betsArray.length === 0) {
+            throw new Error('JSON file contains no bets');
+          }
+          
+          console.log(`📊 Processing ${betsArray.length} bets from import file`);
+          
+          // Get existing bets from storage
+          api.storage.local.get({ bets: [] }, (res) => {
+            const existingBets = res.bets || [];
+            console.log(`📦 Current storage has ${existingBets.length} bets`);
+            
+            // Merge with deduplication
+            const { merged, addedCount, updatedCount, skippedCount } = mergeImportedBets(existingBets, betsArray);
+            
+            console.log(`✅ Import complete: Added ${addedCount}, Updated ${updatedCount}, Skipped ${skippedCount}`);
+            
+            // Write merged bets to storage
+            api.storage.local.set({ bets: merged }, () => {
+              console.log('💾 Merged bets saved to storage');
+              
+              // Trigger bankroll recalculation
+              requestBankrollRecalc(() => {
+                // Refresh UI
+                loadAndRender();
+                
+                // Show success message
+                let message = `✅ Import successful!\n\nAdded: ${addedCount} new bets`;
+                if (updatedCount > 0) {
+                  message += `\nUpdated: ${updatedCount} settled bets`;
+                }
+                if (skippedCount > 0) {
+                  message += `\nSkipped: ${skippedCount} duplicates/invalid`;
+                }
+                
+                alert(message);
+                console.log(`📥 JSON import completed: ${addedCount} added, ${updatedCount} updated, ${skippedCount} skipped`);
+                resolve();
+              });
+            });
+          });
+        } catch (error) {
+          console.error('❌ Import processing error:', error);
+          reject(error);
+        }
+      };
+      
+      reader.onerror = () => {
+        reject(new Error('Failed to read file'));
+      };
+      
+      reader.readAsText(file);
+    });
+  }
+
   function parseBetfairCSV(csvText) {
     const lines = csvText.split('\n').map(line => line.trim()).filter(line => line);
     if (lines.length < 2) {
