@@ -60,11 +60,12 @@
         '#betslip'
       ],
       stakeInput: [
+        'input.betslip-size-input[ng-model*="size"]',
+        'input[bf-number-restrict]',
+        'input.betslip-size-input',
         'input[name="stake"]',
         'input[data-testid*="stake"]',
-        'input[placeholder*="stake" i]',
-        '[class*="stake"] input[type="number"]',
-        'input[type="number"][value]'
+        'input[placeholder*="stake" i]'
       ],
       backBet: '[data-side="back"]',
       layBet: '[data-side="lay"]',
@@ -774,7 +775,10 @@
     if (stakeValue && stakeValue > 0) {
       indicator.classList.remove('muted');
       indicator.dataset.stakeValue = String(stakeValue);
-      indicator.innerHTML = `Stake ${formatStakeAmount(stakeValue, betData.currency || 'GBP')}<span>${Math.round((stakingSettings.fraction || DEFAULT_STAKING_SETTINGS.fraction) * 100)}% Kelly</span>`;
+      indicator.textContent = 'Stake ' + formatStakeAmount(stakeValue, betData.currency || 'GBP');
+      const span = document.createElement('span');
+      span.textContent = Math.round((stakingSettings.fraction || DEFAULT_STAKING_SETTINGS.fraction) * 100) + '% Kelly';
+      indicator.appendChild(span);
     } else {
       indicator.classList.add('muted');
       indicator.dataset.stakeValue = '';
@@ -842,7 +846,20 @@
     }
     const commissionStatus = useCommission ? '✓' : '✗';
     if (summary) {
-      summary.innerHTML = `Current bank <strong>${formatStakeAmount(bankroll)}</strong><br/>Starting bank <strong>${formatStakeAmount(baseBankroll)}</strong><br/>Fractional Kelly <strong>${fractionPercent}%</strong><br/>Commission accounting <strong>${commissionStatus}</strong>`;
+      summary.innerHTML = '';
+      const lines = [
+        { label: 'Current bank', value: formatStakeAmount(bankroll) },
+        { label: 'Starting bank', value: formatStakeAmount(baseBankroll) },
+        { label: 'Fractional Kelly', value: fractionPercent + '%' },
+        { label: 'Commission accounting', value: commissionStatus }
+      ];
+      lines.forEach((line, index) => {
+        if (index > 0) summary.appendChild(document.createElement('br'));
+        summary.appendChild(document.createTextNode(line.label + ' '));
+        const strong = document.createElement('strong');
+        strong.textContent = line.value;
+        summary.appendChild(strong);
+      });
     }
     if (collapsedText) {
       collapsedText.textContent = `Kelly ${fractionPercent}% | Bank ${formatStakeAmount(bankroll)} | Comm ${commissionStatus}`;
@@ -1932,6 +1949,23 @@
       try {
         const element = document.querySelector(selector);
         if (element) {
+          // Never return elements from the extension's own UI
+          try {
+            if (element.closest && element.closest('.sb-logger-stake-panel')) {
+              console.log('SB Logger: Found element but it belongs to extension panel, skipping:', selector);
+              continue;
+            }
+          } catch (e) {
+            // ignore
+          }
+          if (element.id && element.id.includes('sb-logger')) {
+            console.log('SB Logger: Found element but it has sb-logger id, skipping:', selector);
+            continue;
+          }
+          if (element.className && String(element.className).includes('sb-logger')) {
+            console.log('SB Logger: Found element but it has sb-logger class, skipping:', selector);
+            continue;
+          }
           console.log('SB Logger: Found element with selector:', selector);
           return element;
         }

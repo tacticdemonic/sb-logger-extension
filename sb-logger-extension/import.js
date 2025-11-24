@@ -737,7 +737,14 @@ function levenshteinDistance(str1, str2) {
 
 function showResults(type, message) {
   resultsDiv.className = `results ${type}`;
-  resultsDiv.innerHTML = message;
+  resultsDiv.innerHTML = '';
+  if (type === 'error') {
+    resultsDiv.textContent = message;
+  } else {
+    const content = document.createElement('div');
+    content.innerHTML = message.replace(/onclick="[^"]*"/g, '');
+    resultsDiv.appendChild(content);
+  }
   resultsDiv.style.display = 'block';
   
   // Hide file selection
