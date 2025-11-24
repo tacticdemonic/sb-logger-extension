@@ -66,14 +66,19 @@ Before submitting a PR:
 3. Test bet settlement (Won/Lost/Void)
 4. Test export functionality (JSON/CSV)
 5. Test the P/L chart
-6. Verify the extension works in Chrome and Firefox
-7. Check browser console for errors
+6. If modifying auto-fill: Test with real exchange bets (Betfair, Smarkets, Matchbook)
+   - Verify betting slip detection
+   - Test stake input filling
+   - Test back and lay bet handling
+7. Verify the extension works in Chrome and Firefox
+8. Check browser console for errors and warnings
 
 ## Areas for Contribution
 
 We welcome contributions in these areas:
 
 ### High Priority
+- Extend auto-fill to additional exchange sites (Betdaq, Smarkets enhancements)
 - Additional sports API integrations for auto-checking results
 - Support for more bet types and markets
 - Improved bet matching algorithms

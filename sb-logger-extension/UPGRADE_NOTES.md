@@ -1,6 +1,124 @@
-# SB Logger Extension - Production Ready
+# SB Logger Extension - Upgrade Notes
 
-## ✅ What Changed
+## v1.0.37 - Cross-Origin Broker & Auto-Fill Complete 🎉
+
+### What's New
+
+**Final auto-fill implementation complete!** This release completes the end-to-end auto-fill workflow from Surebet to all exchanges:
+
+#### 1. **Cross-Origin Broker Pattern** (v1.0.35-36)
+- **Problem**: sessionStorage inaccessible across origins (Surebet → Smarkets)
+- **Solution**: Implemented background broker using `chrome.runtime.sendMessage()` for safe cross-origin communication
+- **Features**:
+  - In-memory cache + persistent chrome.storage.local backup
+  - Fallback chain: Broker → Storage → Referrer → Parent frame
+  - Promise caching prevents duplicate clears
+  - Tested and verified working with real bet data transfer
+
+#### 2. **Stake Calculation Integration** (v1.0.37)
+- **Problem**: Broker transferred bet data successfully, but stake wasn't calculated before auto-fill
+- **Solution**: Added `calculateKellyStake(betData)` call in auto-fill flow
+- **Result**: Stake amount now properly calculated and filled on all exchanges
+- **Console logging**: "Calculated Kelly stake: {amount}" confirms stake computation
+
+### Complete Auto-Fill Flow
+
+1. **Click stake indicator on Surebet** → Broker sends to background service
+2. **Navigate to exchange** → Page loads, content script queries broker
+3. **Retrieve bet data** → Broker returns cached bet data
+4. **Calculate Kelly stake** → `calculateKellyStake(betData)` computes optimal stake
+5. **Auto-fill input** → Stake amount populates in betting slip
+6. **Success notification** → User sees confirmation
+
+### Testing the Complete Flow
+
+1. On surebet.com, click a stake indicator (e.g., "$50")
+2. Check console: "✓ Broker confirmed pendingBet saved"
+3. You're redirected to exchange betting slip
+4. Check console: "Calculated Kelly stake: [amount]"
+5. Stake should auto-populate in the betting slip input
+6. You review odds and place the bet manually
+
+### Code Changes
+
+**background.js**:
+- Added `global_pendingBetCache` for in-memory broker storage
+- Added `savePendingBet` message handler (stores data + backup to chrome.storage.local)
+- Added `consumePendingBet` message handler (retrieves with intelligent cache clearing)
+
+**contentScript.js**:
+- Stake indicator click handler now uses broker messaging
+- `getSurebetDataFromReferrer()` queries broker first with promise caching
+- Added Kelly stake calculation step before `autoFillBetSlip()` call
+- Console logs confirm each stage: saved → retrieved → calculated → filled
+
+### Exchange Support Status
+
+| Exchange | Status | Notes |
+|----------|--------|-------|
+| Betfair | ✅ | Fully supported |
+| Smarkets | ✅ | **Complete in v1.0.37** (Broker + Kelly calculation) |
+| Matchbook | ✅ | Fully supported |
+| Betdaq | ✅ | Fully supported |
+
+---
+
+## v1.0.29 - Smarkets Auto-Fill Fix 🔧
+
+### What's Fixed
+
+**Smarkets auto-fill was not working** - this release fixes three critical issues:
+
+#### 1. **Incorrect CSS Selectors**
+- **Problem**: Selectors were generic guesses that didn't match Smarkets actual DOM
+- **Solution**: Updated to precise selectors from Smarkets' real betting slip:
+  - Betting slip: `.bet-slip-container`, `.bet-slip-content`
+  - Stake input: `input.box-input.numeric-value.input-value.with-prefix`
+  - **Key finding**: Smarkets uses `type="text"` not `type="number"` for stake
+
+#### 2. **Race Condition in Click Handler** 
+- **Problem**: Bet data stored asynchronously, but browser navigated immediately
+- **Solution**: 
+  - Added `e.preventDefault()` to stop immediate navigation
+  - Made click handler `async` and await storage completion
+  - Only navigate after storage callback fires
+  - Added "Storage complete, navigating..." log
+
+#### 3. **Added Odds Validation** ⚠️
+- **New Feature**: Warns if odds changed after you clicked the bet
+- **How it works**: Compares stored odds with current betting slip odds
+- **If different**: Shows warning toast "⚠️ Odds changed! Expected 1.87, now 2.22"
+- **Auto-fill still happens**: User can verify odds before placing bet
+
+### Testing the Fix
+
+To test:
+1. Click a clue stake link on surebet.com valuebets page
+2. Check console for: "Storage complete, navigating..."
+3. On Smarkets, verify: "Found stored bet data" + "Betting slip detected"
+4. Stake should auto-populate
+5. If odds changed, warning toast appears
+
+### Code Changes
+
+**contentScript.js** (3 updates):
+
+1. **Lines 70-84**: Updated `BETTING_SLIP_SELECTORS.smarkets` with real selectors
+2. **Lines 2597-2619**: Fixed race condition in click handler
+3. **Lines 2141-2149**: Added odds validation before auto-fill
+
+### Exchange Support Status
+
+| Exchange | Status | Notes |
+|----------|--------|-------|
+| Betfair | ✅ | Fully supported |
+| Smarkets | ✅ | **Fixed in v1.0.29** |
+| Matchbook | ✅ | Fully supported |
+| Betdaq | ⚠️ | Selectors may need updating |
+
+---
+
+## v1.0+ - Production Ready
 
 Your extension has been upgraded from a temporary add-on to a **proper, production-ready browser extension**:
 

@@ -52,10 +52,11 @@ After installation, verify the extension is working:
 Once installed, you can:
 - ✅ Save bets with one click from surebet.com
 - 📊 Track your betting performance with P/L tracking
+- ⚡ Auto-fill stakes on betting exchanges (optional, disabled by default)
 - 🔍 Auto-check results using free sports APIs (optional)
 - 📈 View performance charts
 - 📥 Import/Export data as CSV or JSON
-- ⚙️ Configure exchange commission rates
+- ⚙️ Configure exchange commission rates and stake rounding
 
 ## Troubleshooting
 

@@ -2,6 +2,7 @@
 
 ## What it does
 - **Auto-injects** a "💾 Save" button on every bet row on surebet.com/valuebets pages
+- **Auto-fill stakes** (configurable): Automatically inputs calculated Kelly stakes into betting slips on Betfair, Smarkets, and Matchbook
 - **Bookmaker filter presets**: Quick-apply preset bookmaker filters in the filter popup
 - **Auto-captures** all bet details: bookmaker, event, market, odds, probability, overvalue
 - **Prompts for stake** when you click Save
@@ -60,6 +61,47 @@
 7. **Track performance**: See your running P/L and ROI at the top of the popup
 8. **View Chart**: Click 📊 View Chart to see a visual graph of your P/L vs Expected EV over time
 9. Use **Export JSON** or **Export CSV** to download, or **Clear All** to delete
+
+## Auto-Fill Stakes (Complete Feature - v1.0.37!)
+
+The extension now fully implements automatic Kelly stake calculation and filling across all exchanges using a cross-origin broker pattern:
+
+### How to use:
+1. Click the extension icon and go to **⚙️ Auto-Fill** settings
+2. Enable **"Enable automatic stake input on betting slip"**
+3. Select which exchanges you want (Betfair, Smarkets, Matchbook, Betdaq)
+4. When browsing surebet.com, **click a stake indicator** from your bet row (e.g., the stake amount)
+5. You'll be redirected to the exchange betting slip
+6. Your calculated Kelly stake will automatically populate on the betting slip
+
+### How it works (Complete Pipeline):
+1. **Stake indicator clicked** → Broker service stores bet data (in-memory + backup storage)
+2. **Navigate to exchange** → Content script queries broker for pending bet
+3. **Broker retrieves data** → Returns cached bet data from safe background context
+4. **Kelly calculation** → Extension calculates optimal stake based on odds/probability
+5. **Auto-fill stake** → Betting slip input receives calculated amount
+6. **Validation** → Odds compared; warning shown if significantly changed
+7. **Success notification** → User sees confirmation stake was filled
+8. **You review & place** → You manually confirm odds and place the bet
+9. **Fallback chain** → If broker unavailable: Storage → Document referrer → Parent frame
+
+### Supported Exchanges:
+- ✅ **Betfair** - Fully supported (v1.0+)
+- ✅ **Smarkets** - Complete (v1.0.37: Broker + Kelly calculation)
+- ✅ **Matchbook** - Fully supported (v1.0+)
+- ✅ **Betdaq** - Fully supported (v1.0+)
+
+### Settings:
+- **Per-exchange toggle**: Enable/disable for each exchange individually
+- **Disabled by default**: Must explicitly enable for safety
+- **Timeout**: Waits up to 10 seconds for betting slip to appear
+- **Odds Validation**: Warns if odds change after you clicked the bet
+
+### Odds Validation ⚠️
+The extension compares the odds from your surebet.com link with the current odds on the betting slip:
+- If odds differ slightly (±0.01), auto-fill proceeds silently
+- If odds change significantly, you'll see a warning notification but auto-fill still happens
+- This helps you catch when odds have shifted before placing the bet
 
 ## What gets saved
 Each bet record includes:
@@ -206,3 +248,119 @@ This ensures you only select the exact bookmaker versions you want, without acci
 - (Optional) Set up free APIs for automatic result checking - see [API_SETUP.md](API_SETUP.md)
 - Try exporting CSV to validate data structure
 - Consider adding filters/search in popup for large bet lists
+
+---
+
+## Contributing DOM Structures for New Exchanges
+
+The auto-fill feature works by matching CSS selectors to HTML elements on betting slip pages. If you want to add support for a new exchange or fix selectors for an existing one, you can help by contributing DOM structure information!
+
+### How to Contribute:
+
+1. **Navigate to the betting slip** on the exchange you want to support
+2. **Open browser DevTools** (F12 on most browsers)
+3. **Run this diagnostic script** in the Console tab:
+
+```javascript
+// Find betting slip containers
+console.log('=== BETTING SLIP CONTAINERS ===');
+document.querySelectorAll('[class*="slip"], [class*="bet"], [class*="order"], [class*="panel"]').forEach(el => {
+  if (el.className && el.offsetHeight > 50) {
+    console.log('Container:', el.className, el);
+  }
+});
+
+// Find all number/text inputs
+console.log('\n=== STAKE INPUT FIELDS ===');
+document.querySelectorAll('input[type="number"], input[type="text"]').forEach(el => {
+  if (el.offsetHeight > 0) {
+    console.log('Input:', {
+      type: el.type,
+      className: el.className,
+      placeholder: el.placeholder,
+      name: el.name,
+      id: el.id,
+      value: el.value,
+      parent: el.parentElement?.className
+    }, el);
+  }
+});
+
+// Find data attributes
+console.log('\n=== DATA ATTRIBUTES ===');
+document.querySelectorAll('[data-test], [data-testid], [data-test-id]').forEach(el => {
+  if (el.offsetHeight > 0) {
+    console.log('Data:', el.dataset, el);
+  }
+});
+```
+
+4. **Right-click the stake input field** → Inspect Element, then copy the full HTML:
+   - Copy the input element and at least 3 parent levels up
+   - Include all class names and data attributes
+
+5. **Create a GitHub issue** or email with:
+   - Exchange name (e.g., "Betdaq")
+   - Console output from the script above
+   - Full HTML structure of the stake input
+   - Screenshot showing where the input appears on the page
+   - Browser/OS you tested on
+
+### Example Submission:
+
+```markdown
+## Add Support for Betdaq
+
+**Console Output:**
+```
+=== BETTING SLIP CONTAINERS ===
+Container: betting-slip__container ...
+
+=== STAKE INPUT FIELDS ===
+Input: {
+  type: "text",
+  className: "input-field stake-input",
+  placeholder: "Enter stake",
+  ...
+}
+```
+
+**HTML Structure:**
+```html
+<div class="betting-slip__container">
+  <div class="betting-slip__form">
+    <input type="text" class="input-field stake-input" placeholder="Enter stake">
+  </div>
+</div>
+```
+
+**Screenshot:** [attach image]
+**Browser:** Firefox 120 on Windows
+```
+
+### What Happens Next:
+
+1. Developer reviews your submission
+2. Selectors are added to `BETTING_SLIP_SELECTORS` in `contentScript.js`
+3. Auto-fill feature is tested with your selectors
+4. Exchange support is added to the next release
+5. You're credited in UPGRADE_NOTES.md
+
+### Current Selector Status:
+
+```javascript
+BETTING_SLIP_SELECTORS = {
+  betfair: { ... },        // ✅ Tested & working
+  smarkets: { ... },       // ✅ Tested & working (v1.0.29+)
+  matchbook: { ... },      // ✅ Tested & working
+  betdaq: { ... }          // ⚠️  Needs updating/testing
+}
+```
+
+### Why This Helps:
+
+- Auto-fill is more reliable with precise selectors
+- Exchange websites update their HTML regularly
+- Community contributions keep selectors current
+- New exchanges can be supported faster
+- Your betting experience improves!

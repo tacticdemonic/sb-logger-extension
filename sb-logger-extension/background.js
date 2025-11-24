@@ -3,6 +3,7 @@
 
 let ApiServiceClass = null;
 let apiServiceReady = null;
+let global_pendingBetCache = null; // In-memory broker cache for cross-origin bet transfer
 const DISABLE_STORAGE_KEY = 'extensionDisabled';
 const TOGGLE_MENU_ID = 'sb-logger-toggle';
 const IS_FIREFOX = typeof navigator !== 'undefined' && /firefox/i.test(navigator.userAgent);
@@ -395,6 +396,80 @@ api.runtime.onMessage.addListener((message, sender, sendResponse) => {
     })();
     
     return true; // Keep channel open for async response
+  }
+
+  // Broker: Save pending bet (cross-origin safe via background context)
+  if (message.action === 'savePendingBet') {
+    const { betData } = message;
+    if (!betData || !betData.id) {
+      console.warn('SB Logger: ⚠ savePendingBet received invalid data');
+      sendResponse({ success: false, error: 'Invalid bet data' });
+      return true;
+    }
+    
+    console.log(`SB Logger: 📬 Broker saving pendingBet (ID: ${betData.id})`);
+    
+    // Store in memory for immediate cross-origin retrieval
+    global_pendingBetCache = betData;
+    
+    // Also persist to chrome.storage.local as backup for crash recovery
+    chrome.storage.local.set({ pendingBet: betData }, () => {
+      if (chrome.runtime.lastError) {
+        console.warn('SB Logger: ⚠ Failed to persist pendingBet to storage:', chrome.runtime.lastError);
+      } else {
+        console.log('SB Logger: ✓ Persisted pendingBet to chrome.storage.local');
+      }
+      sendResponse({ success: true });
+    });
+    
+    return true; // Keep channel open for async response
+  }
+
+  // Broker: Consume pending bet (retrieve and clear)
+  if (message.action === 'consumePendingBet') {
+    (async () => {
+      console.log('SB Logger: ?Y"? Broker consuming pendingBet');
+
+      let betData = global_pendingBetCache || null;
+
+      // Clear memory cache
+      global_pendingBetCache = null;
+
+      // If nothing in memory, try storage before clearing
+      if (!betData) {
+        try {
+          const storageResult = await new Promise((resolve) => {
+            chrome.storage.local.get(['pendingBet'], resolve);
+          });
+          if (storageResult && storageResult.pendingBet && storageResult.pendingBet.id) {
+            betData = storageResult.pendingBet;
+            console.log(`SB Logger: ?o" Retrieved pendingBet from storage (ID: ${betData.id})`);
+          }
+        } catch (err) {
+          console.warn('SB Logger: ?s? Failed to read pendingBet from storage:', err && err.message);
+        }
+      }
+
+      // Clear from storage only if something was found
+      if (betData) {
+        chrome.storage.local.remove('pendingBet', () => {
+          if (chrome.runtime.lastError) {
+            console.warn('SB Logger: ?s? Failed to clear pendingBet from storage:', chrome.runtime.lastError);
+          } else {
+            console.log('SB Logger: ?o" Cleared pendingBet from chrome.storage.local');
+          }
+        });
+      }
+
+      if (betData) {
+        console.log(`SB Logger: ?o" Broker returned pendingBet (ID: ${betData.id})`);
+      } else {
+        console.log('SB Logger: ?s? Broker found no pendingBet');
+      }
+
+      sendResponse({ success: true, betData });
+    })();
+    return true;
   }
   
   return false;

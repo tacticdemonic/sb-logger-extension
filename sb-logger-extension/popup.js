@@ -26,9 +26,21 @@ const DEFAULT_UI_PREFERENCES = {
   hideLayBets: false
 };
 
+const DEFAULT_AUTOFILL_SETTINGS = {
+  enabled: false,
+  bookmakers: {
+    betfair: true,
+    matchbook: true,
+    smarkets: true
+  },
+  timeout: 10000,
+  requireConfirmation: false
+};
+
 let commissionRates = { ...DEFAULT_COMMISSION_RATES };
 let roundingSettings = { ...DEFAULT_ROUNDING_SETTINGS };
 let uiPreferences = { ...DEFAULT_UI_PREFERENCES };
+let autoFillSettings = { ...DEFAULT_AUTOFILL_SETTINGS };
 
 function loadCommissionRates(callback) {
   api.storage.local.get({ commission: DEFAULT_COMMISSION_RATES }, (res) => {
@@ -66,6 +78,14 @@ function loadUIPreferences(callback) {
       document.getElementById('hide-lay-bets').checked = uiPreferences.hideLayBets || false;
     }
     
+    if (callback) callback();
+  });
+}
+
+function loadAutoFillSettings(callback) {
+  api.storage.local.get({ autoFillSettings: DEFAULT_AUTOFILL_SETTINGS }, (res) => {
+    autoFillSettings = { ...res.autoFillSettings };
+    console.log('⚙️ Auto-fill settings loaded:', autoFillSettings);
     if (callback) callback();
   });
 }
@@ -211,6 +231,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const roundingPanel = document.getElementById('rounding-panel');
   const btnSaveRounding = document.getElementById('save-rounding');
   const btnCancelRounding = document.getElementById('cancel-rounding');
+  const btnAutoFillSettings = document.getElementById('autofill-settings');
+  const autoFillPanel = document.getElementById('autofill-panel');
+  const btnSaveAutoFill = document.getElementById('save-autofill');
+  const btnCancelAutoFill = document.getElementById('cancel-autofill');
 
   function calculateExpectedValueAmount(bet) {
     if (!bet) return 0;
@@ -379,6 +403,59 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnCancelRounding) {
     btnCancelRounding.addEventListener('click', () => {
       roundingPanel.style.display = 'none';
+    });
+  }
+
+  // Auto-fill settings button
+  if (btnAutoFillSettings) {
+    btnAutoFillSettings.addEventListener('click', () => {
+      const isVisible = autoFillPanel.style.display !== 'none';
+      if (isVisible) {
+        autoFillPanel.style.display = 'none';
+      } else {
+        // Load current values from storage to ensure they're fresh
+        loadAutoFillSettings(() => {
+          console.log('⚙️ [Popup] Opening auto-fill panel with settings:', autoFillSettings);
+          document.getElementById('autofill-enabled').checked = autoFillSettings.enabled || false;
+          document.getElementById('autofill-betfair').checked = autoFillSettings.bookmakers?.betfair !== false;
+          document.getElementById('autofill-smarkets').checked = autoFillSettings.bookmakers?.smarkets !== false;
+          document.getElementById('autofill-matchbook').checked = autoFillSettings.bookmakers?.matchbook !== false;
+          console.log('⚙️ [Popup] Auto-fill inputs populated');
+          autoFillPanel.style.display = 'block';
+        });
+      }
+    });
+  }
+
+  // Save auto-fill settings
+  if (btnSaveAutoFill) {
+    btnSaveAutoFill.addEventListener('click', () => {
+      const enabled = document.getElementById('autofill-enabled').checked;
+      const newSettings = {
+        enabled: enabled,
+        bookmakers: {
+          betfair: document.getElementById('autofill-betfair').checked,
+          smarkets: document.getElementById('autofill-smarkets').checked,
+          matchbook: document.getElementById('autofill-matchbook').checked
+        },
+        timeout: 10000,
+        requireConfirmation: false
+      };
+      console.log('💾 Saving auto-fill settings:', newSettings);
+      api.storage.local.set({ autoFillSettings: newSettings }, () => {
+        console.log('✅ Auto-fill settings saved successfully');
+        // Reload auto-fill settings from storage
+        loadAutoFillSettings(() => {
+          autoFillPanel.style.display = 'none';
+        });
+      });
+    });
+  }
+
+  // Cancel auto-fill settings
+  if (btnCancelAutoFill) {
+    btnCancelAutoFill.addEventListener('click', () => {
+      autoFillPanel.style.display = 'none';
     });
   }
 

@@ -22,6 +22,7 @@ A powerful browser extension for tracking and analyzing value bets from surebet.
 - **Visual Charts**: Interactive P/L graph showing your performance trends over time
 
 ### 🤖 Automation
+- **Auto-Fill Stakes**: Automatically inputs calculated Kelly stakes into betting slips on Betfair, Smarkets, and Matchbook (configurable, disabled by default)
 - **Auto-Check Results**: Optional integration with free sports APIs (API-Football, The Odds API)
 - **Smart Retries**: Waits 30 min after event ends, retries up to 5 times with exponential backoff
 - **Hourly Background Checks**: Automatically checks eligible pending bets
@@ -76,13 +77,24 @@ A powerful browser extension for tracking and analyzing value bets from surebet.
 
 ## 📖 Usage
 
+### Basic Workflow
 1. **Visit** [surebet.com/valuebets](https://surebet.com/valuebets)
-2. **Click** the 💾 Save button on any bet row
+2. **Click** the 💾 Save button on any bet row or click the stake indicator
 3. **Enter** your stake amount (and optional note)
 4. **View** all saved bets by clicking the extension icon in your toolbar
 5. **Settle bets** using the ✓ Won, ✗ Lost, or ○ Void buttons
 6. **Track progress** with the P/L summary and 📊 View Chart button
 7. **Export data** using the JSON or CSV export buttons
+
+### Auto-Fill Stakes (Exchange Bets)
+When enabled, the extension automatically fills in your calculated Kelly stake after clicking a bet link:
+
+1. **Enable auto-fill** in the extension settings (⚙️ Auto-Fill tab)
+2. **Select exchanges** you want to use (Betfair, Smarkets, Matchbook)
+3. **Click a stake link** on surebet.com → your calculated stake will auto-populate on the betting slip
+4. **Review and place** your bet on the exchange
+
+**Note**: Auto-fill requires the Surebet official plugin to find and add the bet first. Falls back to clipboard copy if auto-fill fails.
 
 ### Bookmaker Filter Presets
 
@@ -92,9 +104,35 @@ The extension adds quick-filter buttons to the bookmaker filter popup:
 
 Customize these presets in `contentScript.js` by editing the `BOOKMAKER_PRESETS` object.
 
+### Settings Available
+
+Click the extension icon to access:
+- **⚙️ Commission** - Set exchange commission rates (Betfair, Betdaq, Matchbook, Smarkets)
+- **⚙️ Rounding** - Enable stake rounding to nearest increment (e.g., £0.50)
+- **⚙️ Auto-Fill** - Configure automatic stake input (disabled by default, per-exchange toggles)
+
 ---
 
-## ⚙️ Optional: Auto-Check Results
+## ⚙️ Optional Features
+
+### Auto-Fill Stakes on Betting Exchanges
+
+Automatically populate betting slip stake fields after the Surebet plugin adds your bet:
+
+1. Click **⚙️ Auto-Fill** in the popup settings
+2. Enable **"Enable automatic stake input on betting slip"**
+3. Select which exchanges to use (Betfair, Smarkets, Matchbook)
+4. When you click a stake link from surebet.com, your calculated stake will auto-fill
+
+**Features:**
+- Waits for betting slip to appear after Surebet plugin finds the bet
+- Automatically detects when stake input is ready
+- Fills the correct stake input (handles back/lay bets)
+- Shows confirmation toast notification
+- Falls back to clipboard copy if auto-fill fails
+- Disabled by default for safety
+
+### Auto-Check Results
 
 The extension can automatically verify bet results using free sports APIs. This is completely optional — manual settlement always works.
 
@@ -164,14 +202,21 @@ Over 100+ bets, actual results should approach expected value if probabilities a
 ```
 sb-logger-extension/
 ├── manifest.json         # Extension configuration (Manifest V3)
-├── contentScript.js      # Injects save buttons on surebet.com
+├── contentScript.js      # Injects save buttons on surebet.com + auto-fill logic
 ├── background.js         # Service worker for exports and auto-checking
 ├── apiService.js         # Sports result API integration
-├── popup.html/js         # Extension popup interface
+├── popup.html/js         # Extension popup interface with settings
 ├── import.html/js        # Bulk import functionality
 ├── icons/                # Extension icons
 └── docs/                 # Documentation files
 ```
+
+### Recent Updates (v1.0.29)
+- ✨ Added auto-fill stakes feature for Betfair, Smarkets, and Matchbook exchanges
+- ✨ New "⚙️ Auto-Fill" settings panel in extension popup
+- 🔍 Improved betting slip detection using MutationObserver + polling
+- 🐛 Better support for single-page application (SPA) betting sites
+- 📝 Updated documentation with auto-fill instructions
 
 ### Contributing
 We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:

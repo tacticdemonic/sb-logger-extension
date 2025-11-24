@@ -53,6 +53,7 @@
     </label>
     <button id="commission-settings" style="padding:4px 8px;border:1px solid #007bff;background:#007bff;color:#fff;border-radius:3px;font-size:12px;cursor:pointer;margin-left:auto">⚙️ Commission</button>
     <button id="rounding-settings" style="padding:4px 8px;border:1px solid #007bff;background:#007bff;color:#fff;border-radius:3px;font-size:12px;cursor:pointer;margin-left:auto">⚙️ Rounding</button>
+    <button id="autofill-settings" style="padding:4px 8px;border:1px solid #17a2b8;background:#17a2b8;color:#fff;border-radius:3px;font-size:12px;cursor:pointer;margin-left:auto">⚙️ Auto-Fill</button>
   </div>
   <div id="commission-panel" style="display:none;margin-bottom:8px;padding:10px;background:#f8f9fa;border:1px solid #dee2e6;border-radius:4px;font-size:12px">
     <div style="font-weight:600;margin-bottom:8px">Exchange Commission Rates (%)</div>
@@ -97,6 +98,37 @@
       <button id="cancel-rounding" style="padding:4px 12px;background:#6c757d;color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:11px">Cancel</button>
     </div>
     <div class="note" style="margin-top:6px">Rounding increment (e.g., 0.50 rounds £10.23 → £10.50). Only applies to new bets.</div>
+  </div>
+  <div id="autofill-panel" style="display:none;margin-bottom:8px;padding:10px;background:#f8f9fa;border:1px solid #dee2e6;border-radius:4px;font-size:12px">
+    <div style="font-weight:600;margin-bottom:8px">Auto-Fill Stakes</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+        <input type="checkbox" id="autofill-enabled" style="cursor:pointer;width:16px;height:16px" />
+        <span>Enable automatic stake input on betting slip</span>
+      </label>
+      <div style="background:#fff;padding:8px;border:1px solid #dee2e6;border-radius:3px">
+        <div style="font-weight:600;margin-bottom:6px;color:#333">Exchange Selection:</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+            <input type="checkbox" id="autofill-betfair" checked style="cursor:pointer;width:16px;height:16px" />
+            <span>Betfair</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+            <input type="checkbox" id="autofill-smarkets" checked style="cursor:pointer;width:16px;height:16px" />
+            <span>Smarkets</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+            <input type="checkbox" id="autofill-matchbook" checked style="cursor:pointer;width:16px;height:16px" />
+            <span>Matchbook</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:6px;justify-content:flex-end">
+      <button id="save-autofill" style="padding:4px 12px;background:#28a745;color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:11px">Save</button>
+      <button id="cancel-autofill" style="padding:4px 12px;background:#6c757d;color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:11px">Cancel</button>
+    </div>
+    <div class="note" style="margin-top:6px">When enabled, stakes will automatically be filled in betting slips after the Surebet plugin finds the bet. Falls back to clipboard copy if auto-fill fails.</div>
   </div>
   <div id="bets">
     <div class="small">Loading...</div>

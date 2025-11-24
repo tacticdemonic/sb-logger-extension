@@ -7,6 +7,10 @@
   let isInitialized = false;
   let isDisabled = false;
   let mutationObserver = null;
+  
+  // Cache for retrieved bet data to prevent multiple consumers from triggering double-clears
+  let cachedPendingBet = null;
+  let cachedPendingBetPromise = null;
   const clickHandlers = {
     surebetLink: null,
     global: null
@@ -35,10 +39,74 @@
     hideLayBets: false
   };
   
+  const DEFAULT_AUTOFILL_SETTINGS = {
+    enabled: false,
+    bookmakers: {
+      betfair: true,
+      matchbook: true,
+      smarkets: true
+    },
+    timeout: 10000,
+    requireConfirmation: false
+  };
+
+  // Betting slip selectors for each exchange
+  const BETTING_SLIP_SELECTORS = {
+    betfair: {
+      bettingSlip: [
+        '[class*="betslip"]',
+        '[class*="bet-slip"]',
+        '[data-testid*="betslip"]',
+        '#betslip'
+      ],
+      stakeInput: [
+        'input[name="stake"]',
+        'input[data-testid*="stake"]',
+        'input[placeholder*="stake" i]',
+        '[class*="stake"] input[type="number"]',
+        'input[type="number"][value]'
+      ],
+      backBet: '[data-side="back"]',
+      layBet: '[data-side="lay"]',
+      odds: '[class*="odds"], [class*="price"], [data-testid*="odds"]',
+      selection: '[class*="selection"], [class*="leg"]'
+    },
+    smarkets: {
+      bettingSlip: [
+        '.bet-slip-container',
+        '.bet-slip-content',
+        '.bet-slip-bets-container'
+      ],
+      stakeInput: [
+        '.bet-slip-container input.box-input.numeric-value.input-value.with-prefix',
+        '.bet-slip-container input.box-input.numeric-value.input-value:not([disabled])',
+        'input[type="text"].box-input.numeric-value.with-prefix'
+      ],
+      odds: '[class*="odds"], [class*="price"]',
+      selection: '[class*="selection"]'
+    },
+    matchbook: {
+      bettingSlip: [
+        '[class*="betslip"]',
+        '[class*="bet-slip"]'
+      ],
+      stakeInput: [
+        'input[type="text"][class*="stake"]',
+        'input[type="number"]',
+        'input[placeholder*="stake" i]'
+      ],
+      odds: '[class*="odds"], [class*="price"]',
+      selection: '[class*="selection"]'
+    }
+  };
+  
   let stakingSettings = { ...DEFAULT_STAKING_SETTINGS };
   let roundingSettings = { ...DEFAULT_ROUNDING_SETTINGS };
   let uiPreferences = { ...DEFAULT_UI_PREFERENCES };
+  let autoFillSettings = { ...DEFAULT_AUTOFILL_SETTINGS };
   let stakePanel = null;
+  let bettingSlipDetector = null;
+  let bettingSlipDetectorPolling = null;
 
   function generateBetUid() {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -404,11 +472,13 @@
       chrome.storage.local.get({ 
         stakingSettings: DEFAULT_STAKING_SETTINGS,
         commission: {},
-        roundingSettings: DEFAULT_ROUNDING_SETTINGS
+        roundingSettings: DEFAULT_ROUNDING_SETTINGS,
+        autoFillSettings: DEFAULT_AUTOFILL_SETTINGS
       }, (res) => {
         const stored = res.stakingSettings || DEFAULT_STAKING_SETTINGS;
         const commissionData = res.commission || {};
         roundingSettings = res.roundingSettings || DEFAULT_ROUNDING_SETTINGS;
+        autoFillSettings = res.autoFillSettings || DEFAULT_AUTOFILL_SETTINGS;
         const sanitizedBankroll = sanitizeBankroll(stored.bankroll ?? DEFAULT_STAKING_SETTINGS.bankroll, 0);
         const sanitizedBase = sanitizeBankroll(
           stored.baseBankroll ?? stored.bankroll ?? DEFAULT_STAKING_SETTINGS.baseBankroll,
@@ -639,9 +709,36 @@
               // Parse bet data and store it
               const betData = parseSurebetLinkData(oddsLink.href);
               if (betData) {
-                chrome.storage.local.set({ pendingBet: betData }, () => {
-                  console.log('SB Logger: Bet data stored for bookmaker page:', betData);
-                });
+                // Send to background broker so the bookmaker page can retrieve it cross-origin
+                try {
+                  const response = await new Promise((resolve, reject) => {
+                    const timeout = setTimeout(() => reject(new Error('Broker timeout')), 5000);
+                    chrome.runtime.sendMessage(
+                      { action: 'savePendingBet', betData },
+                      (resp) => {
+                        clearTimeout(timeout);
+                        if (chrome.runtime.lastError) {
+                          reject(chrome.runtime.lastError);
+                        } else {
+                          resolve(resp);
+                        }
+                      }
+                    );
+                  });
+                  if (response && response.success) {
+                    console.log('SB Logger: ✓ Broker confirmed pendingBet saved (from stake indicator):', betData);
+                  } else {
+                    console.warn('SB Logger: ⚠ Broker save failed from stake indicator, falling back to local storage');
+                    chrome.storage.local.set({ pendingBet: betData }, () => {
+                      console.log('SB Logger: Bet data stored for bookmaker page (fallback):', betData);
+                    });
+                  }
+                } catch (err) {
+                  console.warn('SB Logger: ⚠ Broker communication error from stake indicator:', err.message);
+                  chrome.storage.local.set({ pendingBet: betData }, () => {
+                    console.log('SB Logger: Bet data stored for bookmaker page (fallback):', betData);
+                  });
+                }
               }
               // Open the betting link in new tab immediately
               window.open(oddsLink.href, '_blank');
@@ -1818,55 +1915,414 @@
     }
   }
 
-  async function getSurebetDataFromReferrer() {
+  // Auto-fill stake helper functions
+  function getExchangeFromHostname() {
+    const hostname = location.hostname.toLowerCase();
+    if (hostname.includes('betfair')) return 'betfair';
+    if (hostname.includes('smarkets')) return 'smarkets';
+    if (hostname.includes('matchbook')) return 'matchbook';
+    return null;
+  }
+
+  function findElement(selectors) {
+    if (typeof selectors === 'string') {
+      selectors = [selectors];
+    }
+    for (const selector of selectors) {
+      try {
+        const element = document.querySelector(selector);
+        if (element) {
+          console.log('SB Logger: Found element with selector:', selector);
+          return element;
+        }
+      } catch (e) {
+        console.warn('SB Logger: Invalid selector:', selector, e);
+      }
+    }
+    return null;
+  }
+
+  function isElementVisible(element) {
+    if (!element) return false;
+    const style = window.getComputedStyle(element);
+    return style.display !== 'none' && 
+           style.visibility !== 'hidden' && 
+           element.offsetHeight > 0 && 
+           element.offsetWidth > 0;
+  }
+
+  function isBettingSlipPopulated(bettingSlipElement, exchange) {
+    if (!bettingSlipElement) return false;
+    
+    // Check if betting slip has content (odds visible, selection name present)
+    const selectors = BETTING_SLIP_SELECTORS[exchange];
+    if (!selectors) return false;
+
+    const oddsElement = findElement(selectors.odds);
+    const selectionElement = findElement(selectors.selection);
+    
+    // If we can find odds and selection, slip is likely populated
+    const hasOdds = oddsElement && oddsElement.textContent.trim() && !oddsElement.textContent.includes('---');
+    const hasSelection = selectionElement && selectionElement.textContent.trim();
+    
+    console.log('SB Logger: Betting slip population check - odds:', hasOdds, 'selection:', hasSelection);
+    return hasOdds || hasSelection || bettingSlipElement.textContent.trim().length > 50;
+  }
+
+  function findStakeInput(exchange, isLay = false) {
+    const selectors = BETTING_SLIP_SELECTORS[exchange];
+    if (!selectors) {
+      console.warn('SB Logger: No selectors defined for exchange:', exchange);
+      return null;
+    }
+
+    // For exchanges with separate back/lay inputs, try to find the correct one
+    if (isLay && selectors.layBet) {
+      const layContainer = document.querySelector(selectors.layBet);
+      if (layContainer) {
+        const input = findElement(selectors.stakeInput);
+        if (input && input.closest(selectors.layBet)) {
+          return input;
+        }
+      }
+    }
+
+    if (!isLay && selectors.backBet) {
+      const backContainer = document.querySelector(selectors.backBet);
+      if (backContainer) {
+        const input = findElement(selectors.stakeInput);
+        if (input && input.closest(selectors.backBet)) {
+          return input;
+        }
+      }
+    }
+
+    // Fallback: just find any stake input
+    return findElement(selectors.stakeInput);
+  }
+
+  async function waitForBettingSlip(exchange, maxAttempts = 20, pollDelay = 500) {
+    const selectors = BETTING_SLIP_SELECTORS[exchange];
+    if (!selectors) {
+      console.error('SB Logger: Unknown exchange:', exchange);
+      return null;
+    }
+
+    console.log('SB Logger: Waiting for betting slip on', exchange);
+    
     return new Promise((resolve) => {
-      // Check chrome.storage.local for data saved on click
-      chrome.storage.local.get(['pendingBet'], (result) => {
-        if (result.pendingBet) {
-          console.log('SB Logger: Found stored bet data from Surebet click:', result.pendingBet);
-          // Clear it after retrieving
-          chrome.storage.local.remove('pendingBet');
-          resolve(result.pendingBet);
-        } else {
-          console.log('SB Logger: No stored bet data found in storage');
-          console.log('SB Logger: document.referrer =', document.referrer);
-          console.log('SB Logger: window.location.href =', window.location.href);
+      let attempts = 0;
+
+      const checkBettingSlip = () => {
+        attempts++;
+        console.log(`SB Logger: Betting slip check attempt ${attempts}/${maxAttempts}`);
+
+        // Try to find the betting slip container
+        const bettingSlip = findElement(selectors.bettingSlip);
+        
+        if (bettingSlip && isElementVisible(bettingSlip) && isBettingSlipPopulated(bettingSlip, exchange)) {
+          console.log('SB Logger: ✓ Betting slip found and populated');
           
-          // Try to get data from document.referrer if it's a Surebet link
-          if (document.referrer && document.referrer.includes('/nav/valuebet/prong/')) {
-            console.log('SB Logger: Found Surebet referrer, parsing:', document.referrer);
-            const data = parseSurebetLinkData(document.referrer);
-            if (data) {
-              console.log('SB Logger: Extracted data from referrer:', data);
-              resolve(data);
-              return;
-            }
-          } else if (document.referrer) {
-            console.log('SB Logger: Referrer exists but not a Surebet valuebet link');
+          // Find stake input within betting slip
+          const stakeInput = findStakeInput(exchange);
+          if (stakeInput && isElementVisible(stakeInput)) {
+            console.log('SB Logger: ✓ Stake input found and visible');
+            resolve({ bettingSlip, stakeInput });
+            return;
           } else {
-            console.log('SB Logger: No referrer found');
+            console.log('SB Logger: Stake input not yet ready');
           }
-          
-          // Try to check if we're in an iframe and parent has Surebet URL
-          try {
-            if (window !== window.top && window.top.location.href.includes('/nav/valuebet/prong/')) {
-              console.log('SB Logger: In iframe with Surebet parent, parsing:', window.top.location.href);
-              const data = parseSurebetLinkData(window.top.location.href);
-              if (data) {
-                console.log('SB Logger: Extracted data from parent frame:', data);
-                resolve(data);
-                return;
+        } else {
+          console.log('SB Logger: Betting slip not yet populated');
+        }
+
+        if (attempts >= maxAttempts) {
+          console.warn('SB Logger: Betting slip detection timeout after', maxAttempts * pollDelay, 'ms');
+          resolve(null);
+          return;
+        }
+
+        // Schedule next attempt
+        setTimeout(checkBettingSlip, pollDelay);
+      };
+
+      checkBettingSlip();
+    });
+  }
+
+  function fillStakeInputValue(input, stakeValue) {
+    if (!input) return false;
+    
+    const stake = String(stakeValue).trim();
+    console.log('SB Logger: Filling stake input with value:', stake);
+
+    // Set the value
+    input.value = stake;
+
+    // Dispatch events to trigger React/Vue/Angular change detection
+    const events = [
+      new Event('input', { bubbles: true }),
+      new Event('change', { bubbles: true }),
+      new Event('blur', { bubbles: true })
+    ];
+
+    events.forEach(event => {
+      try {
+        input.dispatchEvent(event);
+      } catch (e) {
+        console.warn('SB Logger: Error dispatching event:', e);
+      }
+    });
+
+    console.log('SB Logger: ✓ Stake value filled and events dispatched');
+    return true;
+  }
+
+  async function autoFillBetSlip(betData) {
+    if (!autoFillSettings.enabled) {
+      console.log('SB Logger: Auto-fill is disabled');
+      return false;
+    }
+
+    if (!betData || !betData.stake) {
+      console.warn('SB Logger: No bet data or stake available');
+      return false;
+    }
+
+    const exchange = getExchangeFromHostname();
+    if (!exchange) {
+      console.warn('SB Logger: Could not detect exchange');
+      return false;
+    }
+
+    if (!autoFillSettings.bookmakers[exchange]) {
+      console.log('SB Logger: Auto-fill disabled for', exchange);
+      return false;
+    }
+
+    console.log('SB Logger: Starting auto-fill for', exchange, 'stake:', betData.stake);
+
+    // Start MutationObserver to detect betting slip
+    return new Promise((resolve) => {
+      let detected = false;
+      const timeout = setTimeout(() => {
+        if (detected) return;
+        console.warn('SB Logger: Auto-fill timeout reached');
+        if (bettingSlipDetector) {
+          bettingSlipDetector.disconnect();
+          bettingSlipDetector = null;
+        }
+        resolve(false);
+      }, autoFillSettings.timeout);
+
+      const observer = new MutationObserver(async (mutations) => {
+        if (detected) return;
+
+        mutations.forEach(mutation => {
+          mutation.addedNodes.forEach(node => {
+            if (node.nodeType === 1) { // Element node
+              // Check if the added node is or contains the betting slip
+              const selectors = BETTING_SLIP_SELECTORS[exchange];
+              for (const slipSelector of selectors.bettingSlip) {
+                if (node.matches?.(slipSelector) || node.querySelector?.(slipSelector)) {
+                  console.log('SB Logger: Betting slip detected via MutationObserver');
+                  detected = true;
+                  performAutoFill();
+                  return;
+                }
               }
             }
-          } catch (e) {
-            // Cross-origin access blocked, ignore
-            console.log('SB Logger: Cannot access parent frame (cross-origin)');
-          }
-          
-          resolve(null);
-        }
+          });
+        });
       });
+
+      observer.observe(document.body, { childList: true, subtree: true });
+      bettingSlipDetector = observer;
+
+      // Polling fallback
+      let pollCount = 0;
+      const pollInterval = setInterval(async () => {
+        if (detected || pollCount >= 20) {
+          clearInterval(pollInterval);
+          return;
+        }
+        pollCount++;
+        
+        const result = await waitForBettingSlip(exchange, 1, 0);
+        if (result && result.stakeInput) {
+          console.log('SB Logger: Betting slip detected via polling');
+          detected = true;
+          performAutoFill();
+        }
+      }, 500);
+
+      bettingSlipDetectorPolling = pollInterval;
+
+      async function performAutoFill() {
+        clearTimeout(timeout);
+        clearInterval(bettingSlipDetectorPolling);
+        if (bettingSlipDetector) {
+          bettingSlipDetector.disconnect();
+          bettingSlipDetector = null;
+        }
+
+        try {
+          const result = await waitForBettingSlip(exchange, 10, 200);
+          if (result && result.bettingSlip && result.stakeInput) {
+            // Validate odds haven't changed (Smarkets)
+            if (exchange === 'smarkets' && betData.odds) {
+              const oddsInputs = result.bettingSlip.querySelectorAll('input.box-input.numeric-value.input-value:not(.with-prefix):not([disabled])');
+              if (oddsInputs.length > 0) {
+                const currentOdds = parseFloat(oddsInputs[0].value);
+                const expectedOdds = parseFloat(betData.odds);
+                if (Math.abs(currentOdds - expectedOdds) > 0.01) {
+                  console.warn(`SB Logger: ⚠️ Odds changed! Expected ${expectedOdds.toFixed(2)}, found ${currentOdds.toFixed(2)}`);
+                  showToast(`⚠️ Odds changed! Expected ${expectedOdds.toFixed(2)}, now ${currentOdds.toFixed(2)}`, false);
+                }
+              }
+            }
+          }
+          if (result && result.stakeInput) {
+            const success = fillStakeInputValue(result.stakeInput, betData.stake);
+            if (success) {
+              showToast(`✓ Stake auto-filled: ${betData.currency || '£'}${betData.stake}`, true, 2000);
+              resolve(true);
+            } else {
+              console.warn('SB Logger: Failed to fill stake input');
+              resolve(false);
+            }
+          } else {
+            console.warn('SB Logger: Could not locate betting slip or stake input');
+            resolve(false);
+          }
+        } catch (e) {
+          console.error('SB Logger: Error during auto-fill:', e);
+          resolve(false);
+        }
+      }
     });
+  }
+
+  async function getSurebetDataFromReferrer() {
+    const retrievalTimestamp = new Date().toISOString();
+    console.log(`SB Logger: [${retrievalTimestamp}] Starting Smarkets retrieval - querying broker for pendingBet`);
+    
+    // Use cached promise if already in flight (prevents multiple consumers from consuming twice)
+    if (cachedPendingBetPromise) {
+      console.log('SB Logger: ℹ Reusing in-flight broker query');
+      return cachedPendingBetPromise;
+    }
+    
+    // If already cached, return immediately
+    if (cachedPendingBet !== null) {
+      console.log(`SB Logger: ℹ Returning cached pendingBet (ID: ${cachedPendingBet ? cachedPendingBet.id : 'none'})`);
+      return cachedPendingBet;
+    }
+    
+    // Create and cache the retrieval promise
+    cachedPendingBetPromise = (async () => {
+      try {
+        // 1. BROKER: Query background context for pendingBet (cross-origin safe)
+        const brokerResult = await new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error('Broker timeout'));
+          }, 3000);
+          
+          chrome.runtime.sendMessage(
+            { action: 'consumePendingBet' },
+            (response) => {
+              clearTimeout(timeout);
+              if (chrome.runtime.lastError) {
+                reject(chrome.runtime.lastError);
+              } else {
+                resolve(response);
+              }
+            }
+          );
+        });
+        
+        if (brokerResult && brokerResult.betData) {
+          cachedPendingBet = brokerResult.betData;
+          console.log(`SB Logger: ✓ Broker returned pendingBet (ID: ${cachedPendingBet.id})`);
+          console.log('SB Logger: Retrieved bet data from broker:', cachedPendingBet);
+          return cachedPendingBet;
+        } else {
+          console.log('SB Logger: Broker found no pendingBet, trying fallbacks');
+        }
+      } catch (err) {
+        console.warn(`SB Logger: ⚠ Broker query failed (${err.message}), trying fallbacks`);
+      }
+      
+      // 2. FALLBACK: Try chrome.storage.local (async)
+      try {
+        const result = await new Promise((resolve) => {
+          setTimeout(() => {
+            chrome.storage.local.get(['pendingBet'], (storageResult) => {
+              if (storageResult && storageResult.pendingBet && storageResult.pendingBet.id) {
+                resolve(storageResult.pendingBet);
+              } else {
+                resolve(null);
+              }
+            });
+          }, 100);
+        });
+        
+        if (result) {
+          cachedPendingBet = result;
+          console.log(`SB Logger: ✓ Found pendingBet in chrome.storage.local (ID: ${result.id})`);
+          console.log('SB Logger: Retrieved bet data from storage:', result);
+          
+          // Clear after retrieval
+          chrome.storage.local.remove('pendingBet', () => {
+            console.log('SB Logger: ✓ Cleared pendingBet from chrome.storage.local');
+          });
+          
+          return result;
+        }
+      } catch (err) {
+        console.warn(`SB Logger: ⚠ Storage fallback failed (${err.message})`);
+      }
+      
+      // 3. FALLBACK: Try document.referrer
+      if (document.referrer && document.referrer.includes('/nav/valuebet/prong/')) {
+        console.log('SB Logger: Referrer detected from surebet.com');
+        const betData = parseSurebetLinkData(document.referrer);
+        if (betData) {
+          cachedPendingBet = betData;
+          console.log(`SB Logger: ✓ Parsed data from referrer (ID: ${betData.id})`);
+          return betData;
+        } else {
+          console.warn('SB Logger: ⚠ Failed to parse referrer data (may be truncated by browser)');
+        }
+      }
+      
+      // 4. FALLBACK: Try parent window frame
+      try {
+        if (window !== window.top && window.top.location.href.includes('/nav/valuebet/prong/')) {
+          const betData = parseSurebetLinkData(window.top.location.href);
+          if (betData) {
+            cachedPendingBet = betData;
+            console.log(`SB Logger: ✓ Found bet data from parent frame (ID: ${betData.id})`);
+            return betData;
+          }
+        }
+      } catch (e) {
+        console.log('SB Logger: Cannot access parent frame (cross-origin):', e.message);
+      }
+      
+      // No data found anywhere
+      console.log('SB Logger: ⚠ No pending bet data found - user will need to manually enter stakes');
+      cachedPendingBet = null;
+      return null;
+    })();
+    
+    try {
+      const result = await cachedPendingBetPromise;
+      return result;
+    } finally {
+      // Clear the in-flight promise after resolution
+      cachedPendingBetPromise = null;
+    }
   }
 
   async function injectSaveButtonOnSmarkets() {
@@ -2212,9 +2668,26 @@
       showToast('SB Logger Active!', true, 1500);
     }, 1000);
     
-    // If on any bookmaker site, inject floating button
+    // If on any bookmaker site, inject floating button and start auto-fill
     if (onBookmakerSite) {
       console.log('SB Logger: On bookmaker site, injecting floating save button');
+      
+      // Try auto-fill if enabled
+      setTimeout(async () => {
+        const betData = await getSurebetDataFromReferrer();
+        if (betData) {
+          console.log('SB Logger: Bet data available, attempting auto-fill');
+          betData.stake = calculateKellyStake(betData);
+          console.log(`SB Logger: Calculated Kelly stake: ${betData.stake}`);
+          const success = await autoFillBetSlip(betData);
+          if (success) {
+            console.log('SB Logger: ✓ Auto-fill completed successfully');
+          } else {
+            console.log('SB Logger: Auto-fill did not complete, clipboard fallback available');
+          }
+        }
+      }, 500);
+      
       setTimeout(injectSaveButtonOnSmarkets, 1000);
       // Don't do the table row injection on bookmaker sites
       return;
@@ -2223,19 +2696,55 @@
     // Inject hide lay bets button on Surebet page
     setTimeout(injectHideLayButton, 500);
     
-    // On Surebet: intercept clicks on valuebet links to store data
-    clickHandlers.surebetLink = (e) => {
+    // On Surebet: intercept clicks on valuebet links and send to background broker
+    clickHandlers.surebetLink = async (e) => {
       if (isDisabled) {
         return;
       }
       const link = e.target.closest('a[href*="/nav/valuebet/prong/"]');
       if (link && link.href) {
-        console.log('SB Logger: Surebet link clicked, storing data for later');
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('SB Logger: Surebet link clicked, sending bet data to broker');
         const betData = parseSurebetLinkData(link.href);
         if (betData) {
-          chrome.storage.local.set({ pendingBet: betData }, () => {
-            console.log('SB Logger: Bet data stored for bookmaker page:', betData);
-          });
+          const timestamp = new Date().toISOString();
+          console.log(`SB Logger: [${timestamp}] Broker saving pendingBet with ID: ${betData.id}`);
+          
+          // Send to background broker (cross-origin safe)
+          try {
+            const response = await new Promise((resolve, reject) => {
+              const timeout = setTimeout(() => {
+                reject(new Error('Broker timeout'));
+              }, 5000);
+              
+              chrome.runtime.sendMessage(
+                { action: 'savePendingBet', betData },
+                (response) => {
+                  clearTimeout(timeout);
+                  if (chrome.runtime.lastError) {
+                    reject(chrome.runtime.lastError);
+                  } else {
+                    resolve(response);
+                  }
+                }
+              );
+            });
+            
+            if (response && response.success) {
+              console.log(`SB Logger: ✓ Broker confirmed pendingBet saved (ID: ${betData.id})`);
+              console.log('SB Logger: Bet data stored for bookmaker page:', betData);
+              // Navigate to bookmaker
+              window.location.href = link.href;
+            } else {
+              console.warn('SB Logger: ⚠ Broker save failed, navigating anyway');
+              window.location.href = link.href;
+            }
+          } catch (err) {
+            console.error('SB Logger: ⚠ Broker communication error:', err.message);
+            // Navigate anyway to not block user
+            window.location.href = link.href;
+          }
         }
       }
     };
@@ -2425,6 +2934,19 @@
         console.log('📏 [StakePanel] Rounding settings updated from popup:', roundingSettings);
         updateStakeIndicators();
         showToast('Rounding settings updated', true, 2000);
+      }
+
+      // Handle auto-fill settings changes from popup
+      if (changes.autoFillSettings?.newValue) {
+        const newSettings = changes.autoFillSettings.newValue;
+        autoFillSettings = {
+          enabled: newSettings.enabled !== false,
+          bookmakers: newSettings.bookmakers || { betfair: true, matchbook: true, smarkets: true },
+          timeout: newSettings.timeout || 10000,
+          requireConfirmation: newSettings.requireConfirmation || false
+        };
+        console.log('⚙️ [AutoFill] Auto-fill settings updated from popup:', autoFillSettings);
+        showToast('Auto-fill settings updated', true, 2000);
       }
     });
   }
