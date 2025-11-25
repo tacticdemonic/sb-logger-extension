@@ -619,7 +619,7 @@ api.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 async function handleCheckResults() {
-  console.log('🔍 handleCheckResults called');
+  console.log('🔍 handleCheckResults called (batched multi-sport)');
   try {
     console.log('✅ Ensuring ApiService instance is ready...');
     const apiService = await getApiServiceInstance();
@@ -660,7 +660,14 @@ async function handleCheckResults() {
     }
 
     // Filter bets that are ready for lookup (respects retry count and delays)
+    // Also exclude bets marked as unsupported sport
     const readyBets = pendingBets.filter(b => {
+      // Skip if marked as unsupported sport
+      if (b.unsupportedSport) {
+        console.log(`⏭️ Skipping ${b.event} - unsupported sport`);
+        return false;
+      }
+      
       const retryCount = b.apiRetryCount || 0;
       console.log(`📋 Checking ${b.event}: retryCount=${retryCount}, ready=${apiService.isReadyForLookup(b)}`);
       return retryCount < 5 && apiService.isReadyForLookup(b);
@@ -671,10 +678,10 @@ async function handleCheckResults() {
       return { results: [], message: 'No bets ready for lookup yet. Check back later.' };
     }
 
-    console.log(`Checking ${readyBets.length} bets for results...`);
+    console.log(`Checking ${readyBets.length} bets for results (batched)...`);
 
-    // Check results
-    const results = await apiService.checkBetsForResults(readyBets);
+    // Use batched processing for optimized API calls
+    const results = await apiService.checkBetsForResultsBatched(readyBets);
 
     // Update retry counts and statuses
     // Re-fetch bets from storage to avoid race conditions with manual updates
@@ -684,12 +691,33 @@ async function handleCheckResults() {
     const bets = freshStorage.bets || [];
     
     let updated = false;
+    let unsupportedCount = 0;
+    let rateLimitedCount = 0;
+    
     results.forEach(r => {
       const bet = bets.find(b => getBetKey(b) === r.betId);
       if (bet) {
         // Skip if bet is no longer pending (manually marked as won/lost/void)
         if (bet.status && bet.status !== 'pending') {
           console.log(`⏭️ Skipping ${bet.event} - already marked as ${bet.status}`);
+          return;
+        }
+        
+        // Handle unsupported sports - mark to exclude from future auto-checks
+        if (r.unsupportedSport) {
+          bet.unsupportedSport = true;
+          bet.apiRetryCount = 999; // Exclude from future auto-checks
+          bet.unsupportedMessage = r.message;
+          unsupportedCount++;
+          updated = true;
+          console.log(`⚠️ Marked ${bet.event} as unsupported sport`);
+          return;
+        }
+        
+        // Handle rate limited - don't increment retry
+        if (r.rateLimited) {
+          rateLimitedCount++;
+          console.log(`⏳ Rate limited for ${bet.event} - will retry when limit resets`);
           return;
         }
         
@@ -730,7 +758,8 @@ async function handleCheckResults() {
           event: updatedBet.event,
           status: updatedBet.status,
           apiRetryCount: updatedBet.apiRetryCount,
-          lastApiCheck: updatedBet.lastApiCheck
+          lastApiCheck: updatedBet.lastApiCheck,
+          unsupportedSport: updatedBet.unsupportedSport
         });
       }
       await new Promise((resolve) => {
@@ -776,7 +805,9 @@ async function handleCheckResults() {
     return { 
       results: formatted,
       checked: readyBets.length,
-      found: formatted.length
+      found: formatted.length,
+      unsupported: unsupportedCount,
+      rateLimited: rateLimitedCount
     };
   } catch (error) {
     console.error('Check results error:', error);

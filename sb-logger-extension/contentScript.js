@@ -45,13 +45,49 @@ function () {
     bookmakers: {
       betfair: true,
       matchbook: true,
-      smarkets: true
+      smarkets: true,
+      betdaq: true
     },
     timeout: 10000,
     requireConfirmation: false
   };
 
-  // Betting slip selectors for each exchange
+  // Betting slip selectors for each exchange/betting site
+  // 
+  // HOW TO ADD A NEW BETTING SITE:
+  // ==============================
+  // 1. Use the DOM collector tool (popup.html "Contribute" button) on the target site
+  //    to capture the betting slip structure when a bet is in the slip
+  // 
+  // 2. Add entry to BETTING_SLIP_SELECTORS below with:
+  //    - bettingSlip: Array of selectors to find the betting slip container
+  //    - stakeInput: Array of selectors to find the stake input field (most specific first)
+  //    - odds: Array of selectors to find odds display/input (for validation)
+  //    - selection: Selector to find selection name (for validation)
+  //    - backBet/layBet: Optional selectors for back/lay specific containers
+  //
+  // 3. Add to SUPPORTED_SITES (near getExchangeFromHostname) with:
+  //    - hostnames: Array of hostname patterns to match
+  //    - displayName: Human-readable name
+  //    - asyncLoading: true if site loads betting slip content asynchronously
+  //
+  // 4. Add to DEFAULT_AUTOFILL_SETTINGS.bookmakers above (set to true)
+  //
+  // 5. Add commission rate to DEFAULT_COMMISSION_RATES above
+  //
+  // 6. Update settings.html: Add checkbox in autofill-section
+  //
+  // 7. Update settings.js:
+  //    - Add to DEFAULT_AUTOFILL_SETTINGS.bookmakers
+  //    - Add checkbox load handler in loadAllSettings()
+  //    - Add checkbox save handler in save-autofill-btn click handler
+  //
+  // TIPS:
+  // - Selectors are tried in order, put most specific/reliable first
+  // - Use .class1.class2 for elements with multiple classes
+  // - Test with logged-in AND logged-out states (DOM may differ)
+  // - Check if site uses SPA (React/Vue/Angular) - may need asyncLoading: true
+  //
   const BETTING_SLIP_SELECTORS = {
     betfair: {
       bettingSlip: [
@@ -107,6 +143,29 @@ function () {
         'input[class*="odds"], [class*="price"]'
       ],
       selection: '[class*="selection"]'
+    },
+    betdaq: {
+      bettingSlip: [
+        '.betslip-container',
+        '.betslip3',
+        '#betslip',
+        '.betslip-common-wrapper'
+      ],
+      stakeInput: [
+        '.back.polarity input.input.stake',
+        '.betslip-container input.input.stake',
+        '.betslip3 input.input.stake',
+        '#betslip input.input.stake',
+        'input.input.stake'
+      ],
+      odds: [
+        '.back.polarity input.input.odds',
+        '.betslip-container input.input.odds',
+        '.betslip3 input.input.odds',
+        '#betslip input.input.odds',
+        'input.input.odds'
+      ],
+      selection: '.selname, .event-name'
     }
   };
   
@@ -1942,11 +2001,28 @@ function () {
   }
 
   // Auto-fill stake helper functions
+  // NOTE: To add a new betting site:
+  // 1. Add entry to BETTING_SLIP_SELECTORS above with bettingSlip, stakeInput, odds, selection selectors
+  // 2. Add hostname pattern to SUPPORTED_SITES below
+  // 3. Add to DEFAULT_AUTOFILL_SETTINGS.bookmakers above
+  // 4. Add commission rate to DEFAULT_COMMISSION_RATES above
+  // 5. Update settings.html with new checkbox
+  // 6. Update settings.js DEFAULT_AUTOFILL_SETTINGS and load/save handlers
+  
+  const SUPPORTED_SITES = {
+    betfair: { hostnames: ['betfair'], displayName: 'Betfair' },
+    smarkets: { hostnames: ['smarkets'], displayName: 'Smarkets' },
+    matchbook: { hostnames: ['matchbook'], displayName: 'Matchbook' },
+    betdaq: { hostnames: ['betdaq'], displayName: 'Betdaq', asyncLoading: true }
+  };
+
   function getExchangeFromHostname() {
     const hostname = location.hostname.toLowerCase();
-    if (hostname.includes('betfair')) return 'betfair';
-    if (hostname.includes('smarkets')) return 'smarkets';
-    if (hostname.includes('matchbook')) return 'matchbook';
+    for (const [key, config] of Object.entries(SUPPORTED_SITES)) {
+      if (config.hostnames.some(h => hostname.includes(h))) {
+        return key;
+      }
+    }
     return null;
   }
 
@@ -2004,11 +2080,15 @@ function () {
     const oddsElement = findElement(selectors.odds);
     const selectionElement = findElement(selectors.selection);
     
-    // If we can find odds and selection, slip is likely populated
-    const hasOdds = oddsElement && oddsElement.textContent.trim() && !oddsElement.textContent.includes('---');
+    // Check odds - could be input element (Betdaq) or text element
+    let oddsValue = '';
+    if (oddsElement) {
+      oddsValue = oddsElement.tagName === 'INPUT' ? oddsElement.value : oddsElement.textContent;
+    }
+    const hasOdds = oddsElement && oddsValue.trim() && !oddsValue.includes('---');
     const hasSelection = selectionElement && selectionElement.textContent.trim();
     
-    console.log('Surebet Helper: Betting slip population check - odds:', hasOdds, 'selection:', hasSelection);
+    console.log('Surebet Helper: Betting slip population check - odds:', hasOdds, '(value:', oddsValue, ') selection:', hasSelection);
     return hasOdds || hasSelection || bettingSlipElement.textContent.trim().length > 50;
   }
 
@@ -2041,7 +2121,9 @@ function () {
     }
 
     // Fallback: just find any stake input
-    return findElement(selectors.stakeInput);
+    const stakeInput = findElement(selectors.stakeInput);
+    console.log('Surebet Helper: findStakeInput result:', stakeInput, 'for exchange:', exchange);
+    return stakeInput;
   }
 
   async function waitForBettingSlip(exchange, maxAttempts = 20, pollDelay = 500) {
@@ -2066,6 +2148,15 @@ function () {
         if (bettingSlip && isElementVisible(bettingSlip) && isBettingSlipPopulated(bettingSlip, exchange)) {
           console.log('Surebet Helper: ✓ Betting slip found and populated');
           
+          // Debug: Try direct querySelector for Betdaq
+          if (exchange === 'betdaq') {
+            const directStake = document.querySelector('input.input.stake');
+            const directOdds = document.querySelector('input.input.odds');
+            console.log('Surebet Helper: [Betdaq Debug] Direct stake input:', directStake);
+            console.log('Surebet Helper: [Betdaq Debug] Direct odds input:', directOdds);
+            if (directOdds) console.log('Surebet Helper: [Betdaq Debug] Odds value:', directOdds.value);
+          }
+          
           // Find stake input within betting slip
           const stakeInput = findStakeInput(exchange);
           if (stakeInput && isElementVisible(stakeInput)) {
@@ -2073,7 +2164,7 @@ function () {
             resolve({ bettingSlip, stakeInput });
             return;
           } else {
-            console.log('Surebet Helper: Stake input not yet ready');
+            console.log('Surebet Helper: Stake input not yet ready, stakeInput=', stakeInput);
           }
         } else {
           console.log('Surebet Helper: Betting slip not yet populated');
@@ -2138,7 +2229,9 @@ function () {
       return false;
     }
 
-    if (!autoFillSettings.bookmakers[exchange]) {
+    // Check if auto-fill is enabled for this exchange (default to true for new exchanges)
+    const exchangeEnabled = autoFillSettings.bookmakers?.[exchange] !== false;
+    if (!exchangeEnabled) {
       console.log('Surebet Helper: Auto-fill disabled for', exchange);
       return false;
     }
@@ -2146,7 +2239,7 @@ function () {
     console.log('Surebet Helper: Starting auto-fill for', exchange, 'stake:', betData.stake);
 
     // Start MutationObserver to detect betting slip
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       let detected = false;
       const timeout = setTimeout(() => {
         if (detected) return;
@@ -2158,59 +2251,20 @@ function () {
         resolve(false);
       }, autoFillSettings.timeout);
 
-      const observer = new MutationObserver(async (mutations) => {
-        if (detected) return;
-
-        mutations.forEach(mutation => {
-          mutation.addedNodes.forEach(node => {
-            if (node.nodeType === 1) { // Element node
-              // Check if the added node is or contains the betting slip
-              const selectors = BETTING_SLIP_SELECTORS[exchange];
-              for (const slipSelector of selectors.bettingSlip) {
-                if (node.matches?.(slipSelector) || node.querySelector?.(slipSelector)) {
-                  console.log('Surebet Helper: Betting slip detected via MutationObserver');
-                  detected = true;
-                  performAutoFill();
-                  return;
-                }
-              }
-            }
-          });
-        });
-      });
-
-      observer.observe(document.body, { childList: true, subtree: true });
-      bettingSlipDetector = observer;
-
-      // Polling fallback
-      let pollCount = 0;
-      const pollInterval = setInterval(async () => {
-        if (detected || pollCount >= 20) {
-          clearInterval(pollInterval);
-          return;
-        }
-        pollCount++;
-        
-        const result = await waitForBettingSlip(exchange, 1, 0);
-        if (result && result.stakeInput) {
-          console.log('Surebet Helper: Betting slip detected via polling');
-          detected = true;
-          performAutoFill();
-        }
-      }, 500);
-
-      bettingSlipDetectorPolling = pollInterval;
-
       async function performAutoFill() {
         clearTimeout(timeout);
-        clearInterval(bettingSlipDetectorPolling);
+        if (bettingSlipDetectorPolling) clearInterval(bettingSlipDetectorPolling);
         if (bettingSlipDetector) {
           bettingSlipDetector.disconnect();
           bettingSlipDetector = null;
         }
 
         try {
-          const result = await waitForBettingSlip(exchange, 10, 200);
+          // Use more attempts for sites with async loading (configured in SUPPORTED_SITES)
+          const siteConfig = SUPPORTED_SITES[exchange] || {};
+          const maxAttempts = siteConfig.asyncLoading ? 30 : 10;
+          const pollDelay = siteConfig.asyncLoading ? 300 : 200;
+          const result = await waitForBettingSlip(exchange, maxAttempts, pollDelay);
           if (result && result.bettingSlip && result.stakeInput) {
             // Validate odds haven't changed (Smarkets)
             if (exchange === 'smarkets' && betData.odds) {
@@ -2235,14 +2289,67 @@ function () {
               resolve(false);
             }
           } else {
-            console.warn('Surebet Helper: Could not locate betting slip or stake input');
+            console.warn('Surebet Helper: Could not find stake input for auto-fill');
             resolve(false);
           }
-        } catch (e) {
-          console.error('Surebet Helper: Error during auto-fill:', e);
+        } catch (err) {
+          console.error('Surebet Helper: Auto-fill error:', err);
           resolve(false);
         }
       }
+
+      // Immediately check if betting slip already exists (not dynamically loaded)
+      const immediateResult = await waitForBettingSlip(exchange, 1, 0);
+      if (immediateResult && immediateResult.stakeInput) {
+        console.log('Surebet Helper: Betting slip already present on page');
+        detected = true;
+        await performAutoFill();
+        return;
+      }
+
+      // Set up MutationObserver for dynamically loaded betting slips
+      const observer = new MutationObserver(async (mutations) => {
+        if (detected) return;
+
+        mutations.forEach(mutation => {
+          mutation.addedNodes.forEach(node => {
+            if (node.nodeType === 1) { // Element node
+              // Check if the added node is or contains the betting slip
+              const selectors = BETTING_SLIP_SELECTORS[exchange];
+              for (const slipSelector of selectors.bettingSlip) {
+                if (node.matches?.(slipSelector) || node.querySelector?.(slipSelector)) {
+                  console.log('Surebet Helper: Betting slip detected via MutationObserver');
+                  detected = true;
+                  performAutoFill();
+                  return;
+                }
+              }
+            }
+          });
+        });
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true });
+      bettingSlipDetector = observer;
+
+      // Polling fallback for SPAs
+      let pollCount = 0;
+      const pollInterval = setInterval(async () => {
+        if (detected || pollCount >= 20) {
+          clearInterval(pollInterval);
+          return;
+        }
+        pollCount++;
+        
+        const result = await waitForBettingSlip(exchange, 1, 0);
+        if (result && result.stakeInput) {
+          console.log('Surebet Helper: Betting slip detected via polling');
+          detected = true;
+          performAutoFill();
+        }
+      }, 500);
+
+      bettingSlipDetectorPolling = pollInterval;
     });
   }
 
@@ -2707,7 +2814,30 @@ function () {
     
     // If on any bookmaker site, inject floating button and start auto-fill
     if (onBookmakerSite) {
-      console.log('Surebet Helper: On bookmaker site, injecting floating save button');
+      const exchange = getExchangeFromHostname();
+      console.log('Surebet Helper: On bookmaker site:', location.hostname, '(exchange:', exchange || 'unknown', ')');
+      console.log('Surebet Helper: Auto-fill settings:', JSON.stringify(autoFillSettings));
+      
+      // Debug: Test selectors immediately
+      if (exchange) {
+        const selectors = BETTING_SLIP_SELECTORS[exchange];
+        if (selectors) {
+          console.log('Surebet Helper: Testing selectors for', exchange);
+          console.log('  - bettingSlip selectors:', selectors.bettingSlip);
+          console.log('  - stakeInput selectors:', selectors.stakeInput);
+          
+          const bettingSlip = findElement(selectors.bettingSlip);
+          console.log('  - bettingSlip found:', !!bettingSlip, bettingSlip);
+          
+          const stakeInput = findElement(selectors.stakeInput);
+          console.log('  - stakeInput found:', !!stakeInput, stakeInput);
+          
+          if (stakeInput) {
+            console.log('  - stakeInput visible:', isElementVisible(stakeInput));
+            console.log('  - stakeInput value:', stakeInput.value);
+          }
+        }
+      }
       
       // Try auto-fill if enabled
       setTimeout(async () => {
@@ -2722,6 +2852,8 @@ function () {
           } else {
             console.log('Surebet Helper: Auto-fill did not complete, clipboard fallback available');
           }
+        } else {
+          console.log('Surebet Helper: No bet data available from referrer/broker');
         }
       }, 500);
       

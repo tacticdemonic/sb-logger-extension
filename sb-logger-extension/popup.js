@@ -2660,26 +2660,36 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = results[0].result;
         const stakeInputHtml = data.inputs[0]?.html || '(none found)';
         const jsonData = JSON.stringify(data, null, 2);
-        const issueBody = '**Console JSON:**\n\n' + jsonData + '\n\n**HTML of stake input (closest):**\n\n' + stakeInputHtml + '\n\n**Steps to reproduce:**\n- Open: ' + data.url + '\n- Actions: [add selection, open betslip]\n\n**Browser / OS:** ' + data.userAgent + '\n\n**Notes:** Please use the Add Exchange Support issue template.';
+        const issueBody = '**Console JSON:**\n\n```json\n' + jsonData + '\n```\n\n**HTML of stake input (closest):**\n\n```html\n' + stakeInputHtml + '\n```\n\n**Steps to reproduce:**\n- Open: ' + data.url + '\n- Actions: [add selection, open betslip]\n\n**Browser / OS:** ' + data.userAgent + '\n\n**Notes:** Please use the Add Exchange Support issue template.';
+
+        // Always copy JSON to clipboard first
+        let clipboardSuccess = false;
+        try {
+          await navigator.clipboard.writeText(jsonData);
+          clipboardSuccess = true;
+          console.log('📋 DOM data copied to clipboard');
+        } catch (clipError) {
+          console.error('Failed to copy to clipboard:', clipError);
+          console.log('JSON data:', jsonData);
+        }
 
         const repoUrl = `https://github.com/tacticdemonic/surebet-helper-extension/issues/new?template=add-exchange.md&title=${encodeURIComponent('Add Support for ' + exchangeName)}&body=${encodeURIComponent(issueBody)}&labels=enhancement`;
 
-        // Check if body is too large
+        // Check if body is too large for URL
         if (issueBody.length > 8000) {
-          // Copy JSON to clipboard
-          try {
-            await navigator.clipboard.writeText(jsonData);
-            chrome.tabs.create({ url: `https://github.com/tacticdemonic/surebet-helper-extension/issues/new?template=add-exchange.md&title=${encodeURIComponent('Add Support for ' + exchangeName)}` });
-            alert('Data collected! The JSON has been copied to your clipboard. Paste it into the "Console JSON" field in the GitHub issue.');
-          } catch (clipError) {
-            console.error('Failed to copy to clipboard:', clipError);
-            console.log('JSON data:', jsonData);
-            chrome.tabs.create({ url: `https://github.com/tacticdemonic/surebet-helper-extension/issues/new?template=add-exchange.md&title=${encodeURIComponent('Add Support for ' + exchangeName)}` });
-            alert('Data collected, but too large to auto-fill. The JSON is logged in the console. Please copy it from there and paste into the Console JSON field.');
+          chrome.tabs.create({ url: `https://github.com/tacticdemonic/surebet-helper-extension/issues/new?template=add-exchange.md&title=${encodeURIComponent('Add Support for ' + exchangeName)}` });
+          if (clipboardSuccess) {
+            alert('DOM data collected and copied to clipboard! ✅\n\nThe GitHub issue page is now open. Paste the JSON into the "Console JSON" field.');
+          } else {
+            alert('DOM data collected but could not copy to clipboard.\n\nThe JSON is logged in the browser console (F12). Please copy it from there and paste into the Console JSON field.');
           }
         } else {
           chrome.tabs.create({ url: repoUrl });
-          console.log('📋 Opened prefilled GitHub issue for ' + exchangeName);
+          if (clipboardSuccess) {
+            console.log('📋 Opened prefilled GitHub issue for ' + exchangeName + ' (data also in clipboard)');
+          } else {
+            console.log('📋 Opened prefilled GitHub issue for ' + exchangeName);
+          }
         }
       } catch (error) {
         console.error('📋 Error collecting data:', error);

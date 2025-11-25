@@ -48,6 +48,7 @@
       <button class="nav-btn" data-section="autofill">⚡ Auto-Fill</button>
       <button class="nav-btn" data-section="kelly">🎲 Kelly Staking</button>
       <button class="nav-btn" data-section="api">🔑 API Setup</button>
+      <button class="nav-btn" data-section="diagnostics">🔍 API Diagnostics</button>
       <button class="nav-btn" data-section="data">🗑️ Data</button>
     </div>
 
@@ -116,10 +117,10 @@
 
     <!-- Auto-Fill Section -->
     <div id="autofill-section" class="section-container">
-      <h2>Auto-Fill Stakes on Betting Exchanges</h2>
+      <h2>Auto-Fill Stakes on Betting Sites</h2>
       <div class="info-box">
         <strong>ℹ️ Auto-Fill Feature</strong><br>
-        When enabled, calculated stakes will be automatically filled into betting slips on supported exchanges. Falls back to clipboard copy if auto-fill fails.
+        When enabled, calculated stakes will be automatically filled into betting slips on supported betting sites. Falls back to clipboard copy if auto-fill fails.
       </div>
       
       <div class="form-group">
@@ -130,11 +131,15 @@
       </div>
 
       <div style="background: #f8f9fa; padding: 12px; border-radius: 3px; margin-bottom: 15px;">
-        <div style="font-weight: 600; margin-bottom: 12px; color: #333;">Select Exchanges:</div>
+        <div style="font-weight: 600; margin-bottom: 12px; color: #333;">Select Betting Sites:</div>
         <div style="display: flex; flex-direction: column; gap: 10px;">
           <label class="form-group-checkbox">
             <input type="checkbox" id="autofill-betfair" />
             <span>Betfair</span>
+          </label>
+          <label class="form-group-checkbox">
+            <input type="checkbox" id="autofill-betdaq" />
+            <span>Betdaq</span>
           </label>
           <label class="form-group-checkbox">
             <input type="checkbox" id="autofill-smarkets" />
@@ -147,7 +152,7 @@
         </div>
       </div>
 
-      <p class="note">⚠️ <strong>How to Use:</strong> LEFT-CLICK (not right-click) the stake indicator for your target exchange on surebet.com. The system will store the bet and navigate you to the exchange. Stakes will auto-fill in the betting slip.</p>
+      <p class="note">⚠️ <strong>How to Use:</strong> LEFT-CLICK (not right-click) the stake indicator for your target betting site on surebet.com. The system will store the bet and navigate you to the site. Stakes will auto-fill in the betting slip.</p>
       
       <div class="button-row">
         <button class="btn-cancel js-close-window" type="button">Cancel</button>
@@ -264,6 +269,93 @@
       </div>
 
       <div id="api-test-result" style="margin-top: 15px; display: none; padding: 12px; border-radius: 4px; font-size: 12px;"></div>
+    </div>
+
+    <!-- API Diagnostics Section -->
+    <div id="diagnostics-section" class="section-container">
+      <h2>🔍 Multi-Sport API Diagnostics</h2>
+      
+      <!-- Rate Limit Status -->
+      <div style="margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">📊 API Rate Limits (Today)</h3>
+        <div id="rate-limit-warning" style="display: none; background: #fff3cd; padding: 12px; border-left: 4px solid #ffc107; border-radius: 3px; margin-bottom: 15px; font-size: 12px;">
+          <strong>⚠️ Rate Limit Warning</strong><br>
+          <span id="rate-limit-warning-text"></span>
+        </div>
+        <div id="rate-limits-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px;">
+          <div style="text-align: center; padding: 10px; background: #f8f9fa; border-radius: 4px;">
+            <div style="font-size: 11px; color: #666;">Loading...</div>
+          </div>
+        </div>
+        <button style="margin-top: 10px;" id="refresh-rate-limits-btn">🔄 Refresh</button>
+      </div>
+
+      <!-- Supported Sports -->
+      <div style="margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">🏆 API-Sports.io (Primary)</h3>
+        <div class="info-box">
+          <strong>All sports share the same API key</strong> from dashboard.api-football.com. Each sport has 100 requests/day on the free plan.
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; font-size: 12px;">
+          <div style="background: #d4edda; padding: 8px; border-radius: 4px;">⚽ Football</div>
+          <div style="background: #d4edda; padding: 8px; border-radius: 4px;">🏀 Basketball</div>
+          <div style="background: #d4edda; padding: 8px; border-radius: 4px;">🏒 Hockey</div>
+          <div style="background: #d4edda; padding: 8px; border-radius: 4px;">⚾ Baseball</div>
+          <div style="background: #d4edda; padding: 8px; border-radius: 4px;">🏈 NFL</div>
+          <div style="background: #d4edda; padding: 8px; border-radius: 4px;">🏉 Rugby</div>
+          <div style="background: #d4edda; padding: 8px; border-radius: 4px;">🏐 Volleyball</div>
+          <div style="background: #d4edda; padding: 8px; border-radius: 4px;">🤾 Handball</div>
+          <div style="background: #d4edda; padding: 8px; border-radius: 4px;">🏈 AFL</div>
+        </div>
+      </div>
+
+      <!-- Odds API Fallback -->
+      <div style="margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">🌐 The Odds API (Fallback)</h3>
+        <div style="background: #fff3cd; padding: 12px; border-left: 4px solid #ffc107; border-radius: 3px; margin-bottom: 10px; font-size: 12px;">
+          <strong>Covers all other sports</strong> including tennis, cricket, golf, MMA, and more. Used when a sport isn't available via API-Sports.io. 500 requests/month on free plan.
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; font-size: 12px;">
+          <div style="background: #fff3cd; padding: 8px; border-radius: 4px;">🎾 Tennis</div>
+          <div style="background: #fff3cd; padding: 8px; border-radius: 4px;">🏏 Cricket</div>
+          <div style="background: #fff3cd; padding: 8px; border-radius: 4px;">⛳ Golf</div>
+          <div style="background: #fff3cd; padding: 8px; border-radius: 4px;">🥊 MMA/Boxing</div>
+          <div style="background: #fff3cd; padding: 8px; border-radius: 4px;">🎯 Darts</div>
+          <div style="background: #fff3cd; padding: 8px; border-radius: 4px;">🎱 Snooker</div>
+          <div style="background: #fff3cd; padding: 8px; border-radius: 4px;">+ Many more</div>
+        </div>
+      </div>
+
+      <!-- Diagnostic Log -->
+      <div style="margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">📝 API Diagnostic Log</h3>
+        <p style="font-size: 12px; color: #666; margin-bottom: 10px;">
+          Recent API calls, match attempts, and failures. Use this to diagnose why bets aren't being auto-settled.
+        </p>
+        
+        <div style="margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <select id="diagnostic-filter" style="padding: 6px 10px; border: 1px solid #ccc; border-radius: 3px; font-size: 12px;">
+            <option value="">All Types</option>
+            <option value="api_response">API Responses</option>
+            <option value="match_success">Match Successes</option>
+            <option value="match_failure">Match Failures</option>
+            <option value="api_error">API Errors</option>
+            <option value="unsupported_sport">Unsupported Sports</option>
+            <option value="result_determined">Results Determined</option>
+          </select>
+          <button id="load-diagnostics-btn">🔄 Load Log</button>
+          <button id="export-diagnostics-btn">📥 Export JSON</button>
+          <button id="clear-diagnostics-btn" style="background: #ffc107; color: #000; border-color: #ffc107;">🗑️ Clear Log</button>
+        </div>
+
+        <div id="diagnostics-log" style="max-height: 400px; overflow-y: auto; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; padding: 10px; font-family: monospace; font-size: 11px;">
+          <div style="color: #666;">Click "Load Log" to view diagnostic entries...</div>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button class="btn-cancel js-close-window" type="button">Close</button>
+      </div>
     </div>
 
     <!-- Data Management Section -->

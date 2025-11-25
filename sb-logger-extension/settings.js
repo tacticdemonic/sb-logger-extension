@@ -20,7 +20,8 @@ const DEFAULT_AUTOFILL_SETTINGS = {
   bookmakers: {
     betfair: true,
     matchbook: true,
-    smarkets: true
+    smarkets: true,
+    betdaq: true
   },
   timeout: 10000,
   requireConfirmation: false
@@ -103,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const autoFillSettings = res.autoFillSettings || DEFAULT_AUTOFILL_SETTINGS;
       document.getElementById('autofill-enabled').checked = autoFillSettings.enabled || false;
       document.getElementById('autofill-betfair').checked = autoFillSettings.bookmakers?.betfair !== false;
+      document.getElementById('autofill-betdaq').checked = autoFillSettings.bookmakers?.betdaq !== false;
       document.getElementById('autofill-smarkets').checked = autoFillSettings.bookmakers?.smarkets !== false;
       document.getElementById('autofill-matchbook').checked = autoFillSettings.bookmakers?.matchbook !== false;
 
@@ -185,6 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
         enabled: enabled,
         bookmakers: {
           betfair: document.getElementById('autofill-betfair').checked,
+          betdaq: document.getElementById('autofill-betdaq').checked,
           smarkets: document.getElementById('autofill-smarkets').checked,
           matchbook: document.getElementById('autofill-matchbook').checked
         },
@@ -428,5 +431,277 @@ document.addEventListener('DOMContentLoaded', () => {
     oddsApiLink.addEventListener('click', () => {
       api.tabs.create({ url: 'https://the-odds-api.com/' });
     });
+  }
+
+  // ========== API DIAGNOSTICS SECTION ==========
+  
+  // Load and display rate limits
+  async function loadRateLimits() {
+    return new Promise((resolve) => {
+      api.storage.local.get({ apiRateLimits: {} }, (res) => {
+        const limits = res.apiRateLimits || {};
+        const today = new Date().toISOString().split('T')[0];
+        const thisMonth = today.slice(0, 7);
+        
+        // Sports with their endpoints
+        const sports = {
+          football: { emoji: '⚽', limit: 100 },
+          basketball: { emoji: '🏀', limit: 100 },
+          hockey: { emoji: '🏒', limit: 100 },
+          baseball: { emoji: '⚾', limit: 100 },
+          nfl: { emoji: '🏈', limit: 100 },
+          rugby: { emoji: '🏉', limit: 100 },
+          volleyball: { emoji: '🏐', limit: 100 },
+          handball: { emoji: '🤾', limit: 100 },
+          afl: { emoji: '🏈', limit: 100 }
+        };
+        
+        const stats = {};
+        const warnings = [];
+        
+        // Process each sport
+        for (const [sport, config] of Object.entries(sports)) {
+          const data = limits[sport] || { count: 0, resetDate: today };
+          const isToday = data.resetDate === today;
+          const used = isToday ? data.count : 0;
+          const remaining = config.limit - used;
+          
+          stats[sport] = {
+            emoji: config.emoji,
+            used,
+            limit: config.limit,
+            remaining,
+            nearLimit: used >= config.limit * 0.9
+          };
+          
+          if (stats[sport].nearLimit && used > 0) {
+            warnings.push(`${config.emoji} ${sport}: ${used}/${config.limit}`);
+          }
+        }
+        
+        // Add Odds API (monthly)
+        const oddsData = limits.oddsApi || { count: 0, resetMonth: thisMonth };
+        const isThisMonth = oddsData.resetMonth === thisMonth;
+        const oddsUsed = isThisMonth ? oddsData.count : 0;
+        stats.oddsApi = {
+          emoji: '🌐',
+          used: oddsUsed,
+          limit: 500,
+          remaining: 500 - oddsUsed,
+          nearLimit: oddsUsed >= 450,
+          isMonthly: true
+        };
+        
+        if (stats.oddsApi.nearLimit && oddsUsed > 0) {
+          warnings.push(`🌐 Odds API: ${oddsUsed}/500 (monthly)`);
+        }
+        
+        resolve({ stats, warnings });
+      });
+    });
+  }
+  
+  function renderRateLimits() {
+    loadRateLimits().then(({ stats, warnings }) => {
+      const grid = document.getElementById('rate-limits-grid');
+      const warningDiv = document.getElementById('rate-limit-warning');
+      const warningText = document.getElementById('rate-limit-warning-text');
+      
+      if (!grid) return;
+      
+      // Render warning if any
+      if (warnings.length > 0) {
+        warningDiv.style.display = 'block';
+        warningText.textContent = `Approaching limits: ${warnings.join(', ')}`;
+      } else {
+        warningDiv.style.display = 'none';
+      }
+      
+      // Render stats grid
+      let html = '';
+      for (const [sport, data] of Object.entries(stats)) {
+        const percentage = Math.round((data.used / data.limit) * 100);
+        const barColor = data.nearLimit ? '#dc3545' : (data.used > 0 ? '#ffc107' : '#28a745');
+        const periodLabel = data.isMonthly ? '/mo' : '/day';
+        const displayName = sport === 'oddsApi' ? 'Odds API' : sport.charAt(0).toUpperCase() + sport.slice(1);
+        
+        html += `
+          <div style="text-align: center; padding: 10px; background: #f8f9fa; border-radius: 4px; border: 1px solid ${data.nearLimit ? '#dc3545' : '#dee2e6'};">
+            <div style="font-size: 16px; margin-bottom: 4px;">${data.emoji}</div>
+            <div style="font-size: 11px; font-weight: 600; color: #333;">${displayName}</div>
+            <div style="font-size: 10px; color: #666; margin-bottom: 4px;">${data.used}/${data.limit}${periodLabel}</div>
+            <div style="height: 4px; background: #e9ecef; border-radius: 2px; overflow: hidden;">
+              <div style="height: 100%; width: ${percentage}%; background: ${barColor};"></div>
+            </div>
+          </div>
+        `;
+      }
+      
+      grid.innerHTML = html;
+    });
+  }
+  
+  // Load diagnostic log
+  async function loadDiagnosticLog(typeFilter = null) {
+    return new Promise((resolve) => {
+      api.storage.local.get({ apiDiagnosticLog: [] }, (res) => {
+        let log = res.apiDiagnosticLog || [];
+        
+        // Filter by type if specified
+        if (typeFilter) {
+          log = log.filter(e => e.type === typeFilter);
+        }
+        
+        // Return most recent entries (reversed for newest first)
+        resolve(log.slice(-100).reverse());
+      });
+    });
+  }
+  
+  function renderDiagnosticLog(entries) {
+    const container = document.getElementById('diagnostics-log');
+    if (!container) return;
+    
+    if (!entries || entries.length === 0) {
+      container.innerHTML = '<div style="color: #666; padding: 10px;">No diagnostic entries found.</div>';
+      return;
+    }
+    
+    let html = '';
+    for (const entry of entries) {
+      const time = new Date(entry.timestamp).toLocaleString();
+      let bgColor = '#fff';
+      let icon = '📝';
+      
+      switch (entry.type) {
+        case 'api_response':
+          icon = '📡';
+          bgColor = '#e7f3ff';
+          break;
+        case 'match_success':
+          icon = '✅';
+          bgColor = '#d4edda';
+          break;
+        case 'match_failure':
+          icon = '❌';
+          bgColor = '#f8d7da';
+          break;
+        case 'api_error':
+          icon = '⚠️';
+          bgColor = '#fff3cd';
+          break;
+        case 'unsupported_sport':
+          icon = '🚫';
+          bgColor = '#f8d7da';
+          break;
+        case 'result_determined':
+          icon = '🎯';
+          bgColor = '#d4edda';
+          break;
+      }
+      
+      let details = '';
+      if (entry.type === 'api_response') {
+        details = `${entry.sport} - ${entry.date} - ${entry.fixtureCount} fixtures`;
+        if (entry.sampleFixtures && entry.sampleFixtures.length > 0) {
+          details += `<br><span style="color: #666; font-size: 10px;">Sample: ${entry.sampleFixtures.map(f => f.teams?.home + ' vs ' + f.teams?.away).join(', ')}</span>`;
+        }
+      } else if (entry.type === 'match_success') {
+        details = `${entry.betEvent || 'Unknown'} → ${entry.matchedFixture}`;
+      } else if (entry.type === 'match_failure') {
+        details = `${entry.bet?.event || 'Unknown'} - ${entry.reason}`;
+        if (entry.topCandidates && entry.topCandidates.length > 0) {
+          details += `<br><span style="color: #666; font-size: 10px;">Candidates: ${entry.topCandidates.map(c => c.fixture + ' (' + c.score + ')').slice(0, 3).join(', ')}</span>`;
+        }
+      } else if (entry.type === 'api_error') {
+        details = `${entry.sport} - ${entry.error}`;
+      } else if (entry.type === 'unsupported_sport') {
+        details = `${entry.sport} - ${entry.bet?.event || 'Unknown'}`;
+      } else if (entry.type === 'result_determined') {
+        details = `${entry.bet?.event || 'Unknown'} → ${entry.outcome} (${entry.score})`;
+      } else {
+        details = JSON.stringify(entry).substring(0, 100);
+      }
+      
+      html += `
+        <div style="background: ${bgColor}; padding: 8px; margin-bottom: 6px; border-radius: 3px; border-left: 3px solid ${entry.type === 'match_failure' || entry.type === 'api_error' ? '#dc3545' : '#28a745'};">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span style="font-weight: 600;">${icon} ${entry.type}</span>
+            <span style="color: #888; font-size: 10px;">${time}</span>
+          </div>
+          <div style="font-size: 11px;">${details}</div>
+        </div>
+      `;
+    }
+    
+    container.innerHTML = html;
+  }
+  
+  // Set up diagnostics event listeners
+  const loadDiagnosticsBtn = document.getElementById('load-diagnostics-btn');
+  if (loadDiagnosticsBtn) {
+    loadDiagnosticsBtn.addEventListener('click', () => {
+      const filter = document.getElementById('diagnostic-filter')?.value || null;
+      loadDiagnosticLog(filter).then(entries => {
+        renderDiagnosticLog(entries);
+      });
+    });
+  }
+  
+  const exportDiagnosticsBtn = document.getElementById('export-diagnostics-btn');
+  if (exportDiagnosticsBtn) {
+    exportDiagnosticsBtn.addEventListener('click', () => {
+      api.storage.local.get({ apiDiagnosticLog: [], apiRateLimits: {} }, (res) => {
+        const exportData = {
+          exportDate: new Date().toISOString(),
+          diagnosticLog: res.apiDiagnosticLog || [],
+          rateLimits: res.apiRateLimits || {}
+        };
+        
+        const dataStr = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `api-diagnostics-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        
+        URL.revokeObjectURL(url);
+      });
+    });
+  }
+  
+  const clearDiagnosticsBtn = document.getElementById('clear-diagnostics-btn');
+  if (clearDiagnosticsBtn) {
+    clearDiagnosticsBtn.addEventListener('click', () => {
+      if (!confirm('Clear all diagnostic log entries?')) return;
+      
+      api.storage.local.set({ apiDiagnosticLog: [] }, () => {
+        console.log('✅ Diagnostic log cleared');
+        document.getElementById('diagnostics-log').innerHTML = '<div style="color: #666; padding: 10px;">Log cleared.</div>';
+      });
+    });
+  }
+  
+  const refreshRateLimitsBtn = document.getElementById('refresh-rate-limits-btn');
+  if (refreshRateLimitsBtn) {
+    refreshRateLimitsBtn.addEventListener('click', () => {
+      renderRateLimits();
+    });
+  }
+  
+  // Auto-load rate limits when diagnostics section is shown
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.section === 'diagnostics') {
+        renderRateLimits();
+      }
+    });
+  });
+  
+  // Load rate limits on initial load if diagnostics section is active
+  if (window.location.hash === '#diagnostics') {
+    renderRateLimits();
   }
 });
