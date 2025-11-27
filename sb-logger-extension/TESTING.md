@@ -66,10 +66,14 @@
 ### 6. Test Running Totals
 1. After settling some bets, check the summary bar at top of popup
 2. **Verify first row displays**:
+3. **Verify first row displays**:
    - Total Staked: sum of all stakes
    - Settled: count of won/lost/void bets vs total (calculated from the current filtered view — e.g., when "Pending Only" is checked the settled count will reflect visible bets only)
    - P/L: running profit/loss (green if positive, red if negative)
    - ROI %: (P/L / Total Staked) × 100
+4. **Filter-specific test**
+   1. Toggle the **Pending Only** checkbox to show only pending bets
+   2. **Expected**: The "Settled" count shows the number of settled bets among visible bets (e.g., "0/X" if there are no settled bets in the filtered view)
 3. **Verify second row displays** (only if bets settled):
    - Expected P/L: sum of all EV values for settled bets (blue)
    - vs Expected: difference between actual and expected (green if better, red if worse)
