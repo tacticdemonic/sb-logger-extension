@@ -315,9 +315,43 @@ if (chrome.storage && chrome.storage.onChanged) {
   });
 }
 
+// Migrate overvalue format from ratio to percentage
+function migrateOvervalueFormat() {
+  chrome.storage.local.get(['bets', 'overvalueMigrationDone'], (result) => {
+    if (result.overvalueMigrationDone) {
+      console.log('✓ Overvalue migration already completed');
+      return;
+    }
+    
+    const bets = result.bets || [];
+    let migratedCount = 0;
+    
+    const migratedBets = bets.map(bet => {
+      // Check if overvalue is in ratio format (< 2, meaning 0-100% edge)
+      if (bet.overvalue && bet.overvalue < 2) {
+        const newOvervalue = parseFloat(((bet.overvalue - 1) * 100).toFixed(2));
+        console.log(`🔄 Migrated overvalue from ${bet.overvalue} to ${newOvervalue}% for bet: ${bet.event}`);
+        migratedCount++;
+        return { ...bet, overvalue: newOvervalue };
+      }
+      return bet;
+    });
+    
+    if (migratedCount > 0) {
+      chrome.storage.local.set({ bets: migratedBets, overvalueMigrationDone: true }, () => {
+        console.log(`✅ Overvalue migration complete: ${migratedCount} bets converted`);
+      });
+    } else {
+      chrome.storage.local.set({ overvalueMigrationDone: true });
+      console.log('ℹ️ No bets needed overvalue migration');
+    }
+  });
+}
+
 // Set up alarm on extension load
 chrome.runtime.onInstalled.addListener(() => {
   console.log('🚀 Extension installed/updated');
+  migrateOvervalueFormat();
   chrome.storage.local.get(DISABLE_STORAGE_KEY, (result) => {
     if (typeof result[DISABLE_STORAGE_KEY] === 'undefined') {
       chrome.storage.local.set({ [DISABLE_STORAGE_KEY]: false }, syncToggleUiState);

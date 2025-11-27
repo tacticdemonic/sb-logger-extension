@@ -1167,12 +1167,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const evRoi = totalStaked > 0 ? ((totalEV / totalStaked) * 100).toFixed(2) : '0.00';
 
     const hiddenCount = bets.length - filteredBets.length;
+    // Calculate settled count from filtered bets (not all bets) for accurate display
+    const filteredSettledBets = filteredBets.filter(b => {
+      let betStatus = b.status;
+      if (betStatus && typeof betStatus === 'string') {
+        betStatus = betStatus.trim().toLowerCase();
+      }
+      return betStatus === 'won' || betStatus === 'lost' || betStatus === 'void';
+    }).length;
     const summary = `
       <div style="background:#f8f9fa;padding:8px;margin-bottom:8px;border-radius:4px;font-size:12px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
           <div>
             <strong>Total Staked:</strong> ${totalStaked.toFixed(2)} | 
-            <strong>Settled:</strong> ${settledBets}/${filteredBets.length}${hiddenCount > 0 ? ` (${hiddenCount} hidden)` : ''} | 
+            <strong>Settled:</strong> ${filteredSettledBets}/${filteredBets.length}${hiddenCount > 0 ? ` (${hiddenCount} hidden)` : ''} | 
             <strong>Total EV:</strong> <span style="color:${totalEvColor};font-weight:600">${totalEV >= 0 ? '+' : ''}${totalEV.toFixed(2)} <span style="font-size:11px">(${evRoi >= 0 ? '+' : ''}${evRoi}%)</span></span>
           </div>
           <div style="font-size:14px;font-weight:700;color:${roiColor}">

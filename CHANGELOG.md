@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **24-hour Log Retention**: Debug logs are filtered to the last 24 hours on save to prevent storage bloat.
 - **Storage Size Check**: Background added `checkStorageSize` action to warn when storage usage exceeds 4MB; popup shows warning during export preparation.
 - **Documentation**: Added `DEBUG_LOGGING_IMPLEMENTATION.md`, `DEBUG_LOGGING_QUICK_REFERENCE.md`, and `DEBUG_LOGGING_EXPORT_FIX.md` with usage and troubleshooting guidance.
+- **Bug Fix**: Fixed an issue where the "Settled" count in the popup summary showed the number of settled bets from all bets while the denominator reflected the filtered view (e.g., 'Pending Only') — the settled count is now derived from the currently visible (filtered) bets.
 
 
 ## [1.0.76] - 2025-11-26

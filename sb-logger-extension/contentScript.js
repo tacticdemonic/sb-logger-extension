@@ -1264,11 +1264,14 @@ function () {
   function parseRowData(row) {
     try {
       // Get data from row attributes
+      let overvalueRaw = parseFloat(row.dataset.overvalue) || 0;
+      // Convert ratio format (e.g., 1.06) to percentage (e.g., 6) if needed
+      const overvalueAsPercentage = overvalueRaw < 2 ? parseFloat(((overvalueRaw - 1) * 100).toFixed(2)) : overvalueRaw;
       const data = {
         id: row.dataset.id,
         odds: parseFloat(row.dataset.value) || 0,
         probability: parseFloat(row.dataset.probability) || 0,
-        overvalue: parseFloat(row.dataset.overvalue) || 0,
+        overvalue: overvalueAsPercentage,
         timestamp: new Date().toISOString(),
         url: location.href
       };
@@ -2143,7 +2146,7 @@ function () {
         odds: parsedOdds || 0,
         originalLayOdds: isLayBet && jsonData.original_value ? parseFloat(jsonData.original_value) : null,
         probability: parseFloat((jsonData.probability * 100).toFixed(2)) || 0,
-        overvalue: parseFloat(jsonData.overvalue.toFixed(2)) || 0,
+        overvalue: parseFloat(((jsonData.overvalue - 1) * 100).toFixed(2)) || 0,
         bookmaker: jsonData.bk || '',
         sport: jsonData.sport_id === 22 ? 'Tennis' : (jsonData.sport_id === 15 ? 'Football' : 'Other'),
         tournament: jsonData.tournament || '',

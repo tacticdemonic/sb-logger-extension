@@ -67,7 +67,7 @@
 1. After settling some bets, check the summary bar at top of popup
 2. **Verify first row displays**:
    - Total Staked: sum of all stakes
-   - Settled: count of won/lost/void bets vs total
+   - Settled: count of won/lost/void bets vs total (calculated from the current filtered view — e.g., when "Pending Only" is checked the settled count will reflect visible bets only)
    - P/L: running profit/loss (green if positive, red if negative)
    - ROI %: (P/L / Total Staked) × 100
 3. **Verify second row displays** (only if bets settled):

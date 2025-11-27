@@ -451,12 +451,16 @@ function validateImportedBet(bet) {
   }
   
   // Create clean bet object with type coercion
+  let overvalueRaw = parseFloat(bet.overvalue) || 0;
+  // Convert ratio format (e.g., 1.06) to percentage (e.g., 6) if needed
+  const overvalueAsPercentage = overvalueRaw < 2 ? parseFloat(((overvalueRaw - 1) * 100).toFixed(2)) : overvalueRaw;
+  
   const cleanBet = {
     ...bet,
     odds: parseFloat(bet.odds) || 1.01,
     stake: parseFloat(bet.stake) || 0,
     probability: parseFloat(bet.probability) || 0,
-    overvalue: parseFloat(bet.overvalue) || 0,
+    overvalue: overvalueAsPercentage,
     isLay: bet.isLay === true || bet.isLay === 'true',
     status: bet.status || 'pending',
     event: String(bet.event).trim(),
