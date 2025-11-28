@@ -324,60 +324,6 @@ function () {
     return `surebet-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
   }
 
-  function showToast(message, duration = 3000) {
-    const toast = document.createElement('div');
-    toast.style.cssText = `
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #28a745;
-      color: white;
-      padding: 12px 16px;
-      border-radius: 4px;
-      font-size: 13px;
-      font-family: Arial, sans-serif;
-      z-index: 999999;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      animation: slideIn 0.3s ease-out;
-    `;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    
-    // Add animation keyframes if not already present
-    if (!document.getElementById('surebet-toast-styles')) {
-      const style = document.createElement('style');
-      style.id = 'surebet-toast-styles';
-      style.textContent = `
-        @keyframes slideIn {
-          from {
-            transform: translateX(400px);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-        @keyframes slideOut {
-          from {
-            transform: translateX(0);
-            opacity: 1;
-          }
-          to {
-            transform: translateX(400px);
-            opacity: 0;
-          }
-        }
-      `;
-      document.head.appendChild(style);
-    }
-    
-    setTimeout(() => {
-      toast.style.animation = 'slideOut 0.3s ease-out';
-      setTimeout(() => toast.remove(), 300);
-    }, duration);
-  }
-
   // Run on surebet.com valuebets page OR any bookmaker site (not Surebet)
   console.log('Surebet Helper: Script loaded on:', location.hostname, location.pathname);
   
@@ -428,11 +374,17 @@ function () {
       background: #6c757d;
       cursor: not-allowed;
     }
-    .surebet-helper-toast {
+    #surebet-helper-toast-container {
       position: fixed;
+      top: 16px;
       right: 16px;
-      top: 80px;
-      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 999999;
+      pointer-events: none;
+    }
+    .surebet-helper-toast {
       background: #28a745;
       color: #fff;
       padding: 12px 20px;
@@ -440,14 +392,23 @@ function () {
       font-family: Arial, sans-serif;
       font-size: 14px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      animation: slideIn 0.3s ease;
+      animation: surebetToastSlideIn 0.3s ease;
+      pointer-events: auto;
     }
     .surebet-helper-toast.error {
       background: #dc3545;
     }
-    @keyframes slideIn {
+    .surebet-helper-toast.warning {
+      background: #ffc107;
+      color: #000;
+    }
+    @keyframes surebetToastSlideIn {
       from { transform: translateX(400px); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes surebetToastSlideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(400px); opacity: 0; }
     }
     .surebet-helper-preset-container {
       display: flex;
@@ -1451,19 +1412,39 @@ function () {
     console.log('✅ [StakePanel] DOM monitoring started (checks every 3s)');
   }
 
-  function showToast(text, success = true, duration = 2500) {
+  function getOrCreateToastContainer() {
+    let container = document.getElementById('surebet-helper-toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'surebet-helper-toast-container';
+      container.setAttribute('aria-live', 'polite');
+      container.setAttribute('aria-label', 'Notifications');
+      document.body.appendChild(container);
+    }
+    return container;
+  }
+
+  function showToast(text, typeOrSuccess = true, duration = 2500) {
     if (isDisabled) {
       return;
     }
+    const container = getOrCreateToastContainer();
     const toast = document.createElement('div');
-    toast.className = 'surebet-helper-toast' + (success ? '' : ' error');
+    // Support both boolean (backward compat) and string type
+    let typeClass = '';
+    if (typeof typeOrSuccess === 'string') {
+      if (typeOrSuccess === 'error' || typeOrSuccess === 'warning') {
+        typeClass = ' ' + typeOrSuccess;
+      }
+    } else if (typeOrSuccess === false) {
+      typeClass = ' error';
+    }
+    toast.className = 'surebet-helper-toast' + typeClass;
     toast.textContent = text;
-    document.body.appendChild(toast);
+    container.appendChild(toast);
     setTimeout(() => {
-      toast.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateX(400px)';
-      setTimeout(() => toast.remove(), 450);
+      toast.style.animation = 'surebetToastSlideOut 0.3s ease forwards';
+      setTimeout(() => toast.remove(), 300);
     }, duration);
   }
 
@@ -2870,7 +2851,7 @@ function () {
                 if (Math.abs(currentOdds - expectedOdds) > 0.01) {
                   console.warn(`Surebet Helper: ⚠️ Odds changed! Expected ${expectedOdds.toFixed(2)}, found ${currentOdds.toFixed(2)}`);
                   debugLogger.log('autoFill', 'Odds changed', { expected: expectedOdds, current: currentOdds }, 'warn');
-                  showToast(`⚠️ Odds changed! Expected ${expectedOdds.toFixed(2)}, now ${currentOdds.toFixed(2)}`, false);
+                  showToast(`⚠️ Odds changed! Expected ${expectedOdds.toFixed(2)}, now ${currentOdds.toFixed(2)}`, 'warning');
                 }
               }
             }
@@ -3388,7 +3369,7 @@ function () {
       clickHandlers.global = null;
     }
 
-    document.querySelectorAll('.surebet-helper-save-btn, .surebet-helper-save-btn-smarkets, .surebet-helper-preset-container, .surebet-helper-hide-lay-btn, .surebet-helper-toast').forEach((node) => {
+    document.querySelectorAll('.surebet-helper-save-btn, .surebet-helper-save-btn-smarkets, .surebet-helper-preset-container, .surebet-helper-hide-lay-btn, .surebet-helper-toast, #surebet-helper-toast-container').forEach((node) => {
       node.remove();
     });
     document.querySelectorAll('.surebet-helper-stake-indicator').forEach((node) => node.remove());
