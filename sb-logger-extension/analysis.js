@@ -497,6 +497,7 @@ function calculateSummaryStats(bets) {
   });
   
   const stats = {
+    totalCount: bets.length,
     yield: yield_.toFixed(2),
     profitFactor: profitFactor.toFixed(2),
     totalTurnover: totalTurnover.toFixed(2),
@@ -1323,6 +1324,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const sportStats = calculateSportStats(bets);
     
     // Render summary stats section
+    document.getElementById('total-bets-stat').textContent = summaryStats.totalCount;
+    document.getElementById('settled-bets-stat').textContent = summaryStats.settledCount;
+    
     document.getElementById('yield-stat').textContent = summaryStats.yield + '%';
     const yieldValue = parseFloat(summaryStats.yield);
     if (document.getElementById('yield-stat').parentElement) {
