@@ -38,6 +38,20 @@
 </head>
 <body>
   <h1>Surebet Helper — Saved Bets</h1>
+  
+  <!-- Feature Banner -->
+  <div id="feature-banner-kelly" style="display:none;background:#e7f3ff;border-left:4px solid #0056b3;padding:10px;margin-bottom:8px;border-radius:3px;font-size:12px">
+    🎉 <strong>New Feature:</strong> Kelly Bankroll Protection! Manage risk with pending bet adjustment & max bet caps. 
+    <a href="#" id="kelly-learn-more" style="color:#0056b3;text-decoration:underline;cursor:pointer;margin-left:4px">Learn More</a>
+    <a href="#" id="kelly-dismiss" style="color:#0056b3;text-decoration:underline;cursor:pointer;margin-left:8px">Dismiss</a>
+  </div>
+  
+  <!-- Bankroll Warning Banner -->
+  <div id="bankroll-warning-banner" style="display:none;background:#fff3cd;border-left:4px solid #ffc107;padding:10px;margin-bottom:8px;border-radius:3px;font-size:12px">
+    ⚠️ <strong>Warning:</strong> Pending bets (<span id="pending-total">£0</span>) exceed available bankroll (<span id="available-total">£0</span>). New bet stakes are disabled. 
+    <a href="#" id="open-kelly-settings" style="color:#856404;text-decoration:underline;cursor:pointer;margin-left:4px">View Settings</a>
+  </div>
+
   <div style="margin-bottom:8px;display:flex;align-items:center;gap:8px;font-size:12px;flex-wrap:wrap">
     <label style="font-weight:600">Sort by:</label>
     <select id="sort-select" style="padding:4px 8px;border:1px solid #ccc;border-radius:3px;font-size:12px">

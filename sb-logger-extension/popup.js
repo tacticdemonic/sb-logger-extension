@@ -7,7 +7,10 @@ const api = typeof chrome !== 'undefined' ? chrome : browser;
 const DEFAULT_STAKING_SETTINGS = {
   bankroll: 1000,
   baseBankroll: 1000,
-  fraction: 0.25
+  fraction: 0.25,
+  adjustForPending: false,
+  maxBetPercent: null,
+  effectiveBankroll: null
 };
 
 const DEFAULT_COMMISSION_RATES = {
@@ -50,6 +53,45 @@ let roundingSettings = { ...DEFAULT_ROUNDING_SETTINGS };
 let uiPreferences = { ...DEFAULT_UI_PREFERENCES };
 let autoFillSettings = { ...DEFAULT_AUTOFILL_SETTINGS };
 let defaultActionsSettings = { ...DEFAULT_ACTIONS_SETTINGS };
+let recalculateDebounceTimer = null;
+
+function recalculateEffectiveBankroll() {
+  api.storage.local.get({ bets: [], stakingSettings: DEFAULT_STAKING_SETTINGS }, (res) => {
+    const settings = res.stakingSettings || DEFAULT_STAKING_SETTINGS;
+    if (!settings.adjustForPending) {
+      return;
+    }
+    
+    const bets = res.bets || [];
+    const pendingBets = bets.filter(b => !b.status || b.status === 'pending');
+    const totalPendingStakes = pendingBets.reduce((sum, b) => sum + (parseFloat(b.stake) || 0), 0);
+    const effectiveBankroll = Math.max(0, (settings.bankroll || 0) - totalPendingStakes);
+    
+    const updatedSettings = {
+      ...settings,
+      effectiveBankroll: effectiveBankroll
+    };
+    
+    api.storage.local.set({ stakingSettings: updatedSettings }, () => {
+      console.log('📊 [EffectiveBankroll] Recalculated:', {
+        bankroll: settings.bankroll,
+        pendingStakes: totalPendingStakes,
+        effectiveBankroll: effectiveBankroll,
+        pendingBets: pendingBets.length
+      });
+    });
+  });
+}
+
+function debouncedRecalculateEffectiveBankroll() {
+  if (recalculateDebounceTimer) {
+    clearTimeout(recalculateDebounceTimer);
+  }
+  recalculateDebounceTimer = setTimeout(() => {
+    recalculateEffectiveBankroll();
+    recalculateDebounceTimer = null;
+  }, 250);
+}
 
 function loadCommissionRates(callback) {
   api.storage.local.get({ commission: DEFAULT_COMMISSION_RATES }, (res) => {
@@ -793,7 +835,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const userFraction = Math.max(0, Math.min(1, stakingSettings.fraction || DEFAULT_STAKING_SETTINGS.fraction));
     const bankroll = Math.max(0, stakingSettings.bankroll || DEFAULT_STAKING_SETTINGS.bankroll);
 
-    let stake = bankroll * kellyPortion * userFraction;
+    // Use effective bankroll if pending adjustment is enabled
+    const activeBankroll = (stakingSettings.adjustForPending && stakingSettings.effectiveBankroll != null) 
+      ? stakingSettings.effectiveBankroll 
+      : bankroll;
+
+    let stake = activeBankroll * kellyPortion * userFraction;
+    
+    // Apply max bet cap after Kelly calculation (before liquidity limit)
+    if (stakingSettings.maxBetPercent && stakingSettings.maxBetPercent > 0) {
+      stake = Math.min(stake, bankroll * stakingSettings.maxBetPercent);
+    }
+    
     if (betData.limit && betData.limit > 0) {
       stake = Math.min(stake, betData.limit);
     }
@@ -1200,6 +1253,12 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
     container.innerHTML = summary + `<table><thead><tr><th style="width:120px">When / Bookie</th><th>Bet Details</th></tr></thead><tbody>${rows}</tbody></table>`;
+    
+    // Update bankroll warning banner after rendering
+    api.storage.local.get({ bets: [], stakingSettings: DEFAULT_STAKING_SETTINGS }, (res) => {
+      const stakingSettings = res.stakingSettings || DEFAULT_STAKING_SETTINGS;
+      updateBankrollWarningBanner(stakingSettings, bets);
+    });
   }
 
   function escapeHtml(s) {
@@ -2798,8 +2857,65 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // Feature Banner - Kelly Bankroll Protection v1 (show once per version)
+  const featureBanner = document.getElementById('feature-banner-kelly');
+  const learnMoreBtn = document.getElementById('kelly-learn-more');
+  const dismissBtn = document.getElementById('kelly-dismiss');
+  
+  if (featureBanner && learnMoreBtn && dismissBtn) {
+    api.storage.local.get({ featureBanner_kellyProtection_v1: false }, (res) => {
+      if (!res.featureBanner_kellyProtection_v1) {
+        featureBanner.style.display = 'block';
+      }
+    });
+    
+    learnMoreBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      api.tabs.create({ url: 'settings.html' });
+      // Add hash navigation after page loads (settings.js will handle it)
+      setTimeout(() => {
+        window.close();
+      }, 200);
+    });
+    
+    dismissBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      api.storage.local.set({ featureBanner_kellyProtection_v1: true });
+      featureBanner.style.display = 'none';
+    });
+  }
+
+  // Bankroll Warning Banner - Pending bets exceed bankroll
+  const warningBanner = document.getElementById('bankroll-warning-banner');
+  const openSettingsLink = document.getElementById('open-kelly-settings');
+  
+  if (warningBanner && openSettingsLink) {
+    openSettingsLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      api.tabs.create({ url: 'settings.html' });
+      setTimeout(() => {
+        window.close();
+      }, 200);
+    });
+  }
+
+  // Show/hide bankroll warning banner based on settings
+  function updateBankrollWarningBanner(stakingSettings, bets) {
+    if (!warningBanner) return;
+    
+    if (!stakingSettings.adjustForPending || stakingSettings.effectiveBankroll === null) {
+      warningBanner.style.display = 'none';
+      return;
+    }
+    
+    if (stakingSettings.effectiveBankroll <= 0) {
+      const pendingTotal = stakingSettings.bankroll - stakingSettings.effectiveBankroll;
+      document.getElementById('pending-total').textContent = '£' + pendingTotal.toFixed(2);
+      document.getElementById('available-total').textContent = '£' + stakingSettings.effectiveBankroll.toFixed(2);
+      warningBanner.style.display = 'block';
+    } else {
+      warningBanner.style.display = 'none';
+    }
+  }
 });
-
-
-
-

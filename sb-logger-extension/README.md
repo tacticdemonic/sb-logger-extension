@@ -109,28 +109,10 @@ The extension compares the odds from your surebet.com link with the current odds
 
 ## What gets saved
 Each bet record includes:
-- **Timestamp** - When you saved it
-- **Bookmaker** - Betting site (e.g., Bet365, Unibet)
-- **Sport** - Sport type
-- **Event** - Match/game name
-- **Tournament** - League/competition
-- **Market** - Bet type (e.g., "Home", "Over 2.5")
-- **Odds** - Decimal odds value
-- **Probability** - Calculated probability %
-- **Overvalue** - Value edge %
-- **Stake** - Your bet amount (manual entry)
-- **Potential Return** - Stake × Odds
-- **Profit** - Potential Return - Stake
-- **Expected Value (EV)** - (Win Probability × Win Amount) - (Lose Probability × Stake)
-- **Status** - Pending/Won/Lost/Void
-- **Settled At** - When you marked the bet as settled
-- **Actual P/L** - Real profit/loss after settlement
-- **Note** - Optional personal note
-- **URL** - Link back to the page
 ## Distribution Package
-
+## Auto-Fill Stakes (Complete Feature)
 To distribute the extension or prepare for Chrome Web Store submission:
-
+### Recent Major Changes (v1.0.82.2)
 ```powershell
 # PowerShell (Windows) - Create distribution ZIP
 Compress-Archive -Path .\surebet-helper-extension\* -DestinationPath .\surebet-helper-extension.zip -Force

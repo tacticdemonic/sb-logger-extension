@@ -1,5 +1,5 @@
 // Import page script - handles CSV and JSON file import from dedicated page
-console.log('📥 Import page loaded v2.2 - Added JSON import support');
+console.log('📥 Import page loaded v2.3 - Improved team name normalization for Crvena Zvezda/Red Star Belgrade etc.');
 
 const fileInput = document.getElementById('csv-file-input');
 const selectedFilesDiv = document.getElementById('selected-files');
@@ -674,11 +674,33 @@ async function processImportedData(plData, source) {
 function matchBetWithPL(plEntry, allBets) {
   const normalizeString = (str) => {
     return str.toLowerCase()
+      // Normalize team name translations/localizations (Serbian, German, etc.)
+      .replace(/crvena zvezda/g, 'red star belgrade')
+      .replace(/roter stern belgrad/g, 'red star belgrade')
+      .replace(/rode ster belgrado/g, 'red star belgrade')
+      .replace(/partizan beograd/g, 'partizan belgrade')
+      .replace(/fk crvena zvezda/g, 'red star belgrade')
+      .replace(/dinamo zagreb/g, 'dinamo zagreb')
+      .replace(/gnk dinamo zagreb/g, 'dinamo zagreb')
+      .replace(/hajduk split/g, 'hajduk split')
+      .replace(/hnk hajduk split/g, 'hajduk split')
+      // Turkish team names
+      .replace(/fenerbahçe/g, 'fenerbahce')
+      .replace(/galatasaray/g, 'galatasaray')
+      .replace(/beşiktaş/g, 'besiktas')
+      .replace(/trabzonspor/g, 'trabzonspor')
+      // Hungarian team names
+      .replace(/ferencvárosi/g, 'ferencvaros')
+      .replace(/ferencvarosi/g, 'ferencvaros')
       // Normalize Greek transliterations
       .replace(/olympiakos/g, 'olympiacos')
       .replace(/olympiacos/g, 'olympiacos')  // Ensure consistent spelling
+      .replace(/panathinaikos/g, 'panathinaikos')
       .replace(/piräus/g, 'piraeus')
       .replace(/piraus/g, 'piraeus')
+      // German team names
+      .replace(/sk puntigamer sturm graz/g, 'sturm graz')
+      .replace(/sk sturm graz/g, 'sturm graz')
       // Normalize event separators: vs, v, @, at all become a single space
       .replace(/\s+(vs\.?|v\.?|versus|at)\s+/g, ' VERSUS ')
       // Remove common suffixes/prefixes
@@ -695,7 +717,7 @@ function matchBetWithPL(plEntry, allBets) {
   };
   
   const normalizeMarket = (str, eventName = '') => {
-    console.log(`    🔧 normalizeMarket v2.2 called: "${str}" (event: "${eventName}")`);
+    console.log(`    🔧 normalizeMarket v2.3 called: "${str}" (event: "${eventName}")`);
     
     // Extract team/player names from event to remove from market
     const eventParts = eventName.toLowerCase().split(/\s+(?:vs|v|at|versus)\s+/i);
@@ -732,6 +754,8 @@ function matchBetWithPL(plEntry, allBets) {
       .replace(/\/.*$/, '')
       // Remove "participant" keyword before player names
       .replace(/\bparticipant\b/g, '')
+      // Remove "Regular time" prefix from Smarkets markets
+      .replace(/\bregular\s+time\b/g, '')
       // Remove player/team names from market description
       .replace(new RegExp('\\b(' + teamNames.join('|') + ')\\b', 'gi'), '')
       // Normalize periods and quarters FIRST before other replacements
@@ -752,8 +776,11 @@ function matchBetWithPL(plEntry, allBets) {
     // Tennis-specific: normalize "to win" markets
     .replace(/\b(no\s+draw|2-way)\b/g, '_MATCHWIN_')
     .replace(/\bsets\b/g, '')
+      // Normalize ALL handicap variations to single token
       .replace(/\b(asian\s+)?handicap\b/g, '_HANDICAP_')
       .replace(/\bspread\b/g, '_HANDICAP_')
+      // Smarkets uses "+X.X / -X.X" format for Asian handicaps
+      .replace(/[\+\-][\d\.]+\s*\/\s*[\+\-][\d\.]+/g, '_HANDICAP_')
       // Normalize over/under carefully to preserve meaning
       .replace(/\bover\s*\/\s*under\b/g, '_OVERUNDER_')
       .replace(/\btotal\s+(goals?|points?|games?)?\s*(over\s*\/\s*under|under|over)\b/g, '_OVERUNDER_')

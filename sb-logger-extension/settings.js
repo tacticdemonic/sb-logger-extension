@@ -442,34 +442,53 @@ document.addEventListener('DOMContentLoaded', () => {
       bankroll: 1000,
       baseBankroll: 1000,
       fraction: 0.25,
-      useCommission: true
+      useCommission: true,
+      adjustForPending: false,
+      maxBetPercent: null,
+      effectiveBankroll: null
     }}, (res) => {
       const settings = res.stakingSettings || {};
       const bankroll = settings.bankroll || 1000;
       const baseBankroll = settings.baseBankroll || bankroll;
       const fraction = (settings.fraction || 0.25) * 100;
       const useCommission = settings.useCommission !== false;
+      const adjustForPending = settings.adjustForPending || false;
+      const maxBetPercent = settings.maxBetPercent || '';
       
       document.getElementById('kelly-bankroll').value = baseBankroll;
       document.getElementById('kelly-fraction').value = fraction;
       document.getElementById('kelly-use-commission').checked = useCommission;
+      document.getElementById('kelly-adjust-pending').checked = adjustForPending;
+      document.getElementById('kelly-max-bet-percent').value = maxBetPercent ? (maxBetPercent * 100).toFixed(0) : '';
       
-      updateKellySummary(bankroll, baseBankroll, fraction, useCommission);
+      updateKellySummary(bankroll, baseBankroll, fraction, useCommission, adjustForPending, settings.effectiveBankroll);
     });
   }
   
-  function updateKellySummary(bankroll, baseBankroll, fractionPercent, useCommission) {
+  function updateKellySummary(bankroll, baseBankroll, fractionPercent, useCommission, adjustForPending, effectiveBankroll) {
     const profitLoss = bankroll - baseBankroll;
     const plClass = profitLoss >= 0 ? 'green' : 'red';
     const plSign = profitLoss >= 0 ? '+' : '';
     
-    kellySummary.innerHTML = `
+    let summaryHTML = `
       <strong>Current Bankroll:</strong> £${bankroll.toFixed(2)}<br>
       <strong>Starting Bankroll:</strong> £${baseBankroll.toFixed(2)}<br>
       <strong>P/L:</strong> <span style="color: ${plClass}">${plSign}£${profitLoss.toFixed(2)}</span><br>
       <strong>Kelly Fraction:</strong> ${fractionPercent}%<br>
-      <strong>Commission Adjustment:</strong> ${useCommission ? '✓ Enabled' : '✗ Disabled'}
+      <strong>Commission Adjustment:</strong> ${useCommission ? '✓ Enabled' : '✗ Disabled'}<br>
+      <strong>Pending Bet Adjustment:</strong> ${adjustForPending ? '✅ Enabled' : '❌ Disabled'}
     `;
+    
+    if (adjustForPending && effectiveBankroll != null) {
+      const pendingStakes = bankroll - effectiveBankroll;
+      summaryHTML += `<br><strong>Effective Bankroll:</strong> £${effectiveBankroll.toFixed(2)} (£${pendingStakes.toFixed(2)} pending, £${effectiveBankroll.toFixed(2)} available)`;
+      
+      if (effectiveBankroll <= 0) {
+        summaryHTML += '<br><span style="color: red;">⚠️ WARNING: Pending bets exceed bankroll. New stakes disabled.</span>';
+      }
+    }
+    
+    kellySummary.innerHTML = summaryHTML;
   }
   
   if (kellySection) {
@@ -482,6 +501,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const fractionPercent = parseFloat(document.getElementById('kelly-fraction').value) || 25;
         const fraction = fractionPercent / 100;
         const useCommission = document.getElementById('kelly-use-commission').checked;
+        const adjustForPending = document.getElementById('kelly-adjust-pending').checked;
+        const maxBetPercentInput = parseFloat(document.getElementById('kelly-max-bet-percent').value);
+        const maxBetPercent = !isNaN(maxBetPercentInput) ? maxBetPercentInput / 100 : null;
+        
+        // Validate max bet percent
+        if (maxBetPercent !== null) {
+          if (maxBetPercent > 0.50) {
+            alert('⚠️ Warning: Max bet cap >50% not recommended by experts. This defeats the purpose of Kelly staking.\n\nConsider 10% for conservative betting or 20% for moderate risk.');
+          } else if (maxBetPercent > 0.25) {
+            alert('⚠️ Warning: Max bet cap >25% may increase variance. RebelBetting recommends ≤10% for safety.');
+          }
+        }
         
         api.storage.local.get({ stakingSettings: {} }, (res) => {
           const currentBankroll = res.stakingSettings?.bankroll || bankroll;
@@ -490,12 +521,23 @@ document.addEventListener('DOMContentLoaded', () => {
             bankroll: currentBankroll,
             baseBankroll: bankroll,
             fraction: fraction,
-            useCommission: useCommission
+            useCommission: useCommission,
+            adjustForPending: adjustForPending,
+            maxBetPercent: maxBetPercent,
+            effectiveBankroll: res.stakingSettings?.effectiveBankroll || null
           };
           
           api.storage.local.set({ stakingSettings: newSettings }, () => {
             alert('✅ Kelly staking settings saved!');
-            loadKellySettings();
+            // Trigger effective bankroll recalculation
+            if (adjustForPending) {
+              // Send message to background script to recalculate
+              api.runtime.sendMessage({ action: 'recalculateEffectiveBankroll' }, () => {
+                loadKellySettings();
+              });
+            } else {
+              loadKellySettings();
+            }
           });
         });
       });
@@ -509,7 +551,10 @@ document.addEventListener('DOMContentLoaded', () => {
             bankroll: 1000,
             baseBankroll: 1000,
             fraction: 0.25,
-            useCommission: true
+            useCommission: true,
+            adjustForPending: false,
+            maxBetPercent: null,
+            effectiveBankroll: null
           };
           api.storage.local.set({ stakingSettings: defaults }, () => {
             alert('✅ Kelly settings reset to defaults');

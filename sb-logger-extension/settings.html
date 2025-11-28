@@ -246,6 +246,20 @@
         <p class="note">Adjusts odds based on commission rates when calculating Kelly stakes</p>
       </div>
 
+      <div class="form-group">
+        <label class="form-group-checkbox">
+          <input type="checkbox" id="kelly-adjust-pending" />
+          <span>Adjust bankroll for open bets</span>
+        </label>
+        <p class="note">Reduces effective bankroll by pending stakes to manage variance (RebelBetting recommended)</p>
+      </div>
+
+      <div class="form-group">
+        <label for="kelly-max-bet-percent">Max bet size (% of bankroll)</label>
+        <input type="number" id="kelly-max-bet-percent" min="1" max="100" step="1" placeholder="Optional: e.g., 10" />
+        <p class="note">Caps individual bets as a percentage of bankroll. Leave empty for no limit (conservative: 10%, aggressive: 20%)</p>
+      </div>
+
       <div class="info-box">
         <strong>📊 Current Status</strong><br>
         <div id="kelly-summary" style="margin-top: 8px; font-size: 13px;">

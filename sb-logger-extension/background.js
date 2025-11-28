@@ -11,7 +11,10 @@ const IS_FIREFOX = typeof navigator !== 'undefined' && /firefox/i.test(navigator
 const DEFAULT_STAKING_SETTINGS = {
   bankroll: 1000,
   baseBankroll: 1000,
-  fraction: 0.25
+  fraction: 0.25,
+  adjustForPending: false,
+  maxBetPercent: null,
+  effectiveBankroll: null
 };
 
 const DEFAULT_COMMISSION_RATES = {
@@ -23,6 +26,46 @@ const DEFAULT_COMMISSION_RATES = {
 
 // Use chrome API when available (Firefox provides chrome shim), fallback to browser
 const api = typeof chrome !== 'undefined' ? chrome : browser;
+
+let recalculateDebounceTimer = null;
+
+function recalculateEffectiveBankroll() {
+  api.storage.local.get({ bets: [], stakingSettings: DEFAULT_STAKING_SETTINGS }, (res) => {
+    const settings = res.stakingSettings || DEFAULT_STAKING_SETTINGS;
+    if (!settings.adjustForPending) {
+      return;
+    }
+    
+    const bets = res.bets || [];
+    const pendingBets = bets.filter(b => !b.status || b.status === 'pending');
+    const totalPendingStakes = pendingBets.reduce((sum, b) => sum + (parseFloat(b.stake) || 0), 0);
+    const effectiveBankroll = Math.max(0, (settings.bankroll || 0) - totalPendingStakes);
+    
+    const updatedSettings = {
+      ...settings,
+      effectiveBankroll: effectiveBankroll
+    };
+    
+    api.storage.local.set({ stakingSettings: updatedSettings }, () => {
+      console.log('[Surebet Helper Background] 📊 EffectiveBankroll recalculated:', {
+        bankroll: settings.bankroll,
+        pendingStakes: totalPendingStakes,
+        effectiveBankroll: effectiveBankroll,
+        pendingBets: pendingBets.length
+      });
+    });
+  });
+}
+
+function debouncedRecalculateEffectiveBankroll() {
+  if (recalculateDebounceTimer) {
+    clearTimeout(recalculateDebounceTimer);
+  }
+  recalculateDebounceTimer = setTimeout(() => {
+    recalculateEffectiveBankroll();
+    recalculateDebounceTimer = null;
+  }, 250);
+}
 
 function getStorageSizeKB() {
   return new Promise((resolve) => {
@@ -893,7 +936,12 @@ async function autoCheckResults() {
   }
 }
 
-
-
-
+// Message handler for extension requests
+api.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'recalculateEffectiveBankroll') {
+    recalculateEffectiveBankroll();
+    sendResponse({ success: true });
+  }
+  return true;
+});
 

@@ -353,7 +353,18 @@ function calculateKellyStake(betData, stakingSettings = DEFAULT_STAKING_SETTINGS
   const userFraction = Math.max(0, Math.min(1, stakingSettings.fraction || DEFAULT_STAKING_SETTINGS.fraction));
   const bankroll = Math.max(0, stakingSettings.bankroll || DEFAULT_STAKING_SETTINGS.bankroll);
 
-  let stake = bankroll * kellyPortion * userFraction;
+  // Use effective bankroll if pending adjustment is enabled
+  const activeBankroll = (stakingSettings.adjustForPending && stakingSettings.effectiveBankroll != null) 
+    ? stakingSettings.effectiveBankroll 
+    : bankroll;
+
+  let stake = activeBankroll * kellyPortion * userFraction;
+  
+  // Apply max bet cap after Kelly calculation (before liquidity limit)
+  if (stakingSettings.maxBetPercent && stakingSettings.maxBetPercent > 0) {
+    stake = Math.min(stake, bankroll * stakingSettings.maxBetPercent);
+  }
+  
   if (betData.limit && betData.limit > 0) {
     stake = Math.min(stake, betData.limit);
   }

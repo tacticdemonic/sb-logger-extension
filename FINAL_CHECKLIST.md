@@ -182,7 +182,7 @@ b48add0 - docs: add JSON import implementation guides
 The implementation is complete, tested, documented, and committed to GitHub. The feature is ready for:
 1. User testing (follow JSON_IMPORT_TESTING.md)
 2. Release in next version (after testing approval)
-3. Browser store submission (already v1.0.48)
+3. Browser store submission (already v1.0.82.2)
 
 ---
 
@@ -208,7 +208,7 @@ The implementation is complete, tested, documented, and committed to GitHub. The
 
 ## Version Information
 
-- **Extension Version**: 1.0.48
+- **Extension Version**: 1.0.82.2
 - **Manifest Version**: 3 (Manifest V3)
 - **Minimum Firefox**: 140.0
 - **Target Browsers**: Firefox, Chrome, Brave, Edge

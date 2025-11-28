@@ -84,7 +84,10 @@ function () {
     baseBankroll: 1000,
     fraction: 0.25,
     useCommission: true,
-    customCommissionRates: {}
+    customCommissionRates: {},
+    adjustForPending: false,
+    maxBetPercent: null,
+    effectiveBankroll: null
   };
   
   const DEFAULT_COMMISSION_RATES = {
@@ -310,6 +313,7 @@ function () {
   let autoFillSettings = { ...DEFAULT_AUTOFILL_SETTINGS };
   let defaultActionsSettings = { ...DEFAULT_ACTIONS_SETTINGS };
   let stakePanel = null;
+  let recalculateDebounceTimer = null;
   let bettingSlipDetector = null;
   let bettingSlipDetectorPolling = null;
 
@@ -658,6 +662,33 @@ function () {
       cursor: pointer;
       margin: 0;
     }
+    .surebet-helper-stake-indicator[title] {
+      cursor: help;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      max-width: 250px;
+    }
+    .surebet-helper-stake-indicator.kelly-full {
+      background: #d4edda !important;
+      color: #155724 !important;
+    }
+    .surebet-helper-stake-indicator.kelly-maxcap {
+      background: #fff3cd !important;
+      color: #856404 !important;
+    }
+    .surebet-helper-stake-indicator.kelly-liquidity {
+      background: #ffe6a0 !important;
+      color: #8b5900 !important;
+    }
+    .surebet-helper-stake-indicator.kelly-pending {
+      background: #cfe2ff !important;
+      color: #084298 !important;
+    }
+    .surebet-helper-stake-indicator.kelly-combined {
+      background: #ffc9c9 !important;
+      color: #921113 !important;
+    }
   `;
 
   function injectStyles() {
@@ -687,6 +718,45 @@ function () {
       return DEFAULT_STAKING_SETTINGS.fraction;
     }
     return Math.min(parsed, 1);
+  }
+
+  function recalculateEffectiveBankroll() {
+    chrome.storage.local.get({ bets: [], stakingSettings: DEFAULT_STAKING_SETTINGS }, (res) => {
+      const settings = res.stakingSettings || DEFAULT_STAKING_SETTINGS;
+      if (!settings.adjustForPending) {
+        return;
+      }
+      
+      const bets = res.bets || [];
+      const pendingBets = bets.filter(b => !b.status || b.status === 'pending');
+      const totalPendingStakes = pendingBets.reduce((sum, b) => sum + (parseFloat(b.stake) || 0), 0);
+      const effectiveBankroll = Math.max(0, (settings.bankroll || 0) - totalPendingStakes);
+      
+      const updatedSettings = {
+        ...settings,
+        effectiveBankroll: effectiveBankroll
+      };
+      
+      chrome.storage.local.set({ stakingSettings: updatedSettings }, () => {
+        console.log('📊 [EffectiveBankroll] Recalculated:', {
+          bankroll: settings.bankroll,
+          pendingStakes: totalPendingStakes,
+          effectiveBankroll: effectiveBankroll,
+          pendingBets: pendingBets.length
+        });
+        stakingSettings = updatedSettings;
+      });
+    });
+  }
+
+  function debouncedRecalculateEffectiveBankroll() {
+    if (recalculateDebounceTimer) {
+      clearTimeout(recalculateDebounceTimer);
+    }
+    recalculateDebounceTimer = setTimeout(() => {
+      recalculateEffectiveBankroll();
+      recalculateDebounceTimer = null;
+    }, 250);
   }
 
   function loadRoundingSettings() {
@@ -927,7 +997,18 @@ function () {
     const userFraction = Math.max(0, Math.min(1, stakingSettings.fraction || DEFAULT_STAKING_SETTINGS.fraction));
     const bankroll = Math.max(0, stakingSettings.bankroll || DEFAULT_STAKING_SETTINGS.bankroll);
     
-    let stake = bankroll * kellyPortion * userFraction;
+    // Use effective bankroll if pending adjustment is enabled
+    const activeBankroll = (stakingSettings.adjustForPending && stakingSettings.effectiveBankroll != null) 
+      ? stakingSettings.effectiveBankroll 
+      : bankroll;
+    
+    let stake = activeBankroll * kellyPortion * userFraction;
+    
+    // Apply max bet cap after Kelly calculation (before liquidity limit)
+    if (stakingSettings.maxBetPercent && stakingSettings.maxBetPercent > 0) {
+      stake = Math.min(stake, bankroll * stakingSettings.maxBetPercent);
+    }
+    
     if (betData.limit && betData.limit > 0) {
       stake = Math.min(stake, betData.limit);
     }
@@ -939,6 +1020,100 @@ function () {
     stake = applyStakeRounding(stake, roundingSettings);
     
     return stake;
+  }
+
+  function calculateKellyStakeWithMetadata(betData) {
+    if (!betData) {
+      return { stake: 0, cappedReason: 'none', fullKelly: 0, maxCapValue: 0, liquidityLimit: 0, pendingReduction: 0 };
+    }
+    
+    let odds = parseFloat(betData.odds);
+    const probabilityPercent = parseFloat(betData.probability);
+    
+    if (!isFinite(odds) || odds <= 1 || !isFinite(probabilityPercent)) {
+      return { stake: 0, cappedReason: 'none', fullKelly: 0, maxCapValue: 0, liquidityLimit: 0, pendingReduction: 0 };
+    }
+    
+    // Apply commission adjustment if enabled
+    if (stakingSettings.useCommission !== false) {
+      const commission = getCommissionRate(betData);
+      if (commission > 0) {
+        odds = (odds - 1) * (1 - commission) + 1;
+      }
+    }
+    
+    const p = probabilityPercent / 100;
+    if (p <= 0 || p >= 1) {
+      return { stake: 0, cappedReason: 'none', fullKelly: 0, maxCapValue: 0, liquidityLimit: 0, pendingReduction: 0 };
+    }
+    
+    const b = odds - 1;
+    const q = 1 - p;
+    if (b <= 0) {
+      return { stake: 0, cappedReason: 'none', fullKelly: 0, maxCapValue: 0, liquidityLimit: 0, pendingReduction: 0 };
+    }
+    
+    let kellyPortion = ((b * p) - q) / b;
+    if (!isFinite(kellyPortion)) {
+      return { stake: 0, cappedReason: 'none', fullKelly: 0, maxCapValue: 0, liquidityLimit: 0, pendingReduction: 0 };
+    }
+    
+    kellyPortion = Math.max(0, kellyPortion);
+    const userFraction = Math.max(0, Math.min(1, stakingSettings.fraction || DEFAULT_STAKING_SETTINGS.fraction));
+    const bankroll = Math.max(0, stakingSettings.bankroll || DEFAULT_STAKING_SETTINGS.bankroll);
+    
+    // Use effective bankroll if pending adjustment is enabled
+    const activeBankroll = (stakingSettings.adjustForPending && stakingSettings.effectiveBankroll != null) 
+      ? stakingSettings.effectiveBankroll 
+      : bankroll;
+    const pendingReduction = bankroll - activeBankroll;
+    
+    // Full Kelly stake (before any caps)
+    let fullKellyStake = activeBankroll * kellyPortion * userFraction;
+    let stake = fullKellyStake;
+    let cappedReason = 'none';
+    let maxCapValue = 0;
+    let liquidityLimit = 0;
+    
+    // Apply max bet cap
+    if (stakingSettings.maxBetPercent && stakingSettings.maxBetPercent > 0) {
+      maxCapValue = bankroll * stakingSettings.maxBetPercent;
+      if (stake > maxCapValue) {
+        stake = maxCapValue;
+        cappedReason = cappedReason === 'none' ? 'maxBet' : 'combined';
+      }
+    }
+    
+    // Apply liquidity limit
+    if (betData.limit && betData.limit > 0) {
+      liquidityLimit = betData.limit;
+      if (stake > liquidityLimit) {
+        stake = liquidityLimit;
+        cappedReason = cappedReason === 'none' ? 'liquidity' : 'combined';
+      }
+    }
+    
+    // If adjusted by pending and final stake differs
+    if (pendingReduction > 0 && stake < fullKellyStake) {
+      if (cappedReason === 'none') {
+        cappedReason = 'pendingAdjustment';
+      }
+    }
+    
+    // Round to 2 decimal places
+    stake = Math.max(0, Math.round(stake * 100) / 100);
+    
+    // Apply stake rounding if enabled
+    stake = applyStakeRounding(stake, roundingSettings);
+    
+    return {
+      stake: stake,
+      cappedReason: cappedReason,
+      fullKelly: Math.max(0, Math.round(fullKellyStake * 100) / 100),
+      maxCapValue: maxCapValue,
+      liquidityLimit: liquidityLimit,
+      pendingReduction: pendingReduction
+    };
   }
 
   function ensureStakeIndicator(row, parentEl) {
@@ -1035,6 +1210,36 @@ function () {
     if (stakeValue && stakeValue > 0) {
       indicator.classList.remove('muted');
       indicator.dataset.stakeValue = String(stakeValue);
+      
+      // Get metadata for tooltip
+      const metadata = calculateKellyStakeWithMetadata(betData);
+      
+      // Build tooltip text
+      let tooltipParts = [`Stake: £${stakeValue.toFixed(2)}`];
+      if (metadata.fullKelly > 0) {
+        tooltipParts.push(`Kelly: £${metadata.fullKelly.toFixed(2)}`);
+      }
+      if (metadata.maxCapValue > 0) {
+        tooltipParts.push(`Cap: ${(stakingSettings.maxBetPercent * 100).toFixed(0)}%`);
+      }
+      if (metadata.liquidityLimit > 0) {
+        tooltipParts.push(`Liq: £${metadata.liquidityLimit.toFixed(2)}`);
+      }
+      if (metadata.pendingReduction > 0) {
+        tooltipParts.push(`Pending: -£${metadata.pendingReduction.toFixed(2)}`);
+      }
+      
+      const tooltipText = tooltipParts.join(' | ');
+      indicator.title = tooltipText;
+      
+      // Apply color class based on capped reason
+      indicator.classList.remove('kelly-full', 'kelly-maxcap', 'kelly-liquidity', 'kelly-pending', 'kelly-combined');
+      if (metadata.cappedReason !== 'none') {
+        indicator.classList.add(`kelly-${metadata.cappedReason}`);
+      } else {
+        indicator.classList.add('kelly-full');
+      }
+      
       indicator.textContent = 'Stake ' + formatStakeAmount(stakeValue, betData.currency || 'GBP');
       const span = document.createElement('span');
       span.textContent = Math.round((stakingSettings.fraction || DEFAULT_STAKING_SETTINGS.fraction) * 100) + '% Kelly';
@@ -1042,6 +1247,7 @@ function () {
     } else {
       indicator.classList.add('muted');
       indicator.dataset.stakeValue = '';
+      indicator.title = '';
       indicator.textContent = 'Stake n/a';
     }
   }

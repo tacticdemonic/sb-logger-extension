@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.82.2] - 2025-11-28
+
+### 📝 Documentation & Housekeeping
+- Updated docs to reflect manifest version 1.0.82.2 and updated key README and meta docs for clarity.
+- Added minor consistency edits across documentation to remove outdated version labels.
+
 ## [1.0.78] - 2025-11-27
 
 ### ✨ New Features & Fixes
