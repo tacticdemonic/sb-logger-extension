@@ -248,19 +248,19 @@
   <!-- Privacy Warning Modal -->
   <div class="modal-overlay" id="privacy-modal">
     <div class="modal-content">
-      <h3>⚠️ Privacy Notice</h3>
-      <p>This will create a <strong>public</strong> GitHub issue containing:</p>
-      <ul>
-        <li>Your bet event names (e.g., "Manchester City vs Liverpool")</li>
-        <li>Market types (e.g., "Match Winner", "Over 2.5 Goals")</li>
-        <li>Stake amounts and P/L figures</li>
-        <li>Bookmaker names</li>
-      </ul>
-      <p>This data will be <strong>publicly visible</strong> to help debug the matching issue.</p>
-      <p><strong>Full debug data will be copied to your clipboard</strong> - paste it into the issue if the summary is truncated.</p>
+      <h3>📋 Report Debug Info</h3>
+      <p>This will create a GitHub issue with <strong>anonymized</strong> debug data to help fix the matching issue.</p>
+      <p style="margin: 12px 0; padding: 10px; background: #e8f5e9; border-radius: 6px; font-size: 13px;">
+        <strong>✅ What's shared:</strong> Event names, market types, and normalized strings only.<br>
+        <strong>🚫 NOT shared:</strong> Account info, personal details, API keys, or financial totals.
+      </p>
+      <p style="font-size: 13px; color: #666;">
+        Only the minimum data needed to reproduce the bug is included. Stake amounts shown are for debugging match logic only.
+      </p>
+      <p><strong>Full debug data will be copied to your clipboard</strong> - paste it into the issue if needed.</p>
       <div class="modal-buttons">
         <button class="modal-cancel" id="modal-cancel">Cancel</button>
-        <button class="modal-confirm" id="modal-confirm">I Understand, Continue</button>
+        <button class="modal-confirm" id="modal-confirm">Continue</button>
       </div>
     </div>
   </div>
