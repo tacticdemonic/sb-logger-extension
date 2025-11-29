@@ -4,6 +4,42 @@ This guide helps contributors debug and fix CSV import matching issues reported 
 
 ---
 
+## ⚠️ CRITICAL: Backwards Compatibility Constraint
+
+**Before making ANY changes to `normalizeMarket()`, read this carefully.**
+
+The normalization function is used to match:
+1. **New CSV entries** from betting exchanges (Smarkets, Betfair)
+2. **Saved pending bets** already stored in users' extension data
+
+Users have bets that were normalized with the **current** logic. If you change how normalization works, their old saved bets will no longer match new CSV imports.
+
+### ✅ What You CAN Do
+- **ADD** new patterns that produce the **SAME tokens** as existing rules
+- **ADD** rules that detect NEW formats and convert them to EXISTING tokens
+- **ADD** detection earlier in the chain (before content gets stripped)
+
+### ❌ What You CANNOT Do
+- Change what existing patterns normalize to
+- Remove or modify existing regex rules
+- Change the token names (e.g., `_MATCHWIN_` → `_MATCH_`)
+- Reorder rules in a way that changes output for existing inputs
+
+### Example of a CORRECT Fix
+```javascript
+// CSV has "Moneyline" → "_MATCHWIN_" (existing, works)
+// Saved bet has "to win / Draw No Bet" → "_NUMS_" (broken!)
+
+// WRONG: Change Moneyline to produce something different
+// RIGHT: Add detection for "to win" BEFORE slash removal:
+.replace(/\bto\s+win\b/gi, '_MATCHWIN_')  // ADD this line
+.replace(/\bdraw\s+no\s+bet\b/gi, '_DNB_')  // ADD this line
+// ... THEN the existing slash removal runs
+.replace(/\s+\/\s+[^_].*$/g, '')
+```
+
+---
+
 ## How Matching Works
 
 ### Overview
@@ -64,6 +100,8 @@ Best Candidate:
 
 ## Common Issues & Fixes
 
+> ⚠️ **Remember:** You can only ADD rules, not change existing ones. See the backwards compatibility section above.
+
 ### Issue 1: Market Type Lost During Slash Removal
 
 **Symptom:**
@@ -77,11 +115,12 @@ Saved: "Team to win / Draw No Bet" → "_NUMS_"  ← Missing _MATCHWIN_ or _DNB_
 .replace(/\s+\/\s+[^_].*$/g, '')  // Cuts off "/ Draw No Bet"
 ```
 
-**Fix:** Detect market types BEFORE slash removal:
+**Fix:** Add detection BEFORE the slash removal line (don't modify the slash removal itself):
 ```javascript
-// Add these BEFORE the slash removal line
-.replace(/\bdraw\s+no\s+bet\b/gi, '_DNB_')
+// ADD these lines ABOVE the slash removal in normalizeMarket()
 .replace(/\bto\s+win\b/gi, '_MATCHWIN_')
+.replace(/\bdraw\s+no\s+bet\b/gi, '_DNB_')
+// ... existing slash removal stays unchanged below
 ```
 
 ### Issue 2: "to win" Not Normalized to _MATCHWIN_
@@ -91,13 +130,12 @@ Saved: "Team to win / Draw No Bet" → "_NUMS_"  ← Missing _MATCHWIN_ or _DNB_
 "Team to win / Draw No Bet" → "_NUMS_" (should be "_MATCHWIN_" or "_DNB_")
 ```
 
-**Cause:** "to win" is being stripped instead of converted.
+**Cause:** "to win" is being stripped by filler word removal instead of converted.
 
-**Fix:** In `normalizeMarket()`, ensure conversion happens before removal:
+**Fix:** Add conversion BEFORE the filler word removal (around line 920):
 ```javascript
-// Convert first
+// ADD this line BEFORE ".replace(/\bto\s+win\b/g, '')"
 .replace(/\bto\s+win\b/gi, '_MATCHWIN_')
-// Then clean up (but don't re-strip "to win")
 ```
 
 ### Issue 3: Different Total/Over-Under Formats
@@ -109,7 +147,7 @@ Saved: "Total over 229 - points" → "_OVERUNDER__NUMS_"
 ```
 These SHOULD match but don't because of decimal differences.
 
-**Fix:** Normalize numbers more aggressively (strip trailing .0):
+**Fix:** Add number normalization (strip trailing .0) - this is safe because it doesn't change tokens:
 ```javascript
 .replace(/(\d+)\.0\b/g, '$1')  // 229.0 → 229
 ```

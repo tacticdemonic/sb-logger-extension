@@ -825,6 +825,26 @@ function matchBetWithPLDebug(plEntry, allBets) {
       .trim();
   };
   
+  /**
+   * normalizeMarket - Converts market strings to standardized tokens for matching
+   * 
+   * ⚠️  CRITICAL: BACKWARDS COMPATIBILITY CONSTRAINT ⚠️
+   * 
+   * This function is used to match BOTH:
+   *   1. CSV entries from betting exchanges (Smarkets, Betfair)
+   *   2. Saved pending bets already stored in user's extension data
+   * 
+   * The saved bets have ALREADY been normalized with this logic. If you change
+   * how normalization works, OLD bets will no longer match NEW CSV imports.
+   * 
+   * DO NOT modify existing normalization rules. Instead:
+   *   - ADD new patterns that produce the SAME tokens as existing rules
+   *   - ADD new rules that convert NEW formats to EXISTING tokens
+   *   - Example: If CSV has "Moneyline" and saved bet has "to win", add a rule
+   *     to detect "to win" EARLIER and convert it to _MATCHWIN_ like Moneyline does
+   * 
+   * Test any changes against ALL supported CSV formats before merging.
+   */
   const normalizeMarket = (str, eventName = '') => {
     captureConsole(`    🔧 normalizeMarket v2.3 called: "${str}" (event: "${eventName}")`);
     
@@ -865,6 +885,9 @@ function matchBetWithPLDebug(plEntry, allBets) {
       .replace(/\bdraw\s+no\s+bet\b/g, '_DNB_')
       // IMPORTANT: Convert "to win" to _MATCHWIN_ BEFORE slash removal
       .replace(/\bto\s+win\b/g, '_MATCHWIN_')
+      // FIX: Convert market types BEFORE slash removal (see CSV_IMPORT_DEBUGGING_GUIDE.md)
+      .replace(/\bdraw\s+no\s+bet\b/gi, '_DNB_')
+      .replace(/\bto\s+win\b/gi, '_MATCHWIN_')
       // Remove everything after first slash ONLY if not already processed as handicap
       .replace(/\s+\/\s+[^_].*$/g, '')
       // Remove "participant" keyword before player names
@@ -882,6 +905,8 @@ function matchBetWithPLDebug(plEntry, allBets) {
       .replace(/\bset\s+(\d+)\b/g, '_SET$1_')
     // Normalize common market types to consistent keywords
     .replace(/\bdouble\s+chance\b/g, '_DOUBLECHANCE_')
+    // NOTE: "draw no bet" is now converted earlier (before slash removal) - this catches any remaining instances
+    .replace(/\bdraw\s+no\s+bet\b/g, '_DNB_')
     .replace(/\bmatch\s+odds\b/g, '_MATCHWIN_')
     .replace(/\bmoneyline\b/g, '_MATCHWIN_')
     .replace(/\b(match\s+)?winner\b/g, '_MATCHWIN_')
@@ -921,6 +946,8 @@ function matchBetWithPLDebug(plEntry, allBets) {
     // If market is ONLY "Lay" with no other market type, assume it's a match win lay
     .replace(/^_LAY_\s*_NUMS_/g, '_MATCHWIN__LAY__NUMS_')
       // Remove common filler words
+      // NOTE: "to win" is now converted to _MATCHWIN_ earlier (before slash removal) - this only catches non-slash instances
+      .replace(/\bto\s+win\b/g, '')
       .replace(/\bwith\s+a?\b/g, '')
       .replace(/\bof\b/g, '')
       .replace(/\bor\b/g, '')
