@@ -881,10 +881,9 @@ function matchBetWithPLDebug(plEntry, allBets) {
       })
       // Smarkets handicap format: "Team +0.5 / Team -0.5" - detect and normalize BEFORE removing slashes
       .replace(/[\+\-]?\d+\.?\d*\s*\/\s*[\+\-]?\d+\.?\d*/g, '_HANDICAP_')
-      // ⚠️  KNOWN ISSUE: This slash removal is too aggressive!
-      // It removes "/ Draw No Bet" before DNB can be detected.
-      // FIX: Add DNB detection ABOVE this line, not below.
-      // See CSV_IMPORT_DEBUGGING_GUIDE.md for details.
+      // FIX: Convert market types BEFORE slash removal (see CSV_IMPORT_DEBUGGING_GUIDE.md)
+      .replace(/\bdraw\s+no\s+bet\b/gi, '_DNB_')
+      .replace(/\bto\s+win\b/gi, '_MATCHWIN_')
       // Remove everything after first slash ONLY if not already processed as handicap
       .replace(/\s+\/\s+[^_].*$/g, '')
       // Remove "participant" keyword before player names
@@ -902,6 +901,7 @@ function matchBetWithPLDebug(plEntry, allBets) {
       .replace(/\bset\s+(\d+)\b/g, '_SET$1_')
     // Normalize common market types to consistent keywords
     .replace(/\bdouble\s+chance\b/g, '_DOUBLECHANCE_')
+    // NOTE: "draw no bet" is now converted earlier (before slash removal) - this catches any remaining instances
     .replace(/\bdraw\s+no\s+bet\b/g, '_DNB_')
     .replace(/\bmatch\s+odds\b/g, '_MATCHWIN_')
     .replace(/\bmoneyline\b/g, '_MATCHWIN_')
@@ -942,6 +942,7 @@ function matchBetWithPLDebug(plEntry, allBets) {
     // If market is ONLY "Lay" with no other market type, assume it's a match win lay
     .replace(/^_LAY_\s*_NUMS_/g, '_MATCHWIN__LAY__NUMS_')
       // Remove common filler words
+      // NOTE: "to win" is now converted to _MATCHWIN_ earlier (before slash removal) - this only catches non-slash instances
       .replace(/\bto\s+win\b/g, '')
       .replace(/\bwith\s+a?\b/g, '')
       .replace(/\bof\b/g, '')
