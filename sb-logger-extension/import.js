@@ -1231,6 +1231,7 @@ function buildDebugReport() {
   const truncatedPending = debug.pendingBets.slice(0, maxEntries);
   
   let report = `## CSV Import Match Failure Report\n\n`;
+  report += `> 📖 **For contributors:** See [CSV_IMPORT_DEBUGGING_GUIDE.md](https://github.com/${GITHUB_REPO}/blob/master/sb-logger-extension/CSV_IMPORT_DEBUGGING_GUIDE.md) for debugging instructions.\n\n`;
   report += `**Extension Version:** ${EXTENSION_VERSION}\n`;
   report += `**Import Version:** ${IMPORT_VERSION}\n`;
   report += `**CSV Format Detected:** ${debug.csvFormat || 'Unknown'}\n`;
