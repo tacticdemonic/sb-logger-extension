@@ -65,6 +65,8 @@
 9. Use **Export JSON** or **Export CSV** to download, or **Clear All** to delete
    
   For debugging CSV import issues: you can export only pending (unsettled) bets from the extension settings: **⚙️ Settings → 🗑️ Data → 🐛 Debug Export → Export Pending Bets (JSON)**. This is useful when you want to reproduce an import parser issue or inspect unsettled data.
+  
+  New: The import page includes a `🐛 Report Match Issue` button that builds a pre-filled GitHub issue with a concise summary and a clipboard-copied JSON debug payload. See `CSV_IMPORT_ISSUE_REPORTING.md` for usage and privacy notes.
 
 ## Auto-Fill Stakes (Complete Feature - v1.0.37!)
 
