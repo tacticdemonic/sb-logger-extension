@@ -905,7 +905,10 @@ function matchBetWithPLDebug(plEntry, allBets) {
     .replace(/\bdraw\s+no\s+bet\b/g, '_DNB_')
     .replace(/\bmatch\s+odds\b/g, '_MATCHWIN_')
     .replace(/\bmoneyline\b/g, '_MATCHWIN_')
-    .replace(/\b(match\s+)?winner\b/g, '_MATCHWIN_')
+    // Tournament/Cup winner markets - "To Lift The Cup", "To Lift Trophy", etc.
+    .replace(/\bto\s+lift\s+(?:the\s+)?(?:cup|trophy|title)\b/g, '_OUTRIGHTWIN_')
+    .replace(/\b(?:tournament|cup|outright)\s+winner\b/g, '_OUTRIGHTWIN_')
+    .replace(/\b(?:match\s+)?winner\b/g, '_MATCHWIN_')
     .replace(/\bfull\s*-?\s*time\s+result\b/g, '_MATCHWIN_')
     .replace(/\b(full\s*-?\s*time|ft)\s+result\b/g, '_MATCHWIN_')
     // Tennis-specific: normalize "to win" markets
@@ -977,7 +980,7 @@ function matchBetWithPLDebug(plEntry, allBets) {
     let final = `${normalized}_NUMS_${keyNumbers}`.replace(/\s+/g, ' ').trim();
     
     // Post-process: if we only have LAY without a market type, add MATCHWIN
-    if (final.includes('_LAY_') && !final.match(/_(?:MATCHWIN|HANDICAP|OVERUNDER|DNB|DOUBLECHANCE)_/)) {
+    if (final.includes('_LAY_') && !final.match(/_(?:MATCHWIN|HANDICAP|OVERUNDER|DNB|DOUBLECHANCE|OUTRIGHTWIN)_/)) {
       final = final.replace(/_LAY_/, '_MATCHWIN__LAY_');
     }
     
@@ -1059,7 +1062,7 @@ function matchBetWithPLDebug(plEntry, allBets) {
     const union = new Set([...plTokens, ...betTokens]);
     const tokenSimilarity = intersection.size / union.size;
     
-    const marketTypes = ['MATCHWIN', 'DOUBLECHANCE', 'DNB', 'HANDICAP', 'OVERUNDER', 'LAY', 'H1', 'H2', 'Q1', 'Q2', 'Q3', 'Q4', 'ODD', 'EVEN'];
+    const marketTypes = ['MATCHWIN', 'DOUBLECHANCE', 'DNB', 'HANDICAP', 'OVERUNDER', 'LAY', 'H1', 'H2', 'Q1', 'Q2', 'Q3', 'Q4', 'ODD', 'EVEN', 'OUTRIGHTWIN'];
     const sharedMarketType = marketTypes.filter(mt => plTokens.has(mt) && betTokens.has(mt));
     
     const plNums = new Set([...plTokens].filter(t => /^[\-\d_]+$/.test(t) && t.length > 0));
