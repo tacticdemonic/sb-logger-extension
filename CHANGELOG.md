@@ -9,14 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.96] - 2025-12-01
+
 ### ✨ New Features
 - **On-site Market Filtering**: Added the ability to hide or highlight specific market types directly on the surebet.com valuebets page. Presets include Asian Handicap, DNB, Cards, Goals Only, and Corners Only. Supports Hide & Highlight modes and mirrors popup settings.
+- **New Market Filter Presets**: Added three additional filter presets to block Shots, Player Props (goalscorers, assists), and Correct Score markets.
+- **Real-time Filter Updates**: Market filters now apply immediately when toggled in settings/popup without requiring page reload. Content script listens to `uiPreferences` storage changes and reapplies filters in real-time.
 
 ### 🐛 Bug Fixes
 - **Asian Handicap matching**: Improved regex compilation to detect abbreviations like `AH`, `AH1`, `AH2` and variations like `AH2(+1.5)` by using a lookahead. Added content-script-level filtering and highlight badge for easier identification.
 - **Market filter toggle regression**: Fixed issue where disabling market filters wouldn't remove existing filter styling from rows until page reload. Filters now properly clear classes when disabled.
 - **Settings preservation bug**: Fixed critical bug in `settings.js` where saving market filter settings would overwrite and discard other UI preferences like `hideLayBets` and `showPendingOnly`. Now properly merges with existing settings.
 - **Highlight mode counter**: Fixed `marketFilteredCount` not incrementing in highlight mode, so the summary line now correctly reports the number of highlighted rows.
+- **Storage listener gap**: Added missing `uiPreferences` handler in content script storage listener to enable real-time market filter updates without page reload.
 
 
 ## [1.0.82.2] - 2025-11-28

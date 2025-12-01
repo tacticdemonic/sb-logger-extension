@@ -1502,6 +1502,21 @@ document.addEventListener('DOMContentLoaded', () => {
       keywords: ['draw no bet', 'dnb'],
       type: 'block'
     },
+    shots: {
+      name: '🚫 Shots',
+      keywords: ['shot', 'shots on target', 'sot'],
+      type: 'block'
+    },
+    player_props: {
+      name: '🚫 Player Props',
+      keywords: ['anytime goalscorer', 'first goalscorer', 'last goalscorer', 'to score', 'player to', 'assist'],
+      type: 'block'
+    },
+    correct_score: {
+      name: '🚫 Correct Score',
+      keywords: ['correct score', 'exact score'],
+      type: 'block'
+    },
     goals_only: {
       name: '✅ Goals Only',
       keywords: ['goal', 'btts', 'over', 'under', 'total'],

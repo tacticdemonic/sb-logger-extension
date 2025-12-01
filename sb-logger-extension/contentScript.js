@@ -143,6 +143,21 @@ function () {
       keywords: ['draw no bet', 'dnb'],
       type: 'block'
     },
+    shots: {
+      name: 'Shots',
+      keywords: ['shot', 'shots on target', 'sot'],
+      type: 'block'
+    },
+    player_props: {
+      name: 'Player Props',
+      keywords: ['anytime goalscorer', 'first goalscorer', 'last goalscorer', 'to score', 'player to', 'assist'],
+      type: 'block'
+    },
+    correct_score: {
+      name: 'Correct Score',
+      keywords: ['correct score', 'exact score'],
+      type: 'block'
+    },
     goals_only: {
       name: 'Goals Only (Whitelist)',
       keywords: ['goal', 'btts', 'over', 'under'],
@@ -4141,6 +4156,18 @@ function () {
         };
         console.log('⚙️ [AutoFill] Auto-fill settings updated from popup:', autoFillSettings);
         showToast('Auto-fill settings updated', true, 2000);
+      }
+
+      // Handle market filter changes from popup/settings
+      if (changes.uiPreferences?.newValue) {
+        console.log('🎯 [MarketFilter] UI preferences updated from popup/settings');
+        loadMarketFilterSettings(() => {
+          applyMarketFilters();
+          const filterStatus = marketFilterSettings.enabled 
+            ? `Filters ${marketFilterSettings.mode === 'highlight' ? 'highlighting' : 'hiding'} ${marketFilterSettings.activePresets.length} preset(s)`
+            : 'Filters disabled';
+          showToast(filterStatus, true, 2000);
+        });
       }
     });
   }
