@@ -881,6 +881,10 @@ function matchBetWithPLDebug(plEntry, allBets) {
       })
       // Smarkets handicap format: "Team +0.5 / Team -0.5" - detect and normalize BEFORE removing slashes
       .replace(/[\+\-]?\d+\.?\d*\s*\/\s*[\+\-]?\d+\.?\d*/g, '_HANDICAP_')
+      // IMPORTANT: Convert "Draw No Bet" BEFORE slash removal so it doesn't get stripped
+      .replace(/\bdraw\s+no\s+bet\b/g, '_DNB_')
+      // IMPORTANT: Convert "to win" to _MATCHWIN_ BEFORE slash removal
+      .replace(/\bto\s+win\b/g, '_MATCHWIN_')
       // FIX: Convert market types BEFORE slash removal (see CSV_IMPORT_DEBUGGING_GUIDE.md)
       .replace(/\bdraw\s+no\s+bet\b/gi, '_DNB_')
       .replace(/\bto\s+win\b/gi, '_MATCHWIN_')
