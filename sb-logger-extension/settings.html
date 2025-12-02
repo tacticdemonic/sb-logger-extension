@@ -55,6 +55,7 @@
       <button class="nav-btn" data-section="marketfilters">🎯 Market Filters</button>
       <button class="nav-btn" data-section="api">🔑 API Setup</button>
       <button class="nav-btn" data-section="diagnostics">🔍 API Diagnostics</button>
+      <button class="nav-btn" data-section="clv">📈 CLV Tracking</button>
       <button class="nav-btn" data-section="data">🗑️ Data</button>
     </div>
 
@@ -673,6 +674,193 @@
 
       <div class="button-row">
         <button class="btn-cancel js-close-window" type="button">Close</button>
+      </div>
+    </div>
+
+    <!-- CLV Tracking Section -->
+    <div id="clv-section" class="section-container">
+      <h2>📈 Closing Line Value (CLV) Tracking</h2>
+      <div class="info-box">
+        <strong>ℹ️ What is CLV?</strong><br>
+        CLV measures if you're getting better odds than the market's closing line. Positive CLV indicates long-term profitable betting.
+        This feature uses <a href="https://github.com/jordantete/OddsHarvester" target="_blank" style="color: #0056b3;">OddsHarvester</a> to scrape historical closing odds from OddsPortal.
+      </div>
+
+      <!-- Enable Toggle and Connection Status -->
+      <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #dee2e6;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-group-checkbox">
+              <input type="checkbox" id="clv-enabled" />
+              <span style="font-weight: 600;">Enable CLV Tracking</span>
+            </label>
+            <p class="note" style="margin-top: 4px;">Automatically fetch closing odds for settled bets from OddsHarvester API</p>
+          </div>
+          
+          <div id="clv-connection-status" style="text-align: right;">
+            <div style="font-size: 12px; color: #666;">API Status:</div>
+            <div id="clv-status-indicator" style="font-weight: 600; color: #6c757d;">
+              ⏳ Checking...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API Setup Instructions -->
+      <div id="clv-setup-instructions" style="background: #fff3cd; padding: 15px; border-radius: 4px; border-left: 4px solid #ffc107; margin-bottom: 20px;">
+        <div style="font-weight: 600; margin-bottom: 10px; color: #856404;">📥 Installation Required</div>
+        <p style="margin: 0 0 10px 0; font-size: 12px; color: #555;">
+          CLV tracking requires a local Python API server. Follow these steps:
+        </p>
+        <ol style="margin: 0; padding-left: 20px; font-size: 12px; color: #555; line-height: 1.6;">
+          <li>Install <a href="https://www.python.org/downloads/" target="_blank" style="color: #0056b3;">Python 3.11+</a> if not already installed</li>
+          <li>Download the <a href="#" id="clv-download-installer" style="color: #0056b3;">installation script</a> (auto-detects Windows/Mac/Linux)</li>
+          <li>Run the installer script in a terminal (PowerShell on Windows, Bash on Mac/Linux)</li>
+          <li>Start the API server with <code>python server.py</code> in the install directory</li>
+        </ol>
+        <div style="margin-top: 12px;">
+          <button id="clv-test-connection-btn" style="background: #ffc107; color: #000; border-color: #ffc107;">🔌 Test Connection</button>
+          <button id="clv-open-setup-guide-btn" style="margin-left: 8px;">📖 Full Setup Guide</button>
+        </div>
+      </div>
+
+      <!-- API Configuration -->
+      <div style="margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">⚙️ API Configuration</h3>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="clv-api-url">API Server URL:</label>
+            <input type="text" id="clv-api-url" placeholder="http://localhost:8765" value="http://localhost:8765" />
+            <p class="note">Default: http://localhost:8765</p>
+          </div>
+          <div class="form-group">
+            <label for="clv-delay-hours">Fetch Delay (hours after event):</label>
+            <input type="number" id="clv-delay-hours" min="2" max="48" step="1" value="2" />
+            <p class="note">Wait for closing odds to stabilize (2-48 hours)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fallback Strategy -->
+      <div style="margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">🔄 Odds Fallback Strategy</h3>
+        <div class="info-box">
+          <strong>Primary Source:</strong> Your original bookmaker's closing odds<br>
+          <strong>Fallback:</strong> When unavailable, use Pinnacle closing odds (industry benchmark)
+        </div>
+        
+        <div class="form-group">
+          <label for="clv-fallback-strategy">Fallback Source:</label>
+          <select id="clv-fallback-strategy">
+            <option value="pinnacle">Pinnacle (recommended)</option>
+            <option value="weighted_avg">Weighted average of all bookmakers</option>
+            <option value="none">No fallback (require exact bookmaker match)</option>
+          </select>
+          <p class="note">Pinnacle is considered the "sharpest" bookmaker with the most accurate closing lines</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="clv-max-retries">Maximum Retry Attempts:</label>
+          <select id="clv-max-retries">
+            <option value="1">1 attempt</option>
+            <option value="2">2 attempts</option>
+            <option value="3" selected>3 attempts (recommended)</option>
+            <option value="5">5 attempts</option>
+          </select>
+          <p class="note">After max retries, bets require manual CLV entry</p>
+        </div>
+      </div>
+
+      <!-- Performance Settings -->
+      <div style="margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">⚡ Performance Settings</h3>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="clv-max-concurrency">Max Concurrent Requests:</label>
+            <input type="number" id="clv-max-concurrency" min="1" max="10" step="1" value="3" />
+            <p class="note">Higher = faster but uses more system resources (1-10)</p>
+          </div>
+          <div class="form-group">
+            <label for="clv-batch-check-interval">Batch Check Interval (hours):</label>
+            <select id="clv-batch-check-interval">
+              <option value="1">Every hour</option>
+              <option value="2">Every 2 hours</option>
+              <option value="4" selected>Every 4 hours (recommended)</option>
+              <option value="8">Every 8 hours</option>
+              <option value="24">Once daily</option>
+            </select>
+            <p class="note">How often to check for bets needing CLV data</p>
+          </div>
+        </div>
+        
+        <!-- Force CLV Check -->
+        <div style="margin-top: 15px; padding: 12px; background: #e7f3ff; border-radius: 4px; border-left: 4px solid #0056b3;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <div style="font-weight: 600; color: #004085;">🚀 Force CLV Check</div>
+              <div style="font-size: 11px; color: #666;">Immediately check all settled bets without CLV (ignores delay/retry limits)</div>
+            </div>
+            <button id="clv-force-check-btn" style="background: #007bff; color: #fff; border-color: #007bff; white-space: nowrap;">⚡ Force Check Now</button>
+          </div>
+          <div id="clv-force-check-result" style="margin-top: 10px; font-size: 12px; display: none;"></div>
+        </div>
+      </div>
+
+      <!-- Cache Management -->
+      <div style="margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">💾 Cache Management</h3>
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 4px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div>
+              <div style="font-weight: 600;">Database Size:</div>
+              <div id="clv-db-size" style="font-size: 24px; color: #333;">--</div>
+              <div style="font-size: 11px; color: #666;">Cached leagues and closing odds</div>
+            </div>
+            <div style="text-align: right;">
+              <div id="clv-cache-stats" style="font-size: 12px; color: #666; margin-bottom: 8px;">
+                Leagues cached: --<br>
+                Odds cached: --
+              </div>
+            </div>
+          </div>
+          
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button id="clv-clear-cache-btn" style="background: #ffc107; color: #000; border-color: #ffc107;">🗑️ Clear Cache</button>
+            <button id="clv-refresh-stats-btn">🔄 Refresh Stats</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Version & Updates -->
+      <div style="margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">🔄 Updates</h3>
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 4px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 12px; color: #666;">OddsHarvester Version:</div>
+              <div id="clv-harvester-version" style="font-weight: 600;">--</div>
+            </div>
+            <button id="clv-check-updates-btn">🔍 Check for Updates</button>
+          </div>
+          <div id="clv-update-status" style="margin-top: 10px; font-size: 12px; display: none;"></div>
+        </div>
+      </div>
+
+      <!-- Manual CLV Entry Info -->
+      <div style="margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">✏️ Manual CLV Entry</h3>
+        <div class="info-box">
+          <strong>When automatic CLV fails:</strong><br>
+          • Bets requiring manual entry will show a ⚠️ icon in the popup<br>
+          • Click the CLV cell to enter closing odds manually<br>
+          • Use <a href="https://www.oddsportal.com/" target="_blank" style="color: #0056b3;">OddsPortal</a> to find historical closing odds<br>
+          • Submit unmatched events as GitHub issues for future improvement
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button class="btn-cancel js-close-window" type="button">Cancel</button>
+        <button class="btn-save" id="save-clv-btn">Save Changes</button>
       </div>
     </div>
 

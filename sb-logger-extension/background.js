@@ -410,6 +410,13 @@ chrome.runtime.onInstalled.addListener(() => {
   // Set up alarm to check results every hour
   chrome.alarms.create('checkBetResults', { periodInMinutes: 60 });
   console.log('⏰ Alarm created: checkBetResults (every 60 minutes)');
+  
+  // Set up CLV batch check alarm (default: every 4 hours)
+  chrome.storage.local.get({ clvSettings: { batchCheckIntervalHours: 4 } }, (res) => {
+    const intervalHours = res.clvSettings?.batchCheckIntervalHours || 4;
+    chrome.alarms.create('clvBatchCheck', { periodInMinutes: intervalHours * 60 });
+    console.log(`⏰ CLV alarm created: clvBatchCheck (every ${intervalHours} hours)`);
+  });
 });
 
 if (chrome.runtime.onStartup) {
@@ -435,6 +442,10 @@ syncToggleUiState();
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === 'checkBetResults') {
     autoCheckResults();
+  }
+  
+  if (alarm.name === 'clvBatchCheck') {
+    autoFetchClv();
   }
 });
 
@@ -930,6 +941,264 @@ api.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
   
+  // ========== CLV TRACKING ==========
+  
+  // Update CLV batch check schedule
+  if (message.action === 'updateClvSchedule') {
+    const intervalHours = parseInt(message.intervalHours) || 4;
+    console.log('📈 Updating CLV schedule, interval:', intervalHours, 'hours');
+    
+    // Clear existing alarm and create new one
+    chrome.alarms.clear('clvBatchCheck', () => {
+      chrome.alarms.create('clvBatchCheck', { periodInMinutes: intervalHours * 60 });
+      console.log(`⏰ CLV alarm updated: every ${intervalHours} hours`);
+      sendResponse({ success: true });
+    });
+    return true;
+  }
+  
+  // Force immediate CLV check for all eligible bets (ignores delay)
+  if (message.action === 'forceClvCheck') {
+    console.log('📈 Force CLV check triggered');
+    
+    (async () => {
+      try {
+        const clvSettings = await getClvSettings();
+        
+        if (!clvSettings.enabled) {
+          sendResponse({ success: false, error: 'CLV tracking is disabled', checked: 0 });
+          return;
+        }
+        
+        // Check API availability with timeout
+        try {
+          const healthController = new AbortController();
+          const healthTimeout = setTimeout(() => healthController.abort(), 5000);
+          const healthResponse = await fetch(`${clvSettings.apiUrl}/health`, { signal: healthController.signal });
+          clearTimeout(healthTimeout);
+          if (!healthResponse.ok) {
+            sendResponse({ success: false, error: 'CLV API not responding', checked: 0 });
+            return;
+          }
+        } catch (err) {
+          sendResponse({ success: false, error: 'CLV API not reachable: ' + (err.name === 'AbortError' ? 'timeout' : err.message), checked: 0 });
+          return;
+        }
+        
+        // Get ALL settled bets without CLV (ignore delay and retry count for force)
+        const storage = await new Promise((resolve) => {
+          chrome.storage.local.get({ bets: [] }, resolve);
+        });
+        
+        const eligibleBets = storage.bets.filter(bet => {
+          if (!['won', 'lost'].includes(bet.status)) return false;
+          if (bet.clv !== undefined && bet.clv !== null) return false;
+          return true;
+        });
+        
+        if (eligibleBets.length === 0) {
+          sendResponse({ success: true, message: 'No bets need CLV data', checked: 0, updated: 0 });
+          return;
+        }
+        
+        console.log(`📈 Force checking ${eligibleBets.length} bet(s)`);
+        
+        // Fetch CLV
+        const result = await fetchClvFromApi(eligibleBets, clvSettings);
+        
+        if (result.success && result.results && result.results.length > 0) {
+          // Update bets
+          const bets = storage.bets.map(bet => {
+            const betId = getBetKey(bet) || bet.id;
+            const clvResult = result.results.find(r => r.betId === betId);
+            
+            if (clvResult) {
+              return {
+                ...bet,
+                closingOdds: clvResult.closingOdds,
+                clv: clvResult.clv,
+                clvSource: clvResult.source,
+                clvFetchedAt: new Date().toISOString()
+              };
+            }
+            
+            // Increment retry count for failed fetches
+            if (eligibleBets.some(eb => (getBetKey(eb) || eb.id) === betId)) {
+              return {
+                ...bet,
+                clvRetryCount: (bet.clvRetryCount || 0) + 1,
+                clvLastRetry: new Date().toISOString()
+              };
+            }
+            
+            return bet;
+          });
+          
+          await new Promise((resolve) => {
+            chrome.storage.local.set({ bets }, resolve);
+          });
+          
+          sendResponse({ 
+            success: true, 
+            checked: eligibleBets.length, 
+            updated: result.results.length,
+            failed: result.failed || 0
+          });
+        } else {
+          // Increment retry for all failed
+          const bets = storage.bets.map(bet => {
+            const betId = getBetKey(bet) || bet.id;
+            if (eligibleBets.some(eb => (getBetKey(eb) || eb.id) === betId)) {
+              return {
+                ...bet,
+                clvRetryCount: (bet.clvRetryCount || 0) + 1,
+                clvLastRetry: new Date().toISOString()
+              };
+            }
+            return bet;
+          });
+          
+          await new Promise((resolve) => {
+            chrome.storage.local.set({ bets }, resolve);
+          });
+          
+          sendResponse({ 
+            success: false, 
+            error: result.error || 'API returned no results',
+            checked: eligibleBets.length, 
+            updated: 0 
+          });
+        }
+      } catch (err) {
+        console.error('📈 Force CLV check error:', err);
+        sendResponse({ success: false, error: err.message, checked: 0 });
+      }
+    })();
+    return true;
+  }
+  
+  // Trigger manual CLV fetch for a specific bet
+  if (message.action === 'fetchClvForBet') {
+    console.log('📈 fetchClvForBet action received');
+    
+    (async () => {
+      try {
+        const { betId } = message;
+        const clvSettings = await getClvSettings();
+        
+        if (!clvSettings.enabled) {
+          sendResponse({ success: false, error: 'CLV tracking is disabled' });
+          return;
+        }
+        
+        // Get the bet
+        const storage = await new Promise((resolve) => {
+          chrome.storage.local.get({ bets: [] }, resolve);
+        });
+        
+        const bet = storage.bets.find(b => getBetKey(b) === betId || b.id === betId);
+        if (!bet) {
+          sendResponse({ success: false, error: 'Bet not found' });
+          return;
+        }
+        
+        // Fetch CLV from API
+        const result = await fetchClvFromApi([bet], clvSettings);
+        
+        if (result.success && result.results && result.results.length > 0) {
+          const clvResult = result.results[0];
+          
+          // Update the bet with CLV data
+          const bets = storage.bets.map(b => {
+            if (getBetKey(b) === betId || b.id === betId) {
+              return {
+                ...b,
+                closingOdds: clvResult.closingOdds,
+                clv: clvResult.clv,
+                clvSource: clvResult.source,
+                clvFetchedAt: new Date().toISOString()
+              };
+            }
+            return b;
+          });
+          
+          await new Promise((resolve) => {
+            chrome.storage.local.set({ bets }, resolve);
+          });
+          
+          sendResponse({ success: true, clv: clvResult.clv, closingOdds: clvResult.closingOdds });
+        } else {
+          sendResponse({ success: false, error: result.error || 'Failed to fetch CLV' });
+        }
+      } catch (err) {
+        console.error('📈 fetchClvForBet error:', err);
+        sendResponse({ success: false, error: err.message });
+      }
+    })();
+    
+    return true;
+  }
+  
+  // Save manual CLV entry
+  if (message.action === 'saveManualClv') {
+    console.log('📈 saveManualClv action received');
+    
+    (async () => {
+      try {
+        const { betId, closingOdds } = message;
+        
+        if (!betId || !closingOdds) {
+          sendResponse({ success: false, error: 'Missing betId or closingOdds' });
+          return;
+        }
+        
+        const storage = await new Promise((resolve) => {
+          chrome.storage.local.get({ bets: [] }, resolve);
+        });
+        
+        let betUpdated = false;
+        const bets = storage.bets.map(b => {
+          if (getBetKey(b) === betId || b.id === betId) {
+            const odds = parseFloat(b.odds) || 0;
+            const closing = parseFloat(closingOdds) || 0;
+            const clv = closing > 0 ? ((odds / closing) - 1) * 100 : 0;
+            
+            betUpdated = true;
+            return {
+              ...b,
+              closingOdds: closing,
+              clv: clv,
+              clvSource: 'manual',
+              clvFetchedAt: new Date().toISOString()
+            };
+          }
+          return b;
+        });
+        
+        if (!betUpdated) {
+          sendResponse({ success: false, error: 'Bet not found' });
+          return;
+        }
+        
+        await new Promise((resolve) => {
+          chrome.storage.local.set({ bets }, resolve);
+        });
+        
+        const updatedBet = bets.find(b => getBetKey(b) === betId || b.id === betId);
+        sendResponse({ 
+          success: true, 
+          clv: updatedBet.clv, 
+          closingOdds: updatedBet.closingOdds 
+        });
+      } catch (err) {
+        console.error('📈 saveManualClv error:', err);
+        sendResponse({ success: false, error: err.message });
+      }
+    })();
+    
+    return true;
+  }
+  
   return false;
 });
 
@@ -1169,6 +1438,321 @@ async function autoCheckResults() {
     }
   } catch (error) {
     console.error('Auto-check error:', error);
+  }
+}
+
+// ========== CLV TRACKING FUNCTIONS ==========
+
+const DEFAULT_CLV_SETTINGS = {
+  enabled: false,
+  apiUrl: 'http://localhost:8765',
+  delayHours: 2,
+  fallbackStrategy: 'pinnacle',
+  maxRetries: 3,
+  maxConcurrency: 3,
+  batchCheckIntervalHours: 4
+};
+
+async function getClvSettings() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get({ clvSettings: DEFAULT_CLV_SETTINGS }, (res) => {
+      resolve({ ...DEFAULT_CLV_SETTINGS, ...res.clvSettings });
+    });
+  });
+}
+
+async function fetchClvFromApi(bets, clvSettings) {
+  const apiUrl = clvSettings.apiUrl || 'http://localhost:8765';
+  const timeoutMs = 30000; // 30 second timeout for CLV API calls
+  
+  try {
+    // Prepare bet requests for the API
+    const betRequests = bets.map(bet => {
+      const sport = bet.sport?.toLowerCase();
+      // Warn about unknown sports instead of silently defaulting
+      if (!sport || !['football', 'basketball', 'tennis', 'hockey', 'american football', 'baseball', 'volleyball'].includes(sport)) {
+        console.warn(`📈 CLV: Unknown/missing sport "${bet.sport}" for bet ${getBetKey(bet) || bet.id}, using 'football' fallback`);
+      }
+      return {
+        bet_id: getBetKey(bet) || bet.id,
+        event: bet.event,
+        sport: sport || 'football',
+        tournament: bet.tournament || '',
+        bookmaker: bet.bookmaker,
+        market: bet.market || 'Match Odds',
+        selection: extractSelection(bet),
+        opening_odds: parseFloat(bet.odds) || 0,
+        event_date: extractEventDate(bet),
+        home_team: extractHomeTeam(bet),
+        away_team: extractAwayTeam(bet)
+      };
+    });
+    
+    // Create AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    
+    // Send batch request to API with timeout
+    const response = await fetch(`${apiUrl}/api/batch-closing-odds`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        bets: betRequests,
+        fallback_strategy: clvSettings.fallbackStrategy || 'pinnacle',
+        max_concurrency: clvSettings.maxConcurrency || 3
+      }),
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('📈 CLV API error:', response.status, errorText);
+      return { success: false, error: `API returned ${response.status}` };
+    }
+    
+    const data = await response.json();
+    
+    // Process results and calculate CLV
+    const results = [];
+    for (const result of data.results || []) {
+      if (result.success && result.closing_odds) {
+        const bet = bets.find(b => (getBetKey(b) || b.id) === result.bet_id);
+        if (bet) {
+          const openingOdds = parseFloat(bet.odds) || 0;
+          const closingOdds = parseFloat(result.closing_odds) || 0;
+          const clv = closingOdds > 0 ? ((openingOdds / closingOdds) - 1) * 100 : 0;
+          
+          results.push({
+            betId: result.bet_id,
+            closingOdds: closingOdds,
+            clv: clv,
+            source: result.source || 'api',
+            bookmakerMatched: result.bookmaker_matched || false
+          });
+        }
+      }
+    }
+    
+    return { 
+      success: true, 
+      results,
+      jobId: data.job_id,
+      processed: data.processed || 0,
+      failed: data.failed || 0
+    };
+  } catch (err) {
+    // Handle abort (timeout) specifically
+    if (err.name === 'AbortError') {
+      console.error('📈 CLV API request timed out after 30s');
+      return { success: false, error: 'Request timed out - API may be overloaded or unresponsive' };
+    }
+    console.error('📈 CLV API fetch error:', err);
+    return { success: false, error: err.message };
+  }
+}
+
+function extractSelection(bet) {
+  // Try to extract selection from market field
+  if (bet.market) {
+    const parts = bet.market.split(' - ');
+    if (parts.length > 1) {
+      return parts[parts.length - 1].trim();
+    }
+  }
+  
+  // Try to extract from event (home/away/draw)
+  if (bet.event) {
+    const teams = bet.event.split(/\s+(?:vs\.?|v\.?|-)\s+/i);
+    if (teams.length >= 2) {
+      // Check if it's a home/away selection
+      if (bet.market?.toLowerCase().includes('home')) {
+        return teams[0].trim();
+      }
+      if (bet.market?.toLowerCase().includes('away')) {
+        return teams[teams.length - 1].trim();
+      }
+    }
+  }
+  
+  return bet.market || 'Unknown';
+}
+
+function extractEventDate(bet) {
+  // Try eventTime first
+  if (bet.eventTime) {
+    try {
+      return new Date(bet.eventTime).toISOString().split('T')[0];
+    } catch (e) {}
+  }
+  
+  // Fall back to timestamp
+  if (bet.timestamp) {
+    try {
+      return new Date(bet.timestamp).toISOString().split('T')[0];
+    } catch (e) {}
+  }
+  
+  return new Date().toISOString().split('T')[0];
+}
+
+function extractHomeTeam(bet) {
+  if (!bet.event) return '';
+  const teams = bet.event.split(/\s+(?:vs\.?|v\.?|-)\s+/i);
+  return teams.length >= 2 ? teams[0].trim() : '';
+}
+
+function extractAwayTeam(bet) {
+  if (!bet.event) return '';
+  const teams = bet.event.split(/\s+(?:vs\.?|v\.?|-)\s+/i);
+  return teams.length >= 2 ? teams[teams.length - 1].trim() : '';
+}
+
+async function autoFetchClv() {
+  console.log('📈 Auto-fetching CLV for settled bets...');
+  
+  try {
+    const clvSettings = await getClvSettings();
+    
+    if (!clvSettings.enabled) {
+      console.log('📈 CLV tracking is disabled, skipping');
+      return;
+    }
+    
+    // Check if API is available with 5s timeout
+    try {
+      const healthController = new AbortController();
+      const healthTimeout = setTimeout(() => healthController.abort(), 5000);
+      const healthResponse = await fetch(`${clvSettings.apiUrl}/health`, {
+        signal: healthController.signal
+      });
+      clearTimeout(healthTimeout);
+      if (!healthResponse.ok) {
+        console.warn('📈 CLV API not available, skipping');
+        return;
+      }
+    } catch (err) {
+      console.warn('📈 CLV API not reachable:', err.name === 'AbortError' ? 'health check timed out' : err.message);
+      return;
+    }
+    
+    // Get settled bets without CLV
+    const storage = await new Promise((resolve) => {
+      chrome.storage.local.get({ bets: [] }, resolve);
+    });
+    
+    const now = new Date();
+    const delayMs = (clvSettings.delayHours || 2) * 60 * 60 * 1000;
+    
+    // Find bets that:
+    // 1. Are settled (won/lost)
+    // 2. Don't have CLV yet
+    // 3. Settled at least delayHours ago
+    // 4. Haven't exceeded max retries
+    const eligibleBets = storage.bets.filter(bet => {
+      if (!['won', 'lost'].includes(bet.status)) return false;
+      if (bet.clv !== undefined && bet.clv !== null) return false;
+      
+      // Check retry count
+      const retryCount = bet.clvRetryCount || 0;
+      if (retryCount >= clvSettings.maxRetries) return false;
+      
+      // Check if enough time has passed since settlement
+      // For legacy/imported bets without settledAt, use bet timestamp as fallback
+      // If neither exists, skip this bet to avoid hitting API before closing lines available
+      const settlementTimestamp = bet.settledAt || bet.timestamp;
+      if (settlementTimestamp) {
+        const settledTime = new Date(settlementTimestamp).getTime();
+        if (now.getTime() - settledTime < delayMs) return false;
+      } else {
+        // No timestamp available - skip to be safe (user can use Force Check)
+        console.warn(`📈 Skipping bet without timestamp: ${getBetKey(bet) || bet.id}`);
+        return false;
+      }
+      
+      return true;
+    });
+    
+    if (eligibleBets.length === 0) {
+      console.log('📈 No eligible bets for CLV fetch');
+      return;
+    }
+    
+    console.log(`📈 Found ${eligibleBets.length} bet(s) eligible for CLV fetch`);
+    
+    // Fetch CLV for eligible bets
+    const result = await fetchClvFromApi(eligibleBets, clvSettings);
+    
+    if (result.success && result.results && result.results.length > 0) {
+      // Update bets with CLV data
+      const bets = storage.bets.map(bet => {
+        const betId = getBetKey(bet) || bet.id;
+        const clvResult = result.results.find(r => r.betId === betId);
+        
+        if (clvResult) {
+          return {
+            ...bet,
+            closingOdds: clvResult.closingOdds,
+            clv: clvResult.clv,
+            clvSource: clvResult.source,
+            clvFetchedAt: new Date().toISOString()
+          };
+        }
+        
+        // Increment retry count for failed fetches
+        if (eligibleBets.some(eb => (getBetKey(eb) || eb.id) === betId)) {
+          return {
+            ...bet,
+            clvRetryCount: (bet.clvRetryCount || 0) + 1,
+            clvLastRetry: new Date().toISOString()
+          };
+        }
+        
+        return bet;
+      });
+      
+      await new Promise((resolve) => {
+        chrome.storage.local.set({ bets }, resolve);
+      });
+      
+      console.log(`📈 CLV updated for ${result.results.length} bet(s)`);
+      
+      // Show notification if CLV was found
+      if (result.results.length > 0) {
+        chrome.notifications.create({
+          type: 'basic',
+          iconUrl: 'icons/icon96.png',
+          title: 'Surebet Helper - CLV Updated',
+          message: `CLV calculated for ${result.results.length} bet(s).`,
+          priority: 1
+        });
+      }
+    } else {
+      console.log('📈 No CLV results obtained:', result.error);
+      
+      // Increment retry count for all eligible bets
+      const bets = storage.bets.map(bet => {
+        const betId = getBetKey(bet) || bet.id;
+        if (eligibleBets.some(eb => (getBetKey(eb) || eb.id) === betId)) {
+          return {
+            ...bet,
+            clvRetryCount: (bet.clvRetryCount || 0) + 1,
+            clvLastRetry: new Date().toISOString()
+          };
+        }
+        return bet;
+      });
+      
+      await new Promise((resolve) => {
+        chrome.storage.local.set({ bets }, resolve);
+      });
+    }
+  } catch (error) {
+    console.error('📈 Auto-fetch CLV error:', error);
   }
 }
 

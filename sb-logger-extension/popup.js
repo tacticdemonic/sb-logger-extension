@@ -51,6 +51,16 @@ const DEFAULT_ACTIONS_SETTINGS = {
   skipMarketPrompt: false
 };
 
+const DEFAULT_CLV_SETTINGS = {
+  enabled: false,
+  maxRetries: 3,
+  delayHours: 6,
+  fallbackStrategy: 'pinnacle'
+};
+
+// Cached CLV settings for renderClvBadge()
+let cachedClvSettings = null;
+
 // Market filter presets with plain-language keywords
 const MARKET_FILTER_PRESETS = {
   cards: {
@@ -102,62 +112,39 @@ let COMPILED_MARKET_PATTERNS = {};
 function calculateMarketROI(bets, presetId) {
   const preset = MARKET_FILTER_PRESETS[presetId];
   if (!preset) return null;
-  
+
   // Compile pattern for this preset
   const pattern = new RegExp(`\\b(${preset.keywords.join('|')})\\b`, 'i');
-  
+
   // Filter bets that match this market type and are settled
   const matchingBets = bets.filter(b => {
     if (!b.market) return false;
     if (!b.status || b.status === 'pending') return false; // Only settled bets
-    
+
     const marketLower = b.market.toLowerCase();
     return pattern.test(marketLower);
   });
-  
+
   if (matchingBets.length === 0) {
     return { roi: null, totalStaked: 0, profit: 0, betCount: 0 };
   }
-  
+
   // Calculate total staked and profit/loss
   let totalStaked = 0;
   let totalProfit = 0;
-  
+
   matchingBets.forEach(b => {
     const stake = parseFloat(b.stake) || 0;
     totalStaked += stake;
-    
-    // Use actualPL if available, otherwise calculate
-    if (b.actualPL !== undefined && b.actualPL !== null) {
-      totalProfit += b.actualPL;
-    } else {
-      const odds = parseFloat(b.odds) || 0;
-      const commission = getCommission(b.bookmaker);
-      
-      if (b.status === 'won') {
-        if (b.isLay) {
-          const gross = stake;
-          const commissionAmount = commission > 0 ? (gross * commission / 100) : 0;
-          totalProfit += (gross - commissionAmount);
-        } else {
-          const grossProfit = (stake * odds) - stake;
-          const commissionAmount = commission > 0 ? (grossProfit * commission / 100) : 0;
-          totalProfit += (grossProfit - commissionAmount);
-        }
-      } else if (b.status === 'lost') {
-        if (b.isLay) {
-          const layOdds = parseFloat(b.originalLayOdds) || odds;
-          totalProfit -= (stake * (layOdds - 1));
-        } else {
-          totalProfit -= stake;
-        }
-      }
-      // void bets contribute 0 to profit
+
+    // Use helper for P/L calculation
+    if (b.status === 'won' || b.status === 'lost' || b.status === 'void') {
+      totalProfit += calculateBetPL(b);
     }
   });
-  
+
   const roi = totalStaked > 0 ? ((totalProfit / totalStaked) * 100) : 0;
-  
+
   return {
     roi: roi,
     totalStaked: totalStaked,
@@ -169,20 +156,20 @@ function calculateMarketROI(bets, presetId) {
 // Generate ROI warning text with color coding and low-data warning
 function getROIWarningText(roiData) {
   if (!roiData || roiData.roi === null || roiData.betCount === 0) {
-    return { 
-      text: 'No settled bets yet - filter still available', 
+    return {
+      text: 'No settled bets yet - filter still available',
       color: '#6c757d',
       isLowData: true
     };
   }
-  
+
   const betCount = roiData.betCount;
   const roi = roiData.roi;
   const roiStr = roi >= 0 ? `+${roi.toFixed(1)}%` : `${roi.toFixed(1)}%`;
   const isLowData = betCount < 10; // Less than 10 bets = low data
-  
+
   let text, color;
-  
+
   if (isLowData) {
     text = `ROI: ${roiStr} (${betCount} bets) ⚠️ Low data - use cautiously`;
     color = '#ff9800';
@@ -202,7 +189,7 @@ function getROIWarningText(roiData) {
     text = `ROI: ${roiStr} (${betCount} bets) ⚠️ Very high risk`;
     color = '#dc3545';
   }
-  
+
   return { text, color, isLowData };
 }
 
@@ -219,17 +206,17 @@ function recalculateEffectiveBankroll() {
     if (!settings.adjustForPending) {
       return;
     }
-    
+
     const bets = res.bets || [];
     const pendingBets = bets.filter(b => !b.status || b.status === 'pending');
     const totalPendingStakes = pendingBets.reduce((sum, b) => sum + (parseFloat(b.stake) || 0), 0);
     const effectiveBankroll = Math.max(0, (settings.bankroll || 0) - totalPendingStakes);
-    
+
     const updatedSettings = {
       ...settings,
       effectiveBankroll: effectiveBankroll
     };
-    
+
     api.storage.local.set({ stakingSettings: updatedSettings }, () => {
       console.log('📊 [EffectiveBankroll] Recalculated:', {
         bankroll: settings.bankroll,
@@ -259,17 +246,25 @@ function loadCommissionRates(callback) {
   });
 }
 
+function loadClvSettings(callback) {
+  api.storage.local.get({ clvSettings: DEFAULT_CLV_SETTINGS }, (res) => {
+    cachedClvSettings = { ...DEFAULT_CLV_SETTINGS, ...res.clvSettings };
+    console.log('📈 CLV settings loaded:', cachedClvSettings);
+    if (callback) callback();
+  });
+}
+
 function compileMarketPatterns(activePresets) {
   console.log('🔨 Compiling market filter patterns for presets:', activePresets);
   COMPILED_MARKET_PATTERNS = {};
-  
+
   activePresets.forEach(presetId => {
     const preset = MARKET_FILTER_PRESETS[presetId];
     if (!preset) {
       console.warn('⚠️ Unknown preset ID:', presetId);
       return;
     }
-    
+
     // Build pattern parts - handle abbreviations like "AH" that may be followed by digits
     const patternParts = preset.keywords.map(keyword => {
       // If keyword is short (2-3 chars, likely abbreviation), use lookahead instead of word boundary at end
@@ -280,7 +275,7 @@ function compileMarketPatterns(activePresets) {
       // For multi-word or longer keywords, use word boundaries
       return `\\b${keyword}\\b`;
     });
-    
+
     const pattern = new RegExp(`(${patternParts.join('|')})`, 'i');
     COMPILED_MARKET_PATTERNS[presetId] = {
       pattern: pattern,
@@ -288,7 +283,7 @@ function compileMarketPatterns(activePresets) {
       name: preset.name
     };
   });
-  
+
   console.log('✅ Compiled patterns:', Object.keys(COMPILED_MARKET_PATTERNS));
 }
 
@@ -307,6 +302,47 @@ function getCommission(bookmaker) {
   if (bookie.includes('betdaq')) return commissionRates.betdaq || 0;
   if (bookie.includes('matchbook')) return commissionRates.matchbook || 0;
   if (bookie.includes('smarkets')) return commissionRates.smarkets || 0;
+  if (bookie.includes('smarkets')) return commissionRates.smarkets || 0;
+  return 0;
+}
+
+function calculateBetPL(bet) {
+  if (!bet) return 0;
+
+  // Use imported actualPL if available (from exchange CSVs)
+  if (bet.actualPL !== undefined && bet.actualPL !== null) {
+    const parsed = parseFloat(bet.actualPL);
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+
+  // Fallback to calculation
+  if (bet.status === 'won') {
+    const commission = getCommission(bet.bookmaker);
+    if (bet.isLay) {
+      const layOdds = parseFloat(bet.originalLayOdds) || parseFloat(bet.odds);
+      if (!Number.isFinite(layOdds) || layOdds <= 1) return 0;
+      const gross = parseFloat(bet.stake) || 0;
+      const commissionAmount = commission > 0 ? (gross * commission / 100) : 0;
+      return gross - commissionAmount;
+    } else {
+      const grossProfit = (parseFloat(bet.stake) * parseFloat(bet.odds)) - parseFloat(bet.stake);
+      const commissionAmount = commission > 0 ? (grossProfit * commission / 100) : 0;
+      return grossProfit - commissionAmount;
+    }
+  } else if (bet.status === 'lost') {
+    if (bet.isLay) {
+      const layOdds = parseFloat(bet.originalLayOdds) || parseFloat(bet.odds);
+      if (!Number.isFinite(layOdds) || layOdds <= 1) return 0;
+      return -(parseFloat(bet.stake) * (layOdds - 1));
+    } else {
+      return -parseFloat(bet.stake);
+    }
+  } else if (bet.status === 'void') {
+    return 0;
+  }
+
   return 0;
 }
 
@@ -322,22 +358,22 @@ function loadUIPreferences(callback) {
   api.storage.local.get({ uiPreferences: DEFAULT_UI_PREFERENCES }, (res) => {
     uiPreferences = { ...res.uiPreferences };
     console.log('🎨 UI preferences loaded:', uiPreferences);
-    
+
     // Apply UI preferences to DOM elements
     if (document.getElementById('hide-lay-bets')) {
       document.getElementById('hide-lay-bets').checked = uiPreferences.hideLayBets || false;
     }
-    
+
     if (document.getElementById('show-pending-only')) {
       document.getElementById('show-pending-only').checked = uiPreferences.showPendingOnly || false;
     }
-    
+
     // Compile patterns for active presets
     const activePresets = uiPreferences.activePresets || [];
     if (activePresets.length > 0) {
       compileMarketPatterns(activePresets);
     }
-    
+
     if (callback) callback();
   });
 }
@@ -410,7 +446,7 @@ function ensureBetIdentity(bet) {
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('📄 DOM Content Loaded - Initializing popup...');
-  
+
   // Initialize liquidity calculation cache
   let liquidityCache = {
     bets: null,
@@ -431,7 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Only recalculate if bets array hash changed
     const currentHash = JSON.stringify(bets?.map(b => ({ uid: b.uid, status: b.status, limit: b.limit, stake: b.stake })));
     const lastHash = liquidityCache.betsHash;
-    
+
     if (currentHash === lastHash && liquidityCache.isValid) {
       console.log('💾 Using cached liquidity stats');
       return;
@@ -444,7 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
     liquidityCache.bookmakerStats = calculateBookmakerStats(bets);
     liquidityCache.temporalStats = calculateTemporalStats(bets);
     liquidityCache.kellyStats = calculateKellyFillRatios(bets, stakingSettings);
-    
+
     // Store per-bet metrics for quick access
     liquidityCache.perBetMetrics = {};
     bets.forEach(bet => {
@@ -453,14 +489,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const recommendedKelly = calculateKellyStake(bet, stakingSettings);
       const actualStake = parseFloat(bet.stake) || 0;
       const fillRatio = recommendedKelly > 0 ? (actualStake / recommendedKelly) * 100 : 0;
-      
+
       let hoursToEvent = null;
       if (bet.eventTime && bet.timestamp) {
         const eventTime = new Date(bet.eventTime);
         const timestamp = new Date(bet.timestamp);
         hoursToEvent = (eventTime - timestamp) / (1000 * 60 * 60);
       }
-      
+
       liquidityCache.perBetMetrics[bet.uid] = {
         limit,
         limitTier,
@@ -469,7 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
         hoursToEvent
       };
     });
-    
+
     liquidityCache.isValid = true;
     console.log('💾 Liquidity cache updated with', bets.length, 'bets');
   }
@@ -630,7 +666,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnSaveRounding.addEventListener('click', () => {
       const enabled = document.getElementById('rounding-enabled').checked;
       const incrementStr = document.getElementById('rounding-increment').value;
-      
+
       // Validation - only validate when enabled
       if (enabled) {
         const increment = parseFloat(incrementStr);
@@ -643,7 +679,7 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
       }
-      
+
       const newSettings = {
         enabled: enabled,
         increment: enabled && incrementStr ? parseFloat(incrementStr) : null
@@ -762,7 +798,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ===== LIQUIDITY ANALYSIS FUNCTIONS =====
-  
+
   function getLimitTier(limit) {
     if (!isFinite(limit)) return null;
     if (limit < 50) return 'Low';
@@ -773,11 +809,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function calculateLiquidityStats(bets) {
     console.log('📊 Calculating liquidity stats for', bets.length, 'bets');
-    
+
     // Filter to settled bets only
     const settledBets = bets.filter(b => b.status && b.status !== 'pending');
     console.log('  Settled bets:', settledBets.length);
-    
+
     const tiers = {
       'Low': { limit: [0, 50], bets: [], winCount: 0, totalPL: 0, totalStake: 0, totalOvervalue: 0 },
       'Medium': { limit: [50, 100], bets: [], winCount: 0, totalPL: 0, totalStake: 0, totalOvervalue: 0 },
@@ -789,15 +825,15 @@ document.addEventListener('DOMContentLoaded', () => {
     settledBets.forEach(bet => {
       const limit = parseFloat(bet.limit) || 0;
       const tier = getLimitTier(limit);
-      
+
       if (tier && tiers[tier]) {
         tiers[tier].bets.push(bet);
-        
+
         // Track win count
         if (bet.status === 'won') {
           tiers[tier].winCount++;
         }
-        
+
         // Calculate actual P/L for this bet (using existing calculateExpectedValueAmount logic)
         let actualPL = 0;
         if (bet.status === 'won') {
@@ -818,7 +854,7 @@ document.addEventListener('DOMContentLoaded', () => {
             actualPL = -parseFloat(bet.stake);
           }
         }
-        
+
         tiers[tier].totalPL += actualPL;
         tiers[tier].totalStake += parseFloat(bet.stake) || 0;
         tiers[tier].totalOvervalue += parseFloat(bet.overvalue) || 0;
@@ -833,7 +869,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const roi = tierData.totalStake > 0 ? (tierData.totalPL / tierData.totalStake * 100) : 0;
       const avgOvervalue = count > 0 ? tierData.totalOvervalue / count : 0;
       const significance = count >= 20 ? '✓' : count >= 10 ? '⚠️' : '❌';
-      
+
       stats[tierName] = {
         count,
         winCount: tierData.winCount,
@@ -853,12 +889,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function calculateBookmakerStats(bets) {
     console.log('📊 Calculating bookmaker stats');
-    
+
     // Filter to settled bets only
     const settledBets = bets.filter(b => b.status && b.status !== 'pending');
-    
+
     const bookmakersMap = {};
-    
+
     settledBets.forEach(bet => {
       const bookie = bet.bookmaker || 'Unknown';
       if (!bookmakersMap[bookie]) {
@@ -870,17 +906,17 @@ document.addEventListener('DOMContentLoaded', () => {
           totalStake: 0
         };
       }
-      
+
       const limit = parseFloat(bet.limit) || 0;
       if (limit > 0) {
         bookmakersMap[bookie].limits.push(limit);
       }
-      
+
       if (bet.status === 'won') {
         bookmakersMap[bookie].winCount++;
       }
       bookmakersMap[bookie].settledCount++;
-      
+
       // Calculate actual P/L
       let actualPL = 0;
       if (bet.status === 'won') {
@@ -901,23 +937,23 @@ document.addEventListener('DOMContentLoaded', () => {
           actualPL = -parseFloat(bet.stake);
         }
       }
-      
+
       bookmakersMap[bookie].totalPL += actualPL;
       bookmakersMap[bookie].totalStake += parseFloat(bet.stake) || 0;
     });
 
     // Convert to array and calculate stats
     const bookmakerStats = Object.entries(bookmakersMap).map(([name, data]) => {
-      const avgLimit = data.limits.length > 0 
+      const avgLimit = data.limits.length > 0
         ? (data.limits.reduce((a, b) => a + b, 0) / data.limits.length).toFixed(2)
         : '0.00';
-      const winRate = data.settledCount > 0 
+      const winRate = data.settledCount > 0
         ? (data.winCount / data.settledCount * 100).toFixed(2)
         : '0.00';
       const roi = data.totalStake > 0
         ? (data.totalPL / data.totalStake * 100).toFixed(2)
         : '0.00';
-      
+
       return {
         name,
         avgLimit: parseFloat(avgLimit),
@@ -935,10 +971,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function calculateTemporalStats(bets) {
     console.log('📊 Calculating temporal stats');
-    
+
     // Filter to settled bets only with eventTime
     const settledBets = bets.filter(b => b.status && b.status !== 'pending' && b.eventTime && b.timestamp);
-    
+
     const periods = {
       'More than 48h': { bets: [], winCount: 0, totalPL: 0, totalLimit: 0 },
       '24-48 hours': { bets: [], winCount: 0, totalPL: 0, totalLimit: 0 },
@@ -950,19 +986,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const eventTime = new Date(bet.eventTime);
       const timestamp = new Date(bet.timestamp);
       const hoursToEvent = (eventTime - timestamp) / (1000 * 60 * 60);
-      
+
       let period;
       if (hoursToEvent > 48) period = 'More than 48h';
       else if (hoursToEvent > 24) period = '24-48 hours';
       else if (hoursToEvent > 12) period = '12-24 hours';
       else period = 'Less than 12h';
-      
+
       periods[period].bets.push(bet);
-      
+
       if (bet.status === 'won') {
         periods[period].winCount++;
       }
-      
+
       // Calculate actual P/L
       let actualPL = 0;
       if (bet.status === 'won') {
@@ -983,7 +1019,7 @@ document.addEventListener('DOMContentLoaded', () => {
           actualPL = -parseFloat(bet.stake);
         }
       }
-      
+
       periods[period].totalPL += actualPL;
       periods[period].totalLimit += parseFloat(bet.limit) || 0;
     });
@@ -994,7 +1030,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const count = periodData.bets.length;
       const winRate = count > 0 ? (periodData.winCount / count * 100) : 0;
       const avgLimit = count > 0 ? (periodData.totalLimit / count).toFixed(2) : '0.00';
-      
+
       temporalStats[periodName] = {
         count,
         winCount: periodData.winCount,
@@ -1033,17 +1069,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const bankroll = Math.max(0, stakingSettings.bankroll || DEFAULT_STAKING_SETTINGS.bankroll);
 
     // Use effective bankroll if pending adjustment is enabled
-    const activeBankroll = (stakingSettings.adjustForPending && stakingSettings.effectiveBankroll != null) 
-      ? stakingSettings.effectiveBankroll 
+    const activeBankroll = (stakingSettings.adjustForPending && stakingSettings.effectiveBankroll != null)
+      ? stakingSettings.effectiveBankroll
       : bankroll;
 
     let stake = activeBankroll * kellyPortion * userFraction;
-    
+
     // Apply max bet cap after Kelly calculation (before liquidity limit)
     if (stakingSettings.maxBetPercent && stakingSettings.maxBetPercent > 0) {
       stake = Math.min(stake, bankroll * stakingSettings.maxBetPercent);
     }
-    
+
     if (betData.limit && betData.limit > 0) {
       stake = Math.min(stake, betData.limit);
     }
@@ -1058,10 +1094,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const recommendedKelly = calculateKellyStake(bet, stakingSettings);
       const actualStake = parseFloat(bet.stake) || 0;
       const limit = parseFloat(bet.limit) || 0;
-      
+
       let fillRatio = 0;
       let exceededKelly = false;
-      
+
       if (recommendedKelly > 0) {
         fillRatio = (actualStake / recommendedKelly) * 100;
         exceededKelly = actualStake > limit && limit > 0;
@@ -1081,7 +1117,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Calculate overall metrics
     const settledWithKelly = kellyMetrics.filter(m => m.recommendedKelly > 0 && bets.find(b => b.uid === m.uid && b.status && b.status !== 'pending'));
     const exceedingKelly = kellyMetrics.filter(m => m.exceededKelly).length;
-    const fillRatioAvg = kellyMetrics.length > 0 
+    const fillRatioAvg = kellyMetrics.length > 0
       ? (kellyMetrics.reduce((sum, m) => sum + parseFloat(m.fillRatio), 0) / kellyMetrics.length).toFixed(2)
       : '0.00';
 
@@ -1106,28 +1142,28 @@ document.addEventListener('DOMContentLoaded', () => {
       return false;
     }
     if (!market) return false;
-    
+
     const activePresets = uiPreferences.activePresets || [];
     if (activePresets.length === 0) {
       console.log('🔍 [Filter] No active presets');
       return false;
     }
-    
+
     console.log('🔍 [Filter] Checking market:', market, 'Active presets:', activePresets);
-    
+
     // Check if any whitelist presets are active (goals_only, corners_only)
     const whitelistPresets = activePresets.filter(id => {
       const compiled = COMPILED_MARKET_PATTERNS[id];
       return compiled && compiled.type === 'whitelist';
     });
-    
+
     const blacklistPresets = activePresets.filter(id => {
       const compiled = COMPILED_MARKET_PATTERNS[id];
       return compiled && compiled.type === 'block';
     });
-    
+
     const marketLower = market.toLowerCase();
-    
+
     // Whitelist-first logic: if any whitelist preset is active, only show whitelisted markets
     if (whitelistPresets.length > 0) {
       // Check if market matches ANY whitelist pattern
@@ -1135,16 +1171,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const compiled = COMPILED_MARKET_PATTERNS[id];
         return compiled && compiled.pattern.test(marketLower);
       });
-      
+
       // If no whitelist match, filter it out
       if (!matchesWhitelist) {
         return true; // Market is filtered (blocked)
       }
-      
+
       // Market matches whitelist - don't apply blacklist filters
       return false;
     }
-    
+
     // No whitelists active - apply blacklist filters
     if (blacklistPresets.length > 0) {
       const matchesBlacklist = blacklistPresets.some(id => {
@@ -1155,11 +1191,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return isMatch;
       });
-      
+
       console.log(`🔍 [Filter] Final result for "${market}":`, matchesBlacklist ? 'BLOCKED' : 'ALLOWED');
       return matchesBlacklist; // True if matches any blacklist pattern
     }
-    
+
     return false;
   }
 
@@ -1201,19 +1237,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Apply market filter (hide or mark for highlighting)
     let marketFilteredCount = 0;
     const marketFilterMode = uiPreferences.marketFilterMode || 'hide';
-    
+
     if (uiPreferences.marketFilterEnabled && (uiPreferences.activePresets || []).length > 0) {
       console.log('🎯 Market filter active:', {
         mode: marketFilterMode,
         presets: uiPreferences.activePresets
       });
-      
+
       if (marketFilterMode === 'hide') {
         // Hide filtered bets completely
         const beforeFilter = filteredBets.length;
         filteredBets = filteredBets.filter(b => !isMarketFiltered(b.market));
         marketFilteredCount = beforeFilter - filteredBets.length;
-        
+
         if (filteredBets.length === 0) {
           container.innerHTML = '<div class="small">No bets to display (all filtered by market type). Adjust your market filters to see more bets.</div>';
           return;
@@ -1279,34 +1315,18 @@ document.addEventListener('DOMContentLoaded', () => {
       if (betStatus && typeof betStatus === 'string') {
         betStatus = betStatus.trim().toLowerCase();
       }
-      
+
       totalStaked += parseFloat(b.stake) || 0;
       const expectedValue = calculateExpectedValueAmount(b);
       totalEV += expectedValue;
 
-      if (betStatus === 'won') {
+      if (betStatus === 'won' || betStatus === 'lost' || betStatus === 'void') {
         settledBets++;
         expectedProfitSettled += expectedValue;
-        if (b.isLay) {
-          const gross = parseFloat(b.stake) || 0;
-          const commissionAmount = commission > 0 ? (gross * commission / 100) : 0;
-          runningProfit += gross - commissionAmount;
-        } else {
-          const grossProfit = (parseFloat(b.stake) * parseFloat(b.odds)) - parseFloat(b.stake);
-          const commissionAmount = commission > 0 ? (grossProfit * commission / 100) : 0;
-          runningProfit += grossProfit - commissionAmount;
-        }
-      } else if (betStatus === 'lost') {
-        settledBets++;
-        expectedProfitSettled += expectedValue;
-        if (b.isLay) {
-          runningProfit -= parseFloat(b.stake) * (parseFloat(b.odds) - 1);
-        } else {
-          runningProfit -= parseFloat(b.stake);
-        }
+        runningProfit += calculateBetPL(b);
       }
     });
-    
+
     console.log('📊 P/L Summary calculated from ALL bets:', { runningProfit, totalStaked, settledBets, totalEV });
 
     const rows = sortedBets.map((b, idx) => {
@@ -1354,39 +1374,28 @@ document.addEventListener('DOMContentLoaded', () => {
       const limitTierEmojis = { 'Low': '🔴', 'Medium': '🟡', 'High': '🟢', 'VeryHigh': '🔵' };
       const limitTierBg = limitTierColors[limitTier] || '#6c757d';
       const limitTierEmoji = limitTierEmojis[limitTier] || '';
-      
+
       const recommendedKelly = calculateKellyStake(b) || 0;
       const actualStake = parseFloat(b.stake) || 0;
       const kellyFillRatio = recommendedKelly > 0 ? (actualStake / recommendedKelly) * 100 : 0;
       const kellyWarning = kellyFillRatio < 100 ? '⚠️' : '';
-      
+
       // Create Kelly tooltip with breakdown
-      const kellyTooltip = recommendedKelly > 0 
+      const kellyTooltip = recommendedKelly > 0
         ? `Kelly Breakdown:\n\n` +
-          `Recommended (Kelly %) stake: £${recommendedKelly.toFixed(2)}\n` +
-          `Actual stake: £${actualStake.toFixed(2)}\n` +
-          `Fill ratio: ${kellyFillRatio.toFixed(1)}%\n\n` +
-          `Odds: ${b.odds}\n` +
-          `Probability: ${b.probability}%\n` +
-          `Bankroll: £1000 (default)\n` +
-          `Kelly fraction: 0.25 (25%)`
+        `Recommended (Kelly %) stake: £${recommendedKelly.toFixed(2)}\n` +
+        `Actual stake: £${actualStake.toFixed(2)}\n` +
+        `Fill ratio: ${kellyFillRatio.toFixed(1)}%\n\n` +
+        `Odds: ${b.odds}\n` +
+        `Probability: ${b.probability}%\n` +
+        `Bankroll: £1000 (default)\n` +
+        `Kelly fraction: 0.25 (25%)`
         : '';
 
       // Calculate actual profit/loss based on status, including commission
       let actualPL = 0;
-      if (b.stake && b.odds) {
-        if (b.status === 'won') {
-          actualPL = profit;
-        } else if (b.status === 'lost') {
-          if (b.isLay) {
-            // For lay bets, if you lose, you pay the liability
-            actualPL = -(parseFloat(b.stake) * (parseFloat(b.odds) - 1));
-          } else {
-            // For back bets, if you lose, you lose the stake
-            actualPL = -parseFloat(b.stake);
-          }
-        }
-        // void bets don't affect P/L
+      if (b.status === 'won' || b.status === 'lost' || b.status === 'void') {
+        actualPL = calculateBetPL(b);
       }
 
       // Status badge
@@ -1417,16 +1426,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (b.status === 'won') {
         statusBadge = '✓ WON';
         statusColor = '#28a745';
-        plDisplay = `+${profitDisplay}`;
+        const pl = calculateBetPL(b);
+        plDisplay = pl >= 0 ? `+${pl.toFixed(2)}` : pl.toFixed(2);
       } else if (b.status === 'lost') {
         statusBadge = '✗ LOST';
         statusColor = '#dc3545';
-        if (b.isLay) {
-          // Show liability for lay bets
-          plDisplay = `-${liability.toFixed(2)}`;
-        } else {
-          plDisplay = `-${b.stake || 0}`;
-        }
+        // Use actualPL for display if available, otherwise fallback to liability/stake
+        const pl = calculateBetPL(b);
+        plDisplay = pl.toFixed(2);
       } else if (b.status === 'void') {
         statusBadge = '○ VOID';
         statusColor = '#6c757d';
@@ -1482,6 +1489,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <strong>Potential:</strong> ${potentialDisplay} | 
             <strong>EV:</strong> <span style="color:${expectedValue >= 0 ? '#007bff' : '#dc3545'};font-weight:${expectedValue >= 0 ? '600' : '400'}" title="Expected profit (stake × value%)">${expectedValue > 0 ? '+' : ''}${expectedValue.toFixed(2)} <span style="font-size:10px">(${b.overvalue > 0 ? '+' : ''}${b.overvalue}%)</span></span> |
             <strong>P/L:</strong> <span style="color:${b.status === 'won' ? '#28a745' : b.status === 'lost' ? '#dc3545' : '#666'}">${plDisplay}</span>
+            ${renderClvBadge(b, betKey)}
           </div>
           ${b.note ? `<div class="note" style="margin-top:4px"><em>${escapeHtml(b.note)}</em></div>` : ''}
           <div style="margin-top:6px;display:flex;gap:4px">
@@ -1514,11 +1522,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       return betStatus === 'won' || betStatus === 'lost' || betStatus === 'void';
     }).length;
-    
+
     const filterSummary = hiddenCount > 0 || marketFilteredCount > 0
       ? ` (${hiddenCount > 0 ? hiddenCount + ' hidden' : ''}${hiddenCount > 0 && marketFilteredCount > 0 ? ', ' : ''}${marketFilteredCount > 0 ? marketFilteredCount + ' market filtered' : ''})`
       : '';
-    
+
     const summary = `
       <div style="background:#f8f9fa;padding:8px;margin-bottom:8px;border-radius:4px;font-size:12px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
@@ -1544,12 +1552,49 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
     container.innerHTML = summary + `<table><thead><tr><th style="width:120px">When / Bookie</th><th>Bet Details</th></tr></thead><tbody>${rows}</tbody></table>`;
-    
+
     // Update bankroll warning banner after rendering
     api.storage.local.get({ bets: [], stakingSettings: DEFAULT_STAKING_SETTINGS }, (res) => {
       const stakingSettings = res.stakingSettings || DEFAULT_STAKING_SETTINGS;
       updateBankrollWarningBanner(stakingSettings, bets);
     });
+  }
+
+  // ========== CLV BADGE RENDERING ==========
+  function renderClvBadge(bet, betKey) {
+    // Only show CLV for settled bets
+    if (!['won', 'lost'].includes(bet.status)) {
+      return '';
+    }
+    
+    // Don't show CLV UI if tracking is disabled (unless bet already has CLV data)
+    const clvEnabled = cachedClvSettings?.enabled ?? false;
+    if (!clvEnabled && bet.clv == null) {
+      return '';
+    }
+
+    // Check if CLV data exists
+    if (bet.clv !== undefined && bet.clv !== null) {
+      const clv = parseFloat(bet.clv);
+      const clvColor = clv >= 0 ? '#28a745' : '#dc3545';
+      const clvSign = clv >= 0 ? '+' : '';
+      const sourceLabel = bet.clvSource === 'manual' ? '✏️' : (bet.clvSource === 'pinnacle' ? '📌' : '🤖');
+      const closingOdds = bet.closingOdds ? parseFloat(bet.closingOdds).toFixed(2) : '?';
+
+      return ` | <strong>CLV:</strong> <span style="color:${clvColor};font-weight:600" title="Opening: ${bet.odds} → Closing: ${closingOdds}\nSource: ${bet.clvSource || 'unknown'}">${clvSign}${clv.toFixed(2)}% ${sourceLabel}</span>`;
+    }
+
+    // Check if CLV fetch failed (exceeded retries)
+    // Use bet's retry count vs settings maxRetries; fallback to 3 if settings not loaded
+    const maxRetries = cachedClvSettings?.maxRetries ?? DEFAULT_CLV_SETTINGS.maxRetries;
+    const retryCount = bet.clvRetryCount || 0;
+    if (retryCount >= maxRetries) {
+      return ` | <button class="clv-entry-btn" data-bet-id="${betKey}" style="font-size:10px;padding:2px 6px;background:#ffc107;color:#000;border:none;border-radius:3px;cursor:pointer;font-weight:600" title="Click to enter closing odds manually (${retryCount}/${maxRetries} retries exhausted)">⚠️ CLV: Manual Entry</button>`;
+    }
+
+    // CLV is pending - show retry progress
+    const retryInfo = retryCount > 0 ? ` (${retryCount}/${maxRetries})` : '';
+    return ` | <span style="color:#6c757d;font-size:10px" title="CLV will be fetched automatically${retryInfo}">📈 CLV: Pending...${retryInfo}</span>`;
   }
 
   function escapeHtml(s) {
@@ -1571,13 +1616,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Ensure status is trimmed and lowercase
         bet.status = status.trim().toLowerCase();
         bet.settledAt = new Date().toISOString();
-        
+
         // Calculate and store actualPL for settled bets
         if (bet.status === 'won' || bet.status === 'lost' || bet.status === 'void') {
           const stake = parseFloat(bet.stake) || 0;
           const odds = parseFloat(bet.odds) || 0;
           const commission = getCommission(bet.bookmaker);
-          
+
           if (bet.status === 'won') {
             if (bet.isLay) {
               const gross = stake;
@@ -1600,7 +1645,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
           console.log('💰 Calculated actualPL:', bet.actualPL, 'for status:', bet.status);
         }
-        
+
         console.log('Updating bet status to:', bet.status, '(was:', oldStatus, ')');
         api.storage.local.set({ bets }, () => {
           requestBankrollRecalc();
@@ -1631,16 +1676,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function deleteBet(betId) {
     console.log('deleteBet called with:', { betId });
-    
+
     // Check if deletion should be skipped based on default actions settings
     const shouldSkipConfirmation = defaultActionsSettings.skipDeleteConfirmation;
-    
+
     if (!shouldSkipConfirmation) {
       if (!confirm('Are you sure you want to delete this bet? This cannot be undone.')) {
         return;
       }
     }
-    
+
     api.storage.local.get({ bets: [] }, (res) => {
       const bets = res.bets || [];
       console.log('Total bets in storage before delete:', bets.length);
@@ -1810,14 +1855,14 @@ document.addEventListener('DOMContentLoaded', () => {
           b.isLay = true;
           needsCleanup = true;
         }
-        
+
         // Migration: Backfill missing actualPL for settled bets
-        if ((b.status === 'won' || b.status === 'lost' || b.status === 'void') && 
-            (b.actualPL === undefined || b.actualPL === null)) {
+        if ((b.status === 'won' || b.status === 'lost' || b.status === 'void') &&
+          (b.actualPL === undefined || b.actualPL === null)) {
           const stake = parseFloat(b.stake) || 0;
           const odds = parseFloat(b.odds) || 0;
           const commission = getCommission(b.bookmaker);
-          
+
           if (b.status === 'won') {
             if (b.isLay) {
               const gross = stake;
@@ -1895,22 +1940,22 @@ document.addEventListener('DOMContentLoaded', () => {
       api.storage.local.get({ bets: [], stakingSettings: DEFAULT_STAKING_SETTINGS }, (res) => {
         const allBets = res.bets || [];
         const stakingSettings = res.stakingSettings || DEFAULT_STAKING_SETTINGS;
-        
+
         // Ensure all bets have debugLogs field (for backward compatibility with old bets)
         const data = allBets.map(bet => ({
           ...bet,
           debugLogs: bet.debugLogs || []
         }));
-        
+
         // Update cache first
         updateCache(data, stakingSettings);
-        
+
         // Use cached liquidity stats
         const tierStats = liquidityCache.tierStats;
         const bookmakerStats = liquidityCache.bookmakerStats;
         const temporalStats = liquidityCache.temporalStats;
         const kellyStats = liquidityCache.kellyStats;
-        
+
         // Check storage size
         api.runtime.sendMessage({ action: 'checkStorageSize' }, (sizeResp) => {
           if (api.runtime.lastError) {
@@ -1919,7 +1964,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Storage info:', sizeResp);
           }
         });
-        
+
         // Create export object with both bet data and analysis
         const exportData = {
           exportDate: new Date().toISOString(),
@@ -1937,7 +1982,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           }
         };
-        
+
         const dataStr = JSON.stringify(exportData, null, 2);
         const filename = `surebet-bets-${(new Date()).toISOString().replace(/[:.]/g, '-')}.json`;
         console.log('📤 Sending export message for JSON with analysis...');
@@ -1962,16 +2007,16 @@ document.addEventListener('DOMContentLoaded', () => {
       api.storage.local.get({ bets: [], stakingSettings: DEFAULT_STAKING_SETTINGS }, (res) => {
         const data = res.bets || [];
         const stakingSettings = res.stakingSettings || DEFAULT_STAKING_SETTINGS;
-        
+
         if (data.length === 0) {
           alert('No bets to export.');
           return;
         }
-        
+
         // Build CSV header with new columns
         const rows = [];
         rows.push(['timestamp', 'bookmaker', 'sport', 'event', 'tournament', 'market', 'is_lay', 'odds', 'probability', 'overvalue', 'stake', 'liability', 'commission_rate', 'commission_amount', 'potential_return', 'profit', 'expected_value', 'status', 'settled_at', 'actual_pl', 'note', 'url', 'limit', 'limit_tier', 'recommended_kelly_stake', 'fill_ratio_percent', 'hours_to_event'].join(','));
-        
+
         for (const b of data) {
           const esc = (v) => `\"${('' + (v ?? '')).replace(/\"/g, '\"\"')}\"`;
           const commission = getCommission(b.bookmaker);
@@ -2033,7 +2078,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const limitVal = parseFloat(b.limit) || '';
           const limitTier = limitVal ? getLimitTier(limitVal) : '';
           const recommendedKelly = calculateKellyStake(b, stakingSettings).toFixed(2);
-          
+
           let fillRatio = '';
           if (recommendedKelly > 0) {
             fillRatio = ((parseFloat(b.stake) / parseFloat(recommendedKelly)) * 100).toFixed(2);
@@ -2415,7 +2460,7 @@ document.addEventListener('DOMContentLoaded', () => {
           return pl;
         }
       }
-      
+
       // Event-only match: if sport and event match AND there's only 1 bet on this event
       // This handles cases where market names are completely different between surebet and Betfair
       // (e.g., "Arias/Ingildsen to win (no draw) - sets" vs "Match Odds")
@@ -2623,16 +2668,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function showLiquidityStats(bets, stakingSettings = DEFAULT_STAKING_SETTINGS) {
     console.log('📊 Showing liquidity stats modal');
-    
+
     const tierStats = calculateLiquidityStats(bets);
     const bookmakerStats = calculateBookmakerStats(bets);
     const temporalStats = calculateTemporalStats(bets);
     const kellyStats = calculateKellyFillRatios(bets, stakingSettings);
-    
+
     const modal = document.getElementById('liquidity-modal');
     const container = document.getElementById('liquidity-container');
     const content = document.getElementById('liquidity-content');
-    
+
     // Build tier table HTML
     const tierHtml = `
       <div style="font-size:12px">
@@ -2653,10 +2698,10 @@ document.addEventListener('DOMContentLoaded', () => {
           </thead>
           <tbody>
             ${Object.entries(tierStats).map(([tier, stats]) => {
-              const ranges = { 'Low': '<£50', 'Medium': '£50-100', 'High': '£100-200', 'VeryHigh': '>£200' };
-              const roiColor = parseFloat(stats.roi) >= 0 ? '#28a745' : '#dc3545';
-              const plColor = parseFloat(stats.totalPL) >= 0 ? '#28a745' : '#dc3545';
-              return `
+      const ranges = { 'Low': '<£50', 'Medium': '£50-100', 'High': '£100-200', 'VeryHigh': '>£200' };
+      const roiColor = parseFloat(stats.roi) >= 0 ? '#28a745' : '#dc3545';
+      const plColor = parseFloat(stats.totalPL) >= 0 ? '#28a745' : '#dc3545';
+      return `
                 <tr style="border-bottom:1px solid #eee;${stats.count < 10 ? 'background:#fff3cd' : ''}">
                   <td style="padding:8px;border-right:1px solid #ddd;font-weight:600">${tier}</td>
                   <td style="padding:8px;border-right:1px solid #ddd;text-align:center">${ranges[tier]}</td>
@@ -2668,7 +2713,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   <td style="padding:8px;text-align:center">${stats.significance} ${stats.significanceText}</td>
                 </tr>
               `;
-            }).join('')}
+    }).join('')}
           </tbody>
         </table>
         <p style="color:#666;font-size:11px;margin-top:10px">
@@ -2695,11 +2740,11 @@ document.addEventListener('DOMContentLoaded', () => {
           </thead>
           <tbody>
             ${bookmakerStats.map(bookie => {
-              const winRateColor = parseFloat(bookie.winRate) > 50 ? '#28a745' : parseFloat(bookie.winRate) > 40 ? '#ffc107' : '#dc3545';
-              const roiColor = parseFloat(bookie.roi) >= 0 ? '#28a745' : '#dc3545';
-              const plColor = parseFloat(bookie.totalPL) >= 0 ? '#28a745' : '#dc3545';
-              const bgColor = bookie.isHighPerformer ? '#e8f5e9' : '';
-              return `
+      const winRateColor = parseFloat(bookie.winRate) > 50 ? '#28a745' : parseFloat(bookie.winRate) > 40 ? '#ffc107' : '#dc3545';
+      const roiColor = parseFloat(bookie.roi) >= 0 ? '#28a745' : '#dc3545';
+      const plColor = parseFloat(bookie.totalPL) >= 0 ? '#28a745' : '#dc3545';
+      const bgColor = bookie.isHighPerformer ? '#e8f5e9' : '';
+      return `
                 <tr style="border-bottom:1px solid #eee;background:${bgColor}">
                   <td style="padding:8px;border-right:1px solid #ddd;font-weight:600">${bookie.name}${bookie.isHighPerformer ? ' ⭐' : ''}</td>
                   <td style="padding:8px;border-right:1px solid #ddd;text-align:center">£${bookie.avgLimit.toFixed(2)}</td>
@@ -2709,7 +2754,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   <td style="padding:8px;text-align:center;color:${plColor};font-weight:600">£${parseFloat(bookie.totalPL).toFixed(2)}</td>
                 </tr>
               `;
-            }).join('')}
+    }).join('')}
           </tbody>
         </table>
         <p style="color:#666;font-size:11px;margin-top:10px">
@@ -2735,10 +2780,10 @@ document.addEventListener('DOMContentLoaded', () => {
           </thead>
           <tbody>
             ${Object.entries(temporalStats).map(([period, stats]) => {
-              const plColor = parseFloat(stats.totalPL) >= 0 ? '#28a745' : '#dc3545';
-              const winRate = parseFloat(stats.winRate);
-              const winRateColor = winRate > 50 ? '#28a745' : winRate > 40 ? '#ffc107' : '#dc3545';
-              return `
+      const plColor = parseFloat(stats.totalPL) >= 0 ? '#28a745' : '#dc3545';
+      const winRate = parseFloat(stats.winRate);
+      const winRateColor = winRate > 50 ? '#28a745' : winRate > 40 ? '#ffc107' : '#dc3545';
+      return `
                 <tr style="border-bottom:1px solid #eee">
                   <td style="padding:8px;border-right:1px solid #ddd;font-weight:600">${period}</td>
                   <td style="padding:8px;border-right:1px solid #ddd;text-align:center">${stats.count}</td>
@@ -2747,7 +2792,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   <td style="padding:8px;text-align:center;color:${plColor};font-weight:600">£${stats.totalPL}</td>
                 </tr>
               `;
-            }).join('')}
+    }).join('')}
           </tbody>
         </table>
       </div>
@@ -2789,7 +2834,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set initial content
     content.innerHTML = tierHtml;
     modal.style.display = 'block';
-    
+
     // Tab switching
     document.querySelectorAll('.liquidity-tab').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -2797,7 +2842,7 @@ document.addEventListener('DOMContentLoaded', () => {
           b.style.background = '#6c757d';
         });
         btn.style.background = '#007bff';
-        
+
         const tab = btn.dataset.tab;
         if (tab === 'tiers') content.innerHTML = tierHtml;
         else if (tab === 'bookmakers') content.innerHTML = bookmakerHtml;
@@ -3042,7 +3087,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const formData = new FormData(editForm);
       const toggleBtn = document.getElementById('edit-toggle-lay-btn');
       const isLay = toggleBtn ? toggleBtn.dataset.isLay === 'true' : (formData.get('isLay') === 'on');
-      
+
       const updatedFields = {
         bookmaker: formData.get('bookmaker'),
         sport: formData.get('sport'),
@@ -3092,11 +3137,165 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ========== CLV MODAL HANDLERS ==========
+  const clvModal = document.getElementById('clv-modal');
+  const clvForm = document.getElementById('clv-form');
+  const cancelClvBtn = document.getElementById('cancel-clv');
+  const clvClosingOddsInput = document.getElementById('clv-closing-odds');
+  const clvPreview = document.getElementById('clv-preview');
+  const clvPreviewValue = document.getElementById('clv-preview-value');
+  let currentClvBet = null;
+
+  // Open CLV modal when clicking CLV entry button
+  container.addEventListener('click', (e) => {
+    if (e.target.classList.contains('clv-entry-btn')) {
+      const betId = e.target.dataset.betId;
+      console.log('📈 CLV entry button clicked for bet:', betId);
+      openClvModal(betId);
+    }
+  });
+
+  function openClvModal(betId) {
+    api.storage.local.get({ bets: [] }, (res) => {
+      const bets = res.bets || [];
+      const bet = bets.find(b => getBetKey(b) === betId);
+
+      if (!bet) {
+        alert('Error: Bet not found');
+        return;
+      }
+
+      currentClvBet = bet;
+
+      // Populate modal
+      document.getElementById('clv-bet-id').value = betId;
+      document.getElementById('clv-event-name').textContent = bet.event || 'Unknown Event';
+      document.getElementById('clv-opening-odds').textContent = `Opening: ${bet.odds} | Bookmaker: ${bet.bookmaker || 'Unknown'}`;
+      clvClosingOddsInput.value = '';
+      clvPreview.style.display = 'none';
+
+      // Show modal
+      clvModal.style.display = 'flex';
+      clvClosingOddsInput.focus();
+    });
+  }
+
+  // Live preview CLV calculation
+  if (clvClosingOddsInput) {
+    clvClosingOddsInput.addEventListener('input', () => {
+      if (!currentClvBet) return;
+
+      const closingOdds = parseFloat(clvClosingOddsInput.value);
+      const openingOdds = parseFloat(currentClvBet.odds);
+
+      if (closingOdds > 0 && openingOdds > 0) {
+        const clv = ((openingOdds / closingOdds) - 1) * 100;
+        const clvColor = clv >= 0 ? '#28a745' : '#dc3545';
+        const clvSign = clv >= 0 ? '+' : '';
+
+        clvPreviewValue.innerHTML = `<span style="color:${clvColor};font-weight:700;font-size:20px">${clvSign}${clv.toFixed(2)}%</span>`;
+        clvPreview.style.display = 'block';
+      } else {
+        clvPreview.style.display = 'none';
+      }
+    });
+  }
+
+  // Save CLV
+  if (clvForm) {
+    clvForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const betId = document.getElementById('clv-bet-id').value;
+      const closingOdds = parseFloat(clvClosingOddsInput.value);
+
+      if (!closingOdds || closingOdds < 1) {
+        alert('Please enter valid closing odds (must be >= 1.0)');
+        return;
+      }
+
+      console.log('📈 Saving manual CLV for bet:', betId, 'Closing odds:', closingOdds);
+
+      api.runtime.sendMessage({
+        action: 'saveManualClv',
+        betId: betId,
+        closingOdds: closingOdds
+      }, (response) => {
+        if (response?.success) {
+          console.log('✅ CLV saved:', response.clv);
+          clvModal.style.display = 'none';
+          currentClvBet = null;
+          loadAndRender(); // Refresh the view
+        } else {
+          alert('Error saving CLV: ' + (response?.error || 'Unknown error'));
+        }
+      });
+    });
+  }
+
+  // Cancel CLV modal
+  if (cancelClvBtn) {
+    cancelClvBtn.addEventListener('click', () => {
+      clvModal.style.display = 'none';
+      currentClvBet = null;
+    });
+  }
+
+  // Close CLV modal when clicking outside
+  if (clvModal) {
+    clvModal.addEventListener('click', (e) => {
+      if (e.target.id === 'clv-modal') {
+        clvModal.style.display = 'none';
+        currentClvBet = null;
+      }
+    });
+  }
+
+  // CLV report mismatch link
+  const clvReportMismatch = document.getElementById('clv-report-mismatch');
+  if (clvReportMismatch) {
+    clvReportMismatch.addEventListener('click', (e) => {
+      e.preventDefault();
+
+      if (!currentClvBet) {
+        api.tabs.create({ url: 'https://github.com/tacticdemonic/surebet-helper-extension/issues/new?template=clv-mismatch.md' });
+        return;
+      }
+
+      // Create prefilled issue URL
+      const issueTitle = encodeURIComponent(`CLV Mismatch: ${currentClvBet.event || 'Unknown Event'}`);
+      const issueBody = encodeURIComponent(`## Event Details
+
+**Event:** ${currentClvBet.event || 'Unknown'}
+**Tournament:** ${currentClvBet.tournament || 'Unknown'}
+**Sport:** ${currentClvBet.sport || 'Unknown'}
+**Date:** ${currentClvBet.eventTime || currentClvBet.timestamp || 'Unknown'}
+**Bookmaker:** ${currentClvBet.bookmaker || 'Unknown'}
+**Market:** ${currentClvBet.market || 'Unknown'}
+
+## Issue Description
+
+The CLV lookup failed for this event. Please describe the expected closing odds:
+
+- **Expected Closing Odds:** (from OddsPortal)
+- **Opening Odds:** ${currentClvBet.odds}
+
+## Additional Context
+
+(Any other details that might help with matching)
+`);
+
+      api.tabs.create({ url: `https://github.com/tacticdemonic/surebet-helper-extension/issues/new?title=${issueTitle}&body=${issueBody}&labels=clv-mismatch` });
+    });
+  }
+
   loadCommissionRates(() => {
     loadRoundingSettings(() => {
       loadUIPreferences(() => {
         loadDefaultActionsSettings(() => {
-          loadAndRender();
+          loadClvSettings(() => {
+            loadAndRender();
+          });
         });
       });
     });
@@ -3115,20 +3314,20 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function openContributeDialog() {
-    chrome.tabs.query({active: true, currentWindow: true}, async (tabs) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
       const tab = tabs[0];
       if (!tab) {
         alert('Could not determine current tab. Please open a betting site first.');
         return;
       }
-      
+
       // Ask user for exchange name
       const exchangeName = prompt('Enter the site name (e.g., Betfair, Smarkets, Matchbook):', '');
       if (!exchangeName) return;
 
       // Run content script to collect DOM data on the current tab
       console.log('📋 Executing DOM collector on tab:', tab.id);
-      
+
       try {
         const results = await chrome.scripting.executeScript({
           target: { tabId: tab.id },
@@ -3225,14 +3424,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const featureBanner = document.getElementById('feature-banner-kelly');
   const learnMoreBtn = document.getElementById('kelly-learn-more');
   const dismissBtn = document.getElementById('kelly-dismiss');
-  
+
   if (featureBanner && learnMoreBtn && dismissBtn) {
     api.storage.local.get({ featureBanner_kellyProtection_v1: false }, (res) => {
       if (!res.featureBanner_kellyProtection_v1) {
         featureBanner.style.display = 'block';
       }
     });
-    
+
     learnMoreBtn.addEventListener('click', (e) => {
       e.preventDefault();
       api.tabs.create({ url: 'settings.html' });
@@ -3241,7 +3440,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.close();
       }, 200);
     });
-    
+
     dismissBtn.addEventListener('click', (e) => {
       e.preventDefault();
       api.storage.local.set({ featureBanner_kellyProtection_v1: true });
@@ -3252,7 +3451,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Bankroll Warning Banner - Pending bets exceed bankroll
   const warningBanner = document.getElementById('bankroll-warning-banner');
   const openSettingsLink = document.getElementById('open-kelly-settings');
-  
+
   if (warningBanner && openSettingsLink) {
     openSettingsLink.addEventListener('click', (e) => {
       e.preventDefault();
@@ -3266,12 +3465,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Show/hide bankroll warning banner based on settings
   function updateBankrollWarningBanner(stakingSettings, bets) {
     if (!warningBanner) return;
-    
+
     if (!stakingSettings.adjustForPending || stakingSettings.effectiveBankroll === null) {
       warningBanner.style.display = 'none';
       return;
     }
-    
+
     if (stakingSettings.effectiveBankroll <= 0) {
       const pendingTotal = stakingSettings.bankroll - stakingSettings.effectiveBankroll;
       document.getElementById('pending-total').textContent = '£' + pendingTotal.toFixed(2);

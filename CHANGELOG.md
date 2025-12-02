@@ -9,6 +9,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.99] - 2025-12-02
+
+### 🐛 Bug Fixes
+- **CLV badge gating**: CLV badges (Pending/Manual Entry) now only show when CLV tracking is enabled. Previously showed for all settled bets regardless of setting.
+- **CLV scatter plot NaN fix**: Added minimum range fallback to prevent chart from breaking when all CLV points share the same X or Y value.
+- **CLV delay for legacy bets**: Bets without `settledAt` timestamp now use `timestamp` as fallback, or are skipped entirely to avoid querying API before closing lines are available.
+- **Force CLV Check**: Added "⚡ Force Check Now" button in Settings → CLV to manually trigger CLV fetch for all eligible bets.
+
+### 🔧 Technical
+- Added 30-second timeout with AbortController to CLV API fetch calls to prevent stalls.
+- Added 5-second timeout to CLV API health checks.
+- Unknown/missing sports now log warnings instead of silently defaulting to football.
+- Save CLV button now has double-click protection and async error handling.
+
+## [1.0.98] - 2025-12-02
+
+### ✨ New Features
+- **CLV (Closing Line Value) Tracking**: Major new feature to measure betting edge vs closing market prices.
+  - **Local API Server**: Python-based OddsHarvester integration running on localhost:8765 for historical odds lookups.
+  - **Automatic CLV Calculation**: Background service polls for closing odds after bet settlement (configurable 2-48h delay).
+  - **CLV Settings Panel**: New "📈 CLV" section in Settings with toggle, connection status, delay slider, fallback strategy, and cache management.
+  - **CLV Analysis Dashboard**: New "📈 CLV Analysis" tab in Analysis page with histogram distribution, CLV vs ROI scatter plot, and bookmaker breakdown.
+  - **Manual CLV Entry**: Modal in popup for entering closing odds when automatic lookup fails.
+  - **CLV Badges**: Visual indicators on bets showing positive (🟢), negative (🔴), or pending (⏳) CLV status.
+  - **Fuzzy Matching**: Intelligent event name matching using Levenshtein distance and token overlap for OddsPortal lookups.
+  - **League Mapping**: Automatic tournament-to-OddsPortal league mapping with custom alias support.
+  - **Pinnacle Fallback**: Uses Pinnacle closing odds as primary source (industry standard for sharp lines).
+  - **SQLite Cache**: Local database for caching odds lookups and job status.
+  - **Mismatch Reporting**: GitHub issue template for reporting CLV lookup failures to improve matching.
+
+### 📝 Documentation
+- **CLV_SETUP_GUIDE.md**: Comprehensive setup guide for installing and configuring CLV tracking.
+- **GitHub Issue Template**: Added `clv-mismatch.md` template for reporting lookup failures.
+
+### 🔧 Technical
+- New `tools/odds_harvester_api/` directory with FastAPI server, SQLite database, fuzzy matcher, and league mapper.
+- Installation scripts for Windows (PowerShell) and Linux/Mac (Bash).
+- New background alarms: `clv-batch-check` (4h interval) and `clv-job-poll` (60s interval).
+
 ## [1.0.96.1] - 2025-12-01
 
 ### 🐛 Bug Fixes

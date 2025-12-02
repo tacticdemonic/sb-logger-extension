@@ -144,6 +144,40 @@
     </div>
   </div>
 
+  <!-- CLV Entry Modal -->
+  <div id="clv-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:2000;justify-content:center;align-items:center">
+    <div id="clv-container" style="background:#fff;padding:25px;border-radius:8px;width:90%;max-width:400px;max-height:85%;overflow:auto;box-shadow:0 4px 20px rgba(0,0,0,0.3)">
+      <h2 style="margin:0 0 15px 0;font-size:16px;color:#333;font-weight:600">📈 Enter Closing Odds</h2>
+      <div id="clv-bet-info" style="background:#f8f9fa;padding:12px;border-radius:4px;margin-bottom:15px;font-size:12px">
+        <div id="clv-event-name" style="font-weight:600;margin-bottom:4px">--</div>
+        <div id="clv-opening-odds" style="color:#666">Opening: --</div>
+      </div>
+      <form id="clv-form" style="font-size:12px">
+        <input type="hidden" name="betId" id="clv-bet-id">
+        <div style="margin-bottom:15px">
+          <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Closing Odds:</label>
+          <input type="number" name="closingOdds" id="clv-closing-odds" step="0.01" min="1" required 
+            style="width:100%;padding:8px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box;font-size:14px">
+          <p style="color:#888;font-size:11px;margin:4px 0 0 0">
+            Find closing odds at <a href="https://www.oddsportal.com/" target="_blank" style="color:#007bff">OddsPortal.com</a>
+          </p>
+        </div>
+        <div id="clv-preview" style="background:#e7f3ff;padding:12px;border-radius:4px;margin-bottom:15px;display:none">
+          <div style="font-weight:600;color:#004085">CLV Preview:</div>
+          <div id="clv-preview-value" style="font-size:18px;font-weight:600;margin-top:4px">--</div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;border-top:1px solid #eee;padding-top:16px">
+          <button type="button" id="cancel-clv" style="padding:8px 16px;background:#6c757d;color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600">Cancel</button>
+          <button type="submit" id="save-clv" style="padding:8px 16px;background:#28a745;color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600">Save CLV</button>
+        </div>
+      </form>
+      <div style="margin-top:15px;padding-top:15px;border-top:1px solid #eee;font-size:11px;color:#666">
+        <strong>Tip:</strong> If the event can't be found automatically, you can submit it as a 
+        <a href="#" id="clv-report-mismatch" style="color:#007bff">GitHub issue</a> to help improve matching.
+      </div>
+    </div>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 </html>

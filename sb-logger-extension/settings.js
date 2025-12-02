@@ -35,6 +35,16 @@ const DEFAULT_ACTIONS_SETTINGS = {
   dustbinActionAfterSave: 'none' // 'none' | 'hide-valuebet' | 'hide-event'
 };
 
+const DEFAULT_CLV_SETTINGS = {
+  enabled: false,
+  apiUrl: 'http://localhost:8765',
+  delayHours: 2,
+  fallbackStrategy: 'pinnacle',  // 'pinnacle' | 'weighted_avg' | 'none'
+  maxRetries: 3,
+  maxConcurrency: 3,
+  batchCheckIntervalHours: 4
+};
+
 // Initialize page
 document.addEventListener('DOMContentLoaded', () => {
   console.log('⚙️ Settings page loaded');
@@ -94,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
       roundingSettings: DEFAULT_ROUNDING_SETTINGS,
       autoFillSettings: DEFAULT_AUTOFILL_SETTINGS,
       defaultActionsSettings: DEFAULT_ACTIONS_SETTINGS,
+      clvSettings: DEFAULT_CLV_SETTINGS,
       apiKeys: {}
     }, (res) => {
       console.log('⚙️ Loaded settings from storage:', res);
@@ -137,6 +148,24 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('api-odds-key').value = '••••••••••••••••';
         document.getElementById('api-odds-key').placeholder = 'API key already configured';
       }
+
+      // Load CLV settings
+      const clvSettings = res.clvSettings || DEFAULT_CLV_SETTINGS;
+      const clvEnabled = document.getElementById('clv-enabled');
+      const clvApiUrl = document.getElementById('clv-api-url');
+      const clvDelayHours = document.getElementById('clv-delay-hours');
+      const clvFallbackStrategy = document.getElementById('clv-fallback-strategy');
+      const clvMaxRetries = document.getElementById('clv-max-retries');
+      const clvMaxConcurrency = document.getElementById('clv-max-concurrency');
+      const clvBatchInterval = document.getElementById('clv-batch-check-interval');
+      
+      if (clvEnabled) clvEnabled.checked = clvSettings.enabled || false;
+      if (clvApiUrl) clvApiUrl.value = clvSettings.apiUrl || 'http://localhost:8765';
+      if (clvDelayHours) clvDelayHours.value = clvSettings.delayHours || 2;
+      if (clvFallbackStrategy) clvFallbackStrategy.value = clvSettings.fallbackStrategy || 'pinnacle';
+      if (clvMaxRetries) clvMaxRetries.value = clvSettings.maxRetries || 3;
+      if (clvMaxConcurrency) clvMaxConcurrency.value = clvSettings.maxConcurrency || 3;
+      if (clvBatchInterval) clvBatchInterval.value = clvSettings.batchCheckIntervalHours || 4;
 
       if (callback) callback();
     });
@@ -633,6 +662,338 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
     }
+
+    // ========== CLV TRACKING SETTINGS ==========
+    
+    // Save CLV settings
+    const saveClvBtn = document.getElementById('save-clv-btn');
+    if (saveClvBtn) {
+      saveClvBtn.addEventListener('click', async () => {
+        // Prevent double-clicks
+        if (saveClvBtn.disabled) return;
+        saveClvBtn.disabled = true;
+        const originalText = saveClvBtn.textContent;
+        saveClvBtn.textContent = '💾 Saving...';
+        
+        const newSettings = {
+          enabled: document.getElementById('clv-enabled')?.checked || false,
+          apiUrl: document.getElementById('clv-api-url')?.value || 'http://localhost:8765',
+          delayHours: parseInt(document.getElementById('clv-delay-hours')?.value) || 2,
+          fallbackStrategy: document.getElementById('clv-fallback-strategy')?.value || 'pinnacle',
+          maxRetries: parseInt(document.getElementById('clv-max-retries')?.value) || 3,
+          maxConcurrency: parseInt(document.getElementById('clv-max-concurrency')?.value) || 3,
+          batchCheckIntervalHours: parseInt(document.getElementById('clv-batch-check-interval')?.value) || 4
+        };
+        
+        console.log('💾 Saving CLV settings:', newSettings);
+        
+        try {
+          await new Promise((resolve, reject) => {
+            api.storage.local.set({ clvSettings: newSettings }, () => {
+              if (api.runtime.lastError) {
+                reject(api.runtime.lastError);
+              } else {
+                resolve();
+              }
+            });
+          });
+          
+          console.log('✅ CLV settings saved');
+          alert('✅ CLV tracking settings saved successfully!');
+          
+          // Notify background to update CLV alarm interval
+          api.runtime.sendMessage({ 
+            action: 'updateClvSchedule', 
+            intervalHours: newSettings.batchCheckIntervalHours 
+          });
+        } catch (err) {
+          console.error('❌ Failed to save CLV settings:', err);
+          alert('❌ Failed to save settings: ' + err.message);
+        } finally {
+          saveClvBtn.disabled = false;
+          saveClvBtn.textContent = originalText;
+        }
+      });
+    }
+    
+    // Test CLV API connection
+    const testClvBtn = document.getElementById('clv-test-connection-btn');
+    if (testClvBtn) {
+      testClvBtn.addEventListener('click', async () => {
+        testClvBtn.disabled = true;
+        testClvBtn.textContent = '🔄 Testing...';
+        
+        const apiUrl = document.getElementById('clv-api-url')?.value || 'http://localhost:8765';
+        
+        try {
+          const response = await fetch(`${apiUrl}/health`, {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            updateClvConnectionStatus(true, data);
+            alert(`✅ CLV API connected!\n\nStatus: ${data.status}\nHarvester: ${data.harvester_available ? 'Available' : 'Not found'}`);
+          } else {
+            updateClvConnectionStatus(false);
+            alert(`❌ CLV API responded with error: ${response.status}`);
+          }
+        } catch (err) {
+          updateClvConnectionStatus(false);
+          alert(`❌ CLV API connection failed.\n\n${err.message}\n\nMake sure the OddsHarvester API is running.`);
+        }
+        
+        testClvBtn.disabled = false;
+        testClvBtn.textContent = '🔌 Test Connection';
+      });
+    }
+    
+    // Force CLV Check button
+    const forceClvCheckBtn = document.getElementById('clv-force-check-btn');
+    if (forceClvCheckBtn) {
+      forceClvCheckBtn.addEventListener('click', async () => {
+        forceClvCheckBtn.disabled = true;
+        forceClvCheckBtn.textContent = '⏳ Checking...';
+        
+        const resultDiv = document.getElementById('clv-force-check-result');
+        if (resultDiv) {
+          resultDiv.style.display = 'block';
+          resultDiv.innerHTML = '<span style="color: #666;">🔄 Fetching CLV data for settled bets...</span>';
+        }
+        
+        try {
+          const response = await new Promise((resolve) => {
+            api.runtime.sendMessage({ action: 'forceClvCheck' }, resolve);
+          });
+          
+          if (response?.success) {
+            const msg = response.updated > 0 
+              ? `✅ Success! Checked ${response.checked} bet(s), updated ${response.updated} with CLV data.`
+              : `ℹ️ Checked ${response.checked} bet(s), no new CLV data found. ${response.message || ''}`;
+            if (resultDiv) {
+              resultDiv.innerHTML = `<span style="color: ${response.updated > 0 ? '#28a745' : '#666'};">${msg}</span>`;
+            }
+            alert(msg);
+          } else {
+            const errorMsg = `❌ CLV check failed: ${response?.error || 'Unknown error'}`;
+            if (resultDiv) {
+              resultDiv.innerHTML = `<span style="color: #dc3545;">${errorMsg}</span>`;
+            }
+            alert(errorMsg);
+          }
+        } catch (err) {
+          const errorMsg = `❌ Error: ${err.message}`;
+          if (resultDiv) {
+            resultDiv.innerHTML = `<span style="color: #dc3545;">${errorMsg}</span>`;
+          }
+          alert(errorMsg);
+        }
+        
+        forceClvCheckBtn.disabled = false;
+        forceClvCheckBtn.textContent = '⚡ Force Check Now';
+      });
+    }
+    
+    // Clear CLV cache
+    const clearClvCacheBtn = document.getElementById('clv-clear-cache-btn');
+    if (clearClvCacheBtn) {
+      clearClvCacheBtn.addEventListener('click', async () => {
+        if (!confirm('Clear all cached CLV data? This will not affect stored CLV values on bets.')) {
+          return;
+        }
+        
+        clearClvCacheBtn.disabled = true;
+        clearClvCacheBtn.textContent = '🔄 Clearing...';
+        
+        const apiUrl = document.getElementById('clv-api-url')?.value || 'http://localhost:8765';
+        
+        try {
+          const response = await fetch(`${apiUrl}/api/clear-cache`, {
+            method: 'POST',
+            headers: { 'Accept': 'application/json' }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            alert(`✅ Cache cleared!\n\nRemoved ${data.deleted_leagues || 0} league entries\nRemoved ${data.deleted_odds || 0} odds entries`);
+            refreshClvCacheStats();
+          } else {
+            alert(`❌ Failed to clear cache: ${response.status}`);
+          }
+        } catch (err) {
+          alert(`❌ Failed to clear cache: ${err.message}`);
+        }
+        
+        clearClvCacheBtn.disabled = false;
+        clearClvCacheBtn.textContent = '🗑️ Clear Cache';
+      });
+    }
+    
+    // Refresh CLV cache stats
+    const refreshClvStatsBtn = document.getElementById('clv-refresh-stats-btn');
+    if (refreshClvStatsBtn) {
+      refreshClvStatsBtn.addEventListener('click', refreshClvCacheStats);
+    }
+    
+    // Check for OddsHarvester updates
+    const checkUpdatesBtn = document.getElementById('clv-check-updates-btn');
+    if (checkUpdatesBtn) {
+      checkUpdatesBtn.addEventListener('click', async () => {
+        checkUpdatesBtn.disabled = true;
+        checkUpdatesBtn.textContent = '🔄 Checking...';
+        
+        const apiUrl = document.getElementById('clv-api-url')?.value || 'http://localhost:8765';
+        const updateStatus = document.getElementById('clv-update-status');
+        
+        try {
+          const response = await fetch(`${apiUrl}/api/check-updates`, {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (updateStatus) {
+              updateStatus.style.display = 'block';
+              if (data.update_available) {
+                updateStatus.innerHTML = `<span style="color: #ffc107;">⚠️ Update available: ${data.latest_version}</span><br>
+                  <span style="font-size: 11px;">Current: ${data.current_version}</span>`;
+              } else {
+                updateStatus.innerHTML = `<span style="color: #28a745;">✅ Up to date (${data.current_version})</span>`;
+              }
+            }
+          } else {
+            if (updateStatus) {
+              updateStatus.style.display = 'block';
+              updateStatus.innerHTML = `<span style="color: #dc3545;">❌ Failed to check updates</span>`;
+            }
+          }
+        } catch (err) {
+          if (updateStatus) {
+            updateStatus.style.display = 'block';
+            updateStatus.innerHTML = `<span style="color: #dc3545;">❌ ${err.message}</span>`;
+          }
+        }
+        
+        checkUpdatesBtn.disabled = false;
+        checkUpdatesBtn.textContent = '🔍 Check for Updates';
+      });
+    }
+    
+    // Open setup guide
+    const openGuideBtn = document.getElementById('clv-open-setup-guide-btn');
+    if (openGuideBtn) {
+      openGuideBtn.addEventListener('click', () => {
+        api.tabs.create({ url: 'https://github.com/tacticdemonic/surebet-helper-extension/blob/main/sb-logger-extension/CLV_SETUP_GUIDE.md' });
+      });
+    }
+    
+    // Download installer script link
+    const downloadInstallerLink = document.getElementById('clv-download-installer');
+    if (downloadInstallerLink) {
+      downloadInstallerLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Detect OS and open appropriate installer script
+        const isWindows = navigator.platform.toLowerCase().includes('win');
+        const scriptFile = isWindows ? 'install_odds_api.ps1' : 'install_odds_api.sh';
+        api.tabs.create({ url: `https://github.com/tacticdemonic/surebet-helper-extension/blob/main/sb-logger-extension/tools/odds_harvester_api/${scriptFile}` });
+      });
+    }
+  }
+  
+  // ========== CLV HELPER FUNCTIONS ==========
+  
+  function updateClvConnectionStatus(connected, data = null) {
+    const indicator = document.getElementById('clv-status-indicator');
+    const instructions = document.getElementById('clv-setup-instructions');
+    const versionEl = document.getElementById('clv-harvester-version');
+    
+    if (indicator) {
+      if (connected) {
+        indicator.innerHTML = '✅ Connected';
+        indicator.style.color = '#28a745';
+      } else {
+        indicator.innerHTML = '❌ Offline';
+        indicator.style.color = '#dc3545';
+      }
+    }
+    
+    if (instructions) {
+      instructions.style.display = connected ? 'none' : 'block';
+    }
+    
+    if (versionEl && data?.version) {
+      versionEl.textContent = data.version || 'Unknown';
+    }
+  }
+  
+  async function checkClvConnection() {
+    const apiUrl = document.getElementById('clv-api-url')?.value || 'http://localhost:8765';
+    
+    try {
+      const response = await fetch(`${apiUrl}/health`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        updateClvConnectionStatus(true, data);
+        refreshClvCacheStats();
+      } else {
+        updateClvConnectionStatus(false);
+      }
+    } catch (err) {
+      updateClvConnectionStatus(false);
+    }
+  }
+  
+  async function refreshClvCacheStats() {
+    const apiUrl = document.getElementById('clv-api-url')?.value || 'http://localhost:8765';
+    const dbSizeEl = document.getElementById('clv-db-size');
+    const cacheStatsEl = document.getElementById('clv-cache-stats');
+    
+    try {
+      const response = await fetch(`${apiUrl}/health`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (dbSizeEl) {
+          const sizeKb = data.cache_size_kb || 0;
+          if (sizeKb >= 1024) {
+            dbSizeEl.textContent = `${(sizeKb / 1024).toFixed(1)} MB`;
+          } else {
+            dbSizeEl.textContent = `${sizeKb.toFixed(0)} KB`;
+          }
+        }
+        
+        if (cacheStatsEl) {
+          cacheStatsEl.innerHTML = `Leagues cached: ${data.cached_leagues || 0}<br>Odds cached: ${data.cached_odds || 0}`;
+        }
+      }
+    } catch (err) {
+      if (dbSizeEl) dbSizeEl.textContent = '--';
+      if (cacheStatsEl) cacheStatsEl.innerHTML = 'Leagues cached: --<br>Odds cached: --';
+    }
+  }
+  
+  // Auto-check CLV connection when section is shown
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.section === 'clv') {
+        checkClvConnection();
+      }
+    });
+  });
+  
+  // Check CLV connection on initial load if CLV section is active
+  if (window.location.hash === '#clv') {
+    setTimeout(checkClvConnection, 500);
   }
 
   // Kelly Staking Settings

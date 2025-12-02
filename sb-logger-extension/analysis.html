@@ -101,6 +101,7 @@
       <button class="nav-btn" data-view="bookmakers">🏢 Bookmakers</button>
       <button class="nav-btn" data-view="temporal">⏰ Time Analysis</button>
       <button class="nav-btn" data-view="kelly">🎲 Kelly Metrics</button>
+      <button class="nav-btn" data-view="clv">📈 CLV Analysis</button>
       <button class="nav-btn" data-view="export">💾 Export</button>
     </div>
 
@@ -154,6 +155,47 @@
       <h2>Kelly Stake Fill Ratio Analysis</h2>
       <p style="color: #666; margin: 0 0 15px 0;">Comparison of actual stake against recommended Kelly percentage:</p>
       <div id="kelly-content"></div>
+    </div>
+
+    <!-- CLV View -->
+    <div id="clv-view" class="view-container">
+      <h2>📈 Closing Line Value (CLV) Analysis</h2>
+      <p style="color: #666; margin: 0 0 15px 0;">Track how your odds compare to the market's closing line:</p>
+      
+      <div id="clv-summary-stats" class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-label">Bets with CLV</div>
+          <div class="stat-value" id="clv-total-stat">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Avg CLV</div>
+          <div class="stat-value" id="clv-avg-stat">0%</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Positive CLV %</div>
+          <div class="stat-value" id="clv-positive-stat">0%</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">CLV vs ROI Correlation</div>
+          <div class="stat-value" id="clv-correlation-stat">--</div>
+        </div>
+      </div>
+      
+      <div class="section-title">CLV Distribution</div>
+      <canvas id="clvHistogramChart" width="1000" height="300"></canvas>
+      <div id="clv-histogram-content"></div>
+      
+      <div class="section-title">CLV vs Actual ROI</div>
+      <canvas id="clvScatterChart" width="1000" height="400"></canvas>
+      <p class="note">Each point represents a bet. Positive CLV (x-axis) should correlate with winning bets over time.</p>
+      
+      <div class="section-title">CLV by Bookmaker</div>
+      <div id="clv-bookmaker-content"></div>
+      
+      <div class="warning" id="clv-pending-warning" style="display: none;">
+        <strong>⚠️ CLV Pending:</strong> <span id="clv-pending-count">0</span> settled bets are still waiting for CLV data. 
+        <a href="settings.html#clv" style="color: #856404;">Check CLV settings</a>
+      </div>
     </div>
 
     <!-- Export View -->
