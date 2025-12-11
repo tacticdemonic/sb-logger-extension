@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
-"""Test script for CLV API - tests batch-closing-odds endpoint."""
+"""
+Deprecated: test_clv_api
+
+This script used to test the local CLV API server (OddsHarvester). The server
+has been removed and replaced by a CSV-based CLV system and a player props
+poller. This test is deprecated and will not run against the new system.
+"""
+
+raise SystemExit("OddsHarvester removed — test_clv_api is deprecated.")
 import json
 import time
 import sys
@@ -92,5 +100,4 @@ def test_batch_closing_odds():
         return False
 
 if __name__ == "__main__":
-    success = test_batch_closing_odds()
-    sys.exit(0 if success else 1)
+    raise SystemExit("OddsHarvester removed — test_clv_api is deprecated.")

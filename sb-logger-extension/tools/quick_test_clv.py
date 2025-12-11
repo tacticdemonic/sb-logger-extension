@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Quick test of CLV API with a single simple bet."""
+"""Deprecated quick CLV API test — OddsHarvester removed. Use CSV-based tests instead."""
+
+raise SystemExit("OddsHarvester removed — quick_test_clv is deprecated.")
 import requests
 import json
 import time

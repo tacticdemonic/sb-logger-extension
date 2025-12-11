@@ -6,69 +6,36 @@ Use this guide when CLV checks in the extension return empty results, stay Pendi
 
 ## Fast Triage (do these first)
 
-1) **API health**  
-`Invoke-RestMethod http://localhost:8765/health` should return `status: ok`. If not, restart (see Restart section).
+1) **CSV Cache / Settings**  
+Verify CLV is enabled and CSV caches are present. Use Settings → CLV → Force CLV Check to trigger an immediate download and match attempt. There is no local API server to run.
 
 2) **Supported sport/league**  
-Only the sports listed in [Supported inputs](#supported-inputs) work. League must match the OddsPortal slug (example: `england-premier-league`, `usa-nba`). Fix any mismatches in your bet data.
+Ensure the bet sport is supported (football only for CSV CLV) and the tournament name maps to a known CSV league (see `footballDataLeagues.js`). If a league does not match, add an alias or report it.
 
 3) **Seed the cache**  
-Run one manual scrape for the exact sport/league/season you need:  
-`scrape_historic --sport <sport> --leagues <league-id> --season <season> --scrape_odds_history [--headless]`  
-Start with a single league. If the command prints rows, the pipeline is fine.
+Use Settings → CLV → Force CLV Check to pre-populate CSV caches. This triggers downloads for CSV files necessary for eligible bets. If you want automation, write a script that sends `forceClvCheck` messages to the extension.
 
 4) **Check the log**  
-Tail `odds_harvester_api.log` for errors (see Log reference). Address timeouts or selector issues, then rerun the scrape (try non-headless if needed).
+Use the extension's Diagnostics → Load Log and browser DevTools console (background tab) to inspect CSV fetches, parse status, and match confidence. Use DevTools → Network for low-level tracing.
 
 5) **Confirm cache growth**  
-`(Get-Item "$env:LOCALAPPDATA\SurebetHelper\OddsHarvesterAPI\clv_cache.db").Length / 1MB` should increase after a successful scrape.
+Inspect DevTools → Application → Local Storage for keys like `csv_cache_<league>_<season>` and check the cached rows count.
 
 6) **Retry in the extension**  
-In Settings > CLV, ensure CLV is enabled, API URL is `http://localhost:8765`, then use Force CLV Check after the cache is populated.
+Enable CLV in Settings → CLV, then use Force CLV Check to re-run lookups and confirm results in the Diagnostics logs.
 
 ---
 
-## Manual Scraping (populating the cache)
+### Populate CSV Cache (on demand)
+CSV CLV downloads files on-demand from `football-data.co.uk`. The extension will cache CSVs for 7 days. To ensure data is available:
 
-Run OddsHarvester directly to fetch closing odds and write them to `clv_cache.db`.
+1. Use Settings → CLV → Force Check Now to trigger CLV lookups and download necessary CSVs for leagues required by settled bets.
+2. To pre-populate the cache manually, run a script that requests CLV for selected leagues or temporarily enable CLV and visit the Force Check button.
 
-### Pre-Cache via API (Recommended)
-Use the new pre-cache endpoint to populate the cache in the background:
-```powershell
-# Pre-cache Premier League 2024-2025
-Invoke-RestMethod -Uri "http://localhost:8765/api/precache-league?sport=football&league=england-premier-league&season=2024-2025" -Method POST
+Note: Manual scraping via OddsHarvester is no longer supported.
 
-# Pre-cache La Liga 2024-2025
-Invoke-RestMethod -Uri "http://localhost:8765/api/precache-league?sport=football&league=spain-laliga&season=2024-2025" -Method POST
-
-# Pre-cache NBA 2024-2025
-Invoke-RestMethod -Uri "http://localhost:8765/api/precache-league?sport=basketball&league=usa-nba&season=2024-2025" -Method POST
-```
-This runs in the background and can take 10-15 minutes per league.
-
-### Command template (Manual)
-```powershell
-cd "$env:LOCALAPPDATA\SurebetHelper\OddsHarvesterAPI\OddsHarvester"
-& "$env:LOCALAPPDATA\SurebetHelper\OddsHarvesterAPI\venv\Scripts\python.exe" -m src.main scrape_historic --sport <SPORT> --leagues <LEAGUE> --season <SEASON> --scrape_odds_history --headless
-```
-
-### Useful examples
-- EPL 2024-2025  
-```powershell
-& "$env:LOCALAPPDATA\SurebetHelper\OddsHarvesterAPI\venv\Scripts\python.exe" -m src.main scrape_historic --sport football --leagues england-premier-league --season 2024-2025 --scrape_odds_history --headless
-```
-- La Liga 2024-2025  
-```powershell
-& "$env:LOCALAPPDATA\SurebetHelper\OddsHarvesterAPI\venv\Scripts\python.exe" -m src.main scrape_historic --sport football --leagues spain-laliga --season 2024-2025 --scrape_odds_history --headless
-```
-- ATP Tennis 2024  
-```powershell
-& "$env:LOCALAPPDATA\SurebetHelper\OddsHarvesterAPI\venv\Scripts\python.exe" -m src.main scrape_historic --sport tennis --leagues atp-singles --season 2024 --scrape_odds_history --headless
-```
-- NBA 2024-2025  
-```powershell
-& "$env:LOCALAPPDATA\SurebetHelper\OddsHarvesterAPI\venv\Scripts\python.exe" -m src.main scrape_historic --sport basketball --leagues usa-nba --season 2024-2025 --scrape_odds_history --headless
-```
+### Notes on manual operations (Deprecated)
+Manual scraping using OddsHarvester has been deprecated. To pre-populate the CSV cache, use the Force CLV Check button or run a script that triggers CSV fetching for desired leagues. These operations are handled by the extension; there is no local scraping command to run anymore.
 
 To observe the browser, drop `--headless`.
 
@@ -103,7 +70,7 @@ To observe the browser, drop `--headless`.
 | Portugal Liga | `liga-portugal` |
 | NBA | `nba` |
 
-> **Tip:** League slugs must match OddsHarvester's `sport_league_constants.py`. Check `%LOCALAPPDATA%\SurebetHelper\OddsHarvesterAPI\OddsHarvester\src\utils\sport_league_constants.py` for the complete list.
+> **Tip:** League mapping now uses `footballDataLeagues.js` inside the extension. If a league isn't matched automatically, add an alias in `footballDataLeagues.js`.
 
 ### Command flags
 | Flag | Description |
@@ -119,10 +86,8 @@ To observe the browser, drop `--headless`.
 
 ## Logs and validation
 
-### Tail the API log
-```powershell
-Get-Content "$env:LOCALAPPDATA\SurebetHelper\OddsHarvesterAPI\odds_harvester_api.log" -Tail 100
-```
+### Extension diagnostics and logs
+There is no API log for OddsHarvester since the service is removed. Use the extension's diagnostic logs in Settings → Diagnostics → Load Log for recent CLV operations, match attempts, and failures. The popup and background console may also show errors.
 
 ### What common messages mean
 | Message | Meaning / Action |
@@ -132,32 +97,21 @@ Get-Content "$env:LOCALAPPDATA\SurebetHelper\OddsHarvesterAPI\odds_harvester_api
 | `React event header selector not found` | OddsPortal structure changed; verify page markup manually. |
 | `invalid choice: 'other'` | Bet uses an unsupported sport; correct the bet data. |
 
-### Cache location and size
-```powershell
-# Path
-$env:LOCALAPPDATA\SurebetHelper\OddsHarvesterAPI\clv_cache.db
+### Cache location and size (CSV-based cache)
+CSV cache is stored in the extension's local storage with keys prefixed by `csv_cache_<league>_<season>`. To inspect via PowerShell/Chrome DevTools:
 
-# Size in MB
-(Get-Item "$env:LOCALAPPDATA\SurebetHelper\OddsHarvesterAPI\clv_cache.db").Length / 1MB
-```
+- Use the browser extension's diagnostics, or open DevTools → Application → Storage → Local Storage and search for keys starting with `csv_cache_`.
 
-### API health check
-```powershell
-Invoke-RestMethod -Uri "http://localhost:8765/health"
-```
+### No local API health check
+CSV-based CLV runs without a local server; there is no health endpoint. Use the extension's Diagnostics > Load Log to inspect operations and errors.
 
 ---
 
-## Restarting the API server
+# Restarting Services
 
-```powershell
-# Stop existing python processes
-Get-Process -Name python -ErrorAction SilentlyContinue | Stop-Process -Force
-
-# Start fresh
-cd "$env:LOCALAPPDATA\SurebetHelper\OddsHarvesterAPI"
-& ".\venv\Scripts\python.exe" -m uvicorn server:app --host 127.0.0.1 --port 8765
-```
+There is no local CLV API server to start. To refresh CSV-based CLV behavior:
+- Use Settings → CLV → Clear CSV Cache to remove current caches; the extension will redownload CSVs on demand.
+- Use Settings → CLV → Force CLV Check to re-run CLV lookup on eligible bets.
 
 ---
 

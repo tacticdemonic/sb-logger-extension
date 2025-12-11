@@ -76,10 +76,14 @@
 **Solution**: Enable CLV in Settings → CLV Settings → Toggle ON
 
 ### Issue: "CLV API not responding"
-**Symptom**: Health check fails  
-**Debug**: Look at `🐛 [CLV DEBUG] FETCH RESPONSE` for /health endpoint  
-**Cause**: API server not running or wrong port  
-**Solution**: Start server: `python tools/odds_harvester_api/server.py`
+**Symptom**: Health check fails
+**Debug**: Look at `🐛 [CLV DEBUG] FETCH RESPONSE` for /health endpoint
+**Cause**: In historical setups, the API server might not be running or the port is wrong. Note: the OddsHarvester FastAPI server is deprecated and archived — it is no longer the production CLV solution.
+**Solution**: For active CSV-based CLV, view the extension Diagnostics → Load Log and the browser DevTools background console. If you are experimenting with the archived server, start it from the archived location:
+```powershell
+# Archived server (for research only) - Not recommended for production
+python archive\clv_api_attempts\odds_harvester_api\server.py
+```
 
 ### Issue: "No pending bets found"
 **Symptom**: Nothing to check  

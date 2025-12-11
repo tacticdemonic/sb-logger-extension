@@ -1,11 +1,8 @@
-# CLV Cache Population Script
-# Run this to scrape historical odds for leagues commonly found in surebet.com value bets
-# 
-# Usage: 
-#   .\scrape_all_leagues.ps1              # Scrape all leagues (headless)
-#   .\scrape_all_leagues.ps1 -Visible     # Show browser window for debugging
-#   .\scrape_all_leagues.ps1 -Sport football  # Only scrape football leagues
-#   .\scrape_all_leagues.ps1 -League england-premier-league  # Scrape single league
+# DEPRECATED: OddsHarvester removed
+# The previous approach used OddsHarvester to scrape OddsPortal for CLV data.
+# That approach has been removed from the project. Use the CSV-based CLV system
+# (football-data.co.uk) and the Player Props Poller instead. See CLV_SYSTEM_OVERVIEW.md
+# for details and how to populate CSV cache if needed.
 
 param(
     [switch]$Visible,
@@ -14,8 +11,9 @@ param(
     [string]$Season = "2024-2025"
 )
 
-$OddsHarvesterPath = "$env:LOCALAPPDATA\SurebetHelper\OddsHarvesterAPI\OddsHarvester"
-$PythonExe = "$env:LOCALAPPDATA\SurebetHelper\OddsHarvesterAPI\venv\Scripts\python.exe"
+# OddsHarvester related environment variables removed.
+Write-Host "This script is deprecated and no longer available. OddsHarvester has been removed from the project."
+Exit 1
 
 # Mapping of Surebet tournament names to OddsPortal league slugs
 # Format: @{ "sport" = @( @("oddsportal-league-slug", "season-format"), ... ) }

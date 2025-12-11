@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""Test CLV API with real historical bets from extension export."""
+"""
+Deprecated: test_clv_with_real_bets
+
+This script used to test the local CLV API endpoint with real bets. OddsHarvester
+has been removed; use CSV-based CLV fetch testing tools instead.
+"""
+
+raise SystemExit("OddsHarvester removed — test_clv_with_real_bets is deprecated.")
 import json
 import time
 import sys
@@ -186,5 +193,4 @@ def test_with_real_bets():
         return False
 
 if __name__ == "__main__":
-    success = test_with_real_bets()
-    sys.exit(0 if success else 1)
+    raise SystemExit("OddsHarvester removed — test_clv_with_real_bets is deprecated.")

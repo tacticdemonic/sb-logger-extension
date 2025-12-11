@@ -52,7 +52,7 @@ if match:
 **Purpose**: Early prototype wrapper for calling OddsHarvester CLI via subprocess
 
 **Why Archived**:
-- Replaced by comprehensive FastAPI server (`tools/odds_harvester_api/server.py`)
+-- Replaced by comprehensive FastAPI server (archived at `archive/clv_api_attempts/odds_harvester_api/server.py`)
 - Lacked job queue management and concurrent scrape limits
 - No SQLite caching for results
 - Single-bet interface inefficient compared to batch processing
@@ -83,7 +83,7 @@ def get_odds_portal_clv(bet_data):
     }
 ```
 
-**Current Solution**: `tools/odds_harvester_api/server.py` provides:
+**Current Solution**: `archive/clv_api_attempts/odds_harvester_api/server.py` (archived) provides:
 - FastAPI REST endpoints (`/api/batch-closing-odds`, `/api/job-status/{job_id}`)
 - Job queue with concurrency limits (max 3 concurrent scrapes)
 - SQLite caching with 30-day retention
@@ -104,7 +104,7 @@ def get_odds_portal_clv(bet_data):
 ## Current CLV Implementation
 
 For the production CLV tracking system, see:
-- **Game Odds CLV**: `tools/odds_harvester_api/server.py` (FastAPI + OddsHarvester)
+- **Game Odds CLV**: CSV-based CLV (football-data.co.uk) — OddsHarvester archived at `archive/clv_api_attempts/odds_harvester_api`
 - **Player Props**: `prop_poller.js` (line movement tracking via The Odds API)
 - **Documentation**: `CLV_SETUP_GUIDE.md`, `CLV_TROUBLESHOOTING.md`
 

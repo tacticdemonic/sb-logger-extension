@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 """
-Test CLV endpoint with recent match data - async polling version
-Submits job and polls for completion instead of waiting synchronously
+Deprecated: test_clv_async
+
+This script previously tested the CLV API server using async polling while
+OddsHarvester scraped OddsPortal. With OddsHarvester removed, this script is
+no longer applicable and has been deprecated.
 """
+
+raise SystemExit("OddsHarvester removed — test_clv_async is deprecated.")
 
 import httpx
 import asyncio
@@ -166,4 +171,4 @@ async def main():
     print(f"=" * 80)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    raise SystemExit("OddsHarvester removed — test_clv_async is deprecated.")

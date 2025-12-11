@@ -16,8 +16,8 @@
   const url = args[0];
   const options = args[1] || {};
   
-  // Log CLV-related fetches
-  if (typeof url === 'string' && url.includes('127.0.0.1:8765')) {
+  // Log CLV-related fetches (CSV & The Odds API)
+  if (typeof url === 'string' && (url.includes('127.0.0.1:8765') || url.includes('football-data.co.uk') || url.includes('api.the-odds-api.com'))) {
     console.log('🐛 [CLV DEBUG] FETCH INTERCEPTED:', {
       url: url,
       method: options.method || 'GET',

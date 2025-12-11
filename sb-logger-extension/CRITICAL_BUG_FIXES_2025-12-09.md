@@ -106,9 +106,9 @@ result = await self._scrape_with_odds_api(sport, league, event_date)  # Added aw
 4. Verify: No blocking/stalling of health check endpoint during scraping
 
 ### Load Testing
-1. Submit 50+ bets to CLV server
-2. Simultaneously call health check: `curl http://127.0.0.1:8765/health` (should respond <100ms)
-3. Check logs: Jobs should process without stalling other requests
+1. Submit 50+ test bets or run batch CLV checks to simulate load
+2. Monitor extension Diagnostics → Load Log and background console for job processing performance
+3. Check that batch processing completes and CLV fetches do not block other extension operations
 
 ---
 
@@ -147,9 +147,9 @@ result = await self._scrape_with_odds_api(sport, league, event_date)  # Added aw
    **Status**: Acceptable for now (SQLite is fast, operations are <10ms)
    **Future**: Consider `aiosqlite` if scaling beyond 100 concurrent jobs
 
-2. **OddsHarvester Scraping** (Already async ✅)
+2. **CSV Fetch / CLV Processing** (Already async ✅)
    ```python
-   await self._scrape_league_with_oddsharvester(...)  # Async Playwright
+   await self._fetch_csv_for_league(...)  # Async HTTP fetch + CSV parse
    ```
 
 3. **File I/O** (Minimal impact)

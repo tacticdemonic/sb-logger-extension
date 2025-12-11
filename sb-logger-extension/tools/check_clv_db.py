@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Check CLV cache database contents."""
+"""Deprecated: check_clv_db — OddsHarvester removed. Use extension Diagnostics / Local Storage to inspect CSV cache."""
+
+raise SystemExit("OddsHarvester removed — check_clv_db is deprecated.")
 import json
 import os
 import sqlite3

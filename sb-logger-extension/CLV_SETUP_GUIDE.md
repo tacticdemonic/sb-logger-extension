@@ -23,69 +23,35 @@ CLV tracking uses **FREE** Pinnacle closing odds from **football-data.co.uk** fo
 
 ---
 
-## Prerequisites
+## Important: OddsHarvester Deprecated
 
-Before setting up CLV tracking, you need:
+The local OddsHarvester-based CLV server has been removed from the project.
+This guide has been updated to support a CSV-based CLV approach using
+football-data.co.uk for Pinnacle closing odds and The Odds API for player props.
 
-1. **Python 3.11 or higher** installed on your system
-2. **OddsHarvester** - A Python tool for scraping historical odds data
-3. **SB Logger browser extension** v1.0.98+
+### Prerequisites
+- **SB Logger browser extension** v1.0.102+ (supports CSV-based CLV)
+- **The Odds API Key** (optional, required only for player props polling/features)
 
 ---
 
-## Installation Steps
+### Installation Steps (CSV Approach)
 
-### Step 1: Run the Automated Installer
+CSV-based CLV requires no local server. The extension will automatically
+download CSV files from football-data.co.uk and cache them for faster
+processing. To enable CSV CLV:
 
-We provide installation scripts that handle everything automatically.
+1. Install the extension (or reload extension with new version)
+2. Open Settings → CLV Tracking
+3. Enable **CLV Tracking** and set your preferred delay (default 2 hours)
+4. The extension will download CSVs on-demand and cache them (7-day cache)
 
-#### Windows (PowerShell)
+### Step 2: Verify CLV Operation
 
-1. Open PowerShell as Administrator
-2. Navigate to the extension folder:
-   ```powershell
-   cd "c:\Local\SB Logger\sb-logger-extension\sb-logger-extension\tools\odds_harvester_api"
-   ```
-3. Run the installer:
-   ```powershell
-   .\install_odds_api.ps1
-   ```
-
-#### Linux/Mac (Bash)
-
-1. Open Terminal
-2. Navigate to the extension folder:
-   ```bash
-   cd ~/path-to-extension/tools/odds_harvester_api
-   ```
-3. Make the script executable and run:
-   ```bash
-   chmod +x install_odds_api.sh
-   ./install_odds_api.sh
-   ```
-
-The installer will:
-- Create a Python virtual environment
-- Install OddsHarvester and its dependencies
-- Set up the local API server
-- Test the installation
-
-### Step 2: Verify Installation
-
-After installation completes, the API server should be running. Verify by opening:
-
-```
-http://localhost:8765/health
-```
-
-You should see:
-```json
-{
-  "status": "ok",
-  "version": "1.0.0",
-  "oddsharvester_installed": true
-}
-```
+1. Enable CLV in extension Settings
+2. Use the **Force CLV Check** button to fetch CLV for eligible bets
+3. Check the CLV badge on settled football bets in the popup or analysis tab
+4. Use Settings → CLV → Clear CSV Cache to remove cached CSVs and force re-download
 
 ### Step 3: Configure the Extension
 
@@ -173,19 +139,11 @@ You can find closing odds on [OddsPortal](https://www.oddsportal.com).
 
 ### "Connection Failed" in Settings
 
-1. Ensure the API server is running:
-   ```powershell
-   cd tools\odds_harvester_api
-   .\venv\Scripts\Activate.ps1
-   python server.py
-   ```
+This message previously referred to a local API server. If you see a connection failure when testing CLV, follow these steps:
 
-2. Check if port 8765 is available:
-   ```powershell
-   netstat -an | Select-String ":8765"
-   ```
-
-3. If another process is using the port, kill it or change the port in `server.py`
+1. Ensure CLV is enabled in Settings → CLV and that the delay is configured appropriately.
+2. Use the Force CLV Check button and inspect the extension Diagnostics → Load Log for errors.
+3. Clear CSV cache (Settings → CLV → Clear CSV Cache) and retry if data seems stale or missing.
 
 ### No CLV Data Appearing
 
@@ -216,22 +174,10 @@ If you see many "failed" jobs:
 ## Architecture Overview
 
 ```
-┌─────────────────────┐     HTTP      ┌─────────────────────┐
-│  Browser Extension  │◄────────────►│  Local API Server   │
-│  (SB Logger)        │   localhost   │  (FastAPI + Python) │
-└─────────────────────┘    :8765      └──────────┬──────────┘
-                                                 │
-                                                 ▼
-                                      ┌─────────────────────┐
-                                      │   OddsHarvester     │
-                                      │   (CLI Scraper)     │
-                                      └──────────┬──────────┘
-                                                 │
-                                                 ▼
-                                      ┌─────────────────────┐
-                                      │   OddsPortal.com    │
-                                      │   (Historical Data) │
-                                      └─────────────────────┘
+┌─────────────────────┐     HTTPS     ┌──────────────────────────────┐
+│  Browser Extension  │◄────────────►│  CSV Data (football-data.co) │
+│  (SB Logger)        │              │  and The Odds API (Props)    │
+└─────────────────────┘              └──────────────────────────────┘
 ```
 
 ---
@@ -241,7 +187,7 @@ If you see many "failed" jobs:
 CLV data is stored in two places:
 
 1. **Extension Storage**: Each bet object gets `clv` and `closingOdds` fields
-2. **Local SQLite Database**: Cached responses at `tools/odds_harvester_api/clv_cache.db`
+2. **CSV Cache**: Cached responses are stored in the extension's local storage with keys starting with `csv_cache_<league>_<season>`
 
 ### Clearing Cache
 
@@ -256,35 +202,20 @@ This removes cached odds but doesn't affect your bet CLV values.
 
 ## Privacy & Data
 
-- All odds lookups happen **locally** through OddsHarvester
+-- All game-odds lookups happen client-side through CSV downloads (football-data.co)
 - No bet data is sent to external servers
 - The API runs only on `localhost`
 - OddsPortal is accessed via standard web scraping
 
 ---
 
-## Manual API Server Control
+## Manual Operations (CSV)
 
-### Start Server
-```powershell
-cd tools\odds_harvester_api
-.\venv\Scripts\Activate.ps1
-python server.py
-```
+There is no local API server to start. For CSV operations:
 
-### Stop Server
-Press `Ctrl+C` in the terminal running the server.
-
-### Run as Background Service (Windows)
-
-You can create a Windows Task to auto-start the API:
-1. Open Task Scheduler
-2. Create Basic Task → "CLV API Server"
-3. Trigger: At startup
-4. Action: Start a program
-   - Program: `pythonw.exe`
-   - Arguments: `server.py`
-   - Start in: `path\to\tools\odds_harvester_api`
+- **Force CLV Check**: Triggers an immediate CLV fetch for eligible settled bets in the extension.
+- **Clear CSV Cache**: Removes locally cached CSVs; current-season CSVs will be redownloaded on demand.
+- **Props Polling**: Configure The Odds API key in Settings for player props line movement polling.
 
 ---
 
@@ -325,7 +256,7 @@ CLV accuracy is highest for leagues with consistent Pinnacle data coverage.
 
 **Player prop bets** (points, rebounds, assists, strikeouts, etc.) use a different tracking system than game odds:
 
-- **Game Odds CLV**: Automatic via OddsHarvester (compares your odds to Pinnacle closing line)
+- **Game Odds CLV**: Automatic via CSV downloads (football-data.co.uk) using Pinnacle closing odds
 - **Player Props**: **Line Movement Tracking** via The Odds API (tracks odds changes from opening to current)
 
 ### Why Not True CLV for Props?
@@ -398,7 +329,7 @@ To poll immediately (uses manual reserve):
 
 | Feature | Game Odds CLV | Player Props |
 |---------|---------------|--------------|
-| **Data Source** | OddsHarvester → OddsPortal | The Odds API |
+| **Data Source** | CSV (football-data.co) → Pinnacle | The Odds API |
 | **Closing Line** | Actual Pinnacle closing odds | Approximation (last poll before game) |
 | **Accuracy** | High (true CLV) | Medium (movement indicator) |
 | **Historical Data** | Yes (years of data) | Building (3-6 months → true CLV) |
@@ -434,11 +365,11 @@ After **3-6 months** of polling, the extension will have enough historical data 
 
 ## FAQ
 
-**Q: Do I need to keep the API running all the time?**
-A: The extension checks periodically (every 4 hours by default). The API only needs to be running when those checks happen.
+**Q: Do I need to keep a local API server running all the time?**
+A: No. The extension uses CSV-based CLV for historical game odds and The Odds API for props; no local server required.
 
 **Q: Can I use this with multiple browsers?**
-A: Yes, the same API server can serve multiple browser instances.
+A: Yes, each browser with the extension installed will manage its own local CSV cache and props polls. There's no central server that needs to run.
 
 **Q: What if OddsPortal doesn't have my match?**
 A: Enter closing odds manually, or the bet will remain without CLV data.
@@ -454,7 +385,7 @@ If you encounter issues:
 
 1. Check this guide's Troubleshooting section
 2. Look for errors in browser DevTools console
-3. Check API server terminal output
+3. Check the extension Diagnostics → Load Log for CLV/props polling errors and status
 4. [Open a GitHub issue](https://github.com/tacticdemonic/sb-logger-extension/issues)
 
 ---

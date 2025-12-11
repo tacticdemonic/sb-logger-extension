@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### 🔧 Technical
 - **Service Worker Modules**: Integrated `csvClvService.js`, `footballDataLeagues.js`, and `prop_poller.js` into the background service worker.
 - **Manifest Updates**: Updated permissions and host permissions for new data sources.
+### ⚠️ Deprecated/Removed
+- **OddsHarvester removed**: Local Python-based OddsHarvester integration and its helper scripts have been removed from the repository in favor of CSV-based CLV data and the player props poller. All setup and server instructions have been deprecated in documentation.
 
 ## [1.0.99] - 2025-12-02
 

@@ -209,7 +209,8 @@ const BOOKMAKER_ALIASES = {
 
 
 // === Market Type Mappings ===
-// Maps surebet.com market formats to OddsHarvester formats
+// Maps surebet.com market formats to the extension's normalized market identifiers
+// These normalized identifiers are used to match markets against CSV-based CLV data
 
 const MARKET_MAPPINGS = {
   // Match Winner / 1X2
@@ -386,7 +387,7 @@ function normalizeBookmaker(name) {
 
 
 /**
- * Normalize a market type to OddsHarvester format.
+ * Normalize a market type to the extension's normalized market identifier format.
  * 
  * @param {string} market - Market type string
  * @returns {string} Normalized market type

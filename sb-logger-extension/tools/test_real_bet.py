@@ -127,22 +127,8 @@ async def main():
     print("\n🚀 Starting test...")
     print(f"⏰ Current time: {datetime.now().isoformat()}")
     
-    # Check server health first
-    print("\n🔍 Checking server health...")
-    try:
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            health = await client.get("http://127.0.0.1:8765/health")
-            if health.status_code == 200:
-                print("✅ Server is healthy")
-            else:
-                print(f"⚠️  Server returned {health.status_code}")
-                return
-    except Exception as e:
-        print(f"❌ Server unreachable: {e}")
-        print("\nPlease start the server first:")
-        print('   cd "c:\\Local\\SB Logger\\sb-logger-extension\\sb-logger-extension\\tools\\odds_harvester_api"')
-        print('   python server.py')
-        return
+    print("OddsHarvester removed. This test is now deprecated. Use the CSV-based CLV tests or a new Python harness that reads CSV data and performs CLV calculations if needed.")
+    return
     
     # Run the test
     success = await test_clv_endpoint()
@@ -155,4 +141,4 @@ async def main():
     print("=" * 80)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    raise SystemExit("OddsHarvester removed — test_real_bet is deprecated.")

@@ -4,7 +4,7 @@
 **Status**: Ready for testing
 
 ## Summary
-Complete implementation of Closing Line Value (CLV) tracking using the OddsHarvester API with player props support.
+Complete implementation of Closing Line Value (CLV) tracking using a CSV-based approach for football CLV (football-data.co.uk) and The Odds API for player props.
 
 ---
 
@@ -17,15 +17,10 @@ Complete implementation of Closing Line Value (CLV) tracking using the OddsHarve
 - 16 automatic + 50 manual polls per day budget
 - Supports NBA, NFL, MLB, NHL props
 
-### 2. **OddsHarvester API Server**
-- FastAPI wrapper at `tools/odds_harvester_api/server.py`
-- SQLite database with caching (`clv_cache.db`)
-- Endpoints:
-  - `/health` - Server status and stats
-  - `/api/batch-closing-odds` - Get closing odds for bets
-  - `/api/cache-stats` - Cache statistics
-  - `/api/clear-cache` - Clear cached data
-  - `/api/check-updates` - Check OddsHarvester version
+### 2. **CSV-Based CLV Service (football-data.co.uk)**
+- CSV fetcher & parser: `csvClvService.js` with intelligent caching and parsing
+- League mapping: `footballDataLeagues.js` handles tournament -> CSV code mapping
+- Supported markets: 1X2, O/U 2.5, Asian Handicap (Pinnacle closing odds via CSV)
 
 ### 3. **Extension Integration**
 - Background service (`background.js`) communicates with API
@@ -91,29 +86,13 @@ return {
 
 ---
 
-## Server Status Verification
+## CSV CLV Verification
 
-### API Server Running
-```powershell
-PS> netstat -ano | Select-String ":8765"
-TCP    127.0.0.1:8765         0.0.0.0:0              LISTENING       36332
-```
+### Cache present
+After the extension downloads CSVs, you should see CSV cache entries in extension storage keyed with `csv_cache_<league>_<season>`.
 
-### Health Check Passed ✅
-```json
-{
-  "status": "ok",
-  "version": "1.0.0",
-  "odds_harvester_version": "49aa5be",
-  "db_size": 0.09,
-  "cache_age": null,
-  "pending_jobs": 0,
-  "failure_rate": 0.0,
-  "active_concurrency": 3,
-  "recommended_concurrency": 3,
-  "health_state": "healthy"
-}
-```
+### Verify CSV parsing
+Use the CSV tools or the Force CLV Check in Settings to ensure CSV rows are parsed and match bets in the extension.
 
 ### Batch Endpoint Test ✅
 ```json
@@ -137,18 +116,15 @@ TCP    127.0.0.1:8765         0.0.0.0:0              LISTENING       36332
 
 ## How to Test
 
-### 1. **Start the API Server**
-```powershell
-cd "c:\Local\SB Logger\sb-logger-extension\sb-logger-extension\tools\odds_harvester_api"
-$env:LOCALAPPDATA\SurebetHelper\OddsHarvesterAPI\venv\Scripts\python.exe server.py
-```
+### 1. **Enable CSV CLV in Settings**
+1. Open extension Settings → CLV
+2. Toggle **Enable CLV Tracking**
+3. Use **Force CLV Check** to fetch CLV for eligible settled bets
 
 **Expected Output**:
 ```
-INFO:     Started server process [PID]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://127.0.0.1:8765
+INFO: CSV files downloaded and parsed (extension logs)
+INFO: Batch check finished: processed: 1, failed: 0
 ```
 
 ### 2. **Reload the Extension**
@@ -163,36 +139,20 @@ INFO:     Uvicorn running on http://127.0.0.1:8765
 
 **Expected**: ✅ API online (version shown)
 
-### 4. **Test CLV Check**
+### 4. **Test CLV Check (CSV)**
 1. In CLV Settings panel
 2. Click **Force Check Now** button
 
 **Expected Results**:
 - If no pending bets: "No pending bets found"
-- If pending bets exist: "Processing X bets..." then results table
-- Current mock: All bets fail with "OddsHarvester integration not implemented yet"
+- If pending bets exist: the extension will fetch CSVs and compute CLV for eligible bets
 
 ---
 
-## Known Limitations
-
-### OddsHarvester Scraping Not Implemented
-The API server is fully functional but returns mock failures because the actual OddsHarvester web scraping integration is pending. This is intentional - the infrastructure is ready, scraping logic comes next.
-
-**Current Behavior**:
-```json
-{
-  "success": false,
-  "error": "OddsHarvester integration not implemented yet",
-  "closing_odds": null
-}
-```
-
-**Next Steps for Full Functionality**:
-1. Implement `oddsharvester_wrapper.py` scraping logic
-2. Add Selenium/Playwright for dynamic content
-3. Handle rate limiting and CAPTCHAs
-4. Integrate with existing league mappers
+### Known Limitations
+- The local Python-based OddsHarvester scraper is deprecated and no longer used.
+- CSV-based CLV supports 22 major European leagues; gaps may exist for smaller leagues.
+- Player props require sufficient polling history to calculate true props CLV; this may take 3-6 months of historic poll data.
 
 ### Player Props API Integration
 The props polling system is complete but requires The Odds API key configuration:
@@ -249,13 +209,14 @@ Get free key: https://the-odds-api.com/ (100 requests/month free tier)
 
 ---
 
-## File Manifest
+
+### File Manifest
 
 ### New Files
 - `sb-logger-extension/prop_poller.js` (476 lines) - Player props polling
-- `tools/odds_harvester_api/server.py` (894 lines) - FastAPI server
-- `tools/odds_harvester_api/database.py` (557 lines) - SQLite wrapper
-- `tools/odds_harvester_api/requirements_api.txt` - Python dependencies
+- `tools/odds_harvester_api/server.py` (894 lines) - FastAPI server (now deprecated and archived at `archive/clv_api_attempts/odds_harvester_api/`)
+- `tools/odds_harvester_api/database.py` (557 lines) - SQLite wrapper (archived)
+- `tools/odds_harvester_api/requirements_api.txt` - Python dependencies (archived)
 
 ### Modified Files
 - `background.js` - CLV API integration, URL fix, error handling
@@ -286,29 +247,24 @@ git add sb-logger-extension/prop_poller.js
 ## Troubleshooting
 
 ### "Unknown error" when clicking Force Check Now
-**Cause**: Server not running or network issue  
+**Cause**: CSV download failed, parse error, or match not found  
 **Fix**: 
-1. Check server is running: `netstat -ano | Select-String ":8765"`
-2. Test manually: `Invoke-RestMethod http://127.0.0.1:8765/health`
-3. Check browser console for actual error
+1. Use Settings → Diagnostics → Load Log to view the CSV fetch, parse, or match errors
+2. Clear CSV cache and retry using Settings → CLV → Clear CSV Cache → Force CLV Check
+3. Inspect browser DevTools console for more details
 
-### Server won't start
-**Cause**: Port 8765 already in use  
+### CSV not downloading / parse issues
+**Cause**: Network blocking, site changes, or malformed CSV data
 **Fix**:
-```powershell
-# Kill existing process
-netstat -ano | Select-String ":8765" | ForEach-Object { 
-  $_.ToString().Trim() -split '\s+' | Select-Object -Last 1 
-} | ForEach-Object { 
-  Stop-Process -Id $_ -Force 
-}
-```
+1. Run Force CLV Check and inspect Diagnostics → Load Log
+2. Clear CSV cache and retry
+3. If a particular CSV file is missing (404), verify the season/league combination (season format: YYZZ, league code list in `footballDataLeagues.js`)
 
 ### Import errors in server.py
 **Cause**: Missing dependencies  
 **Fix**:
 ```powershell
-cd tools/odds_harvester_api
+  # Note: OddsHarvester API has been archived. See `archive/clv_api_attempts/odds_harvester_api` for historical files
 pip install -r requirements_api.txt
 ```
 
@@ -320,11 +276,9 @@ pip install -r requirements_api.txt
 
 ## Next Implementation Phase
 
-### Priority 1: OddsHarvester Scraping
-- Implement `oddsharvester_wrapper.py` 
-- Add Selenium for dynamic content
-- Integrate with `league_mapper.detect_league()`
-- Handle rate limiting (delays between requests)
+### Priority 1: CSV & Data Coverage
+- Expand CSV coverage to additional leagues and seasons where available
+- Improve matching heuristics for tournament naming, timezones, and edge cases
 
 ### Priority 2: Player Props Integration
 - Configure The Odds API key
@@ -343,12 +297,7 @@ pip install -r requirements_api.txt
 ## Configuration Reference
 
 ### API Server Config
-```python
-# server.py - Lines 48-51
-API_HOST = "127.0.0.1"
-API_PORT = 8765
-DB_FILE = Path(__file__).parent / "clv_cache.db"
-```
+The local API server is deprecated and no longer required; no API config is necessary for standard CSV-based CLV usage.
 
 ### Extension Config
 ```javascript

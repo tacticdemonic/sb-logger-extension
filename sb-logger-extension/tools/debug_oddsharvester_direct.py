@@ -1,25 +1,13 @@
 #!/usr/bin/env python3
 """
-Debug OddsHarvester scraping - test directly with the library
+Deprecated: debug_oddsharvester_direct
+
+OddsHarvester has been removed. This script previously performed direct
+debug scraping with OddsHarvester and is now deprecated. Use the CSV CLV
+service or player props poller for testing and debugging CLV behaviors.
 """
 
-import sys
-import os
-
-# Add OddsHarvester to path
-oddsharvester_path = r"c:\Local\SB Logger\sb-logger-extension\sb-logger-extension\tools\odds_harvester_api\OddsHarvester\src"
-sys.path.insert(0, oddsharvester_path)
-
-import asyncio
-from core.odds_harvester import OddsHarvester
-from datetime import datetime, timedelta
-
-async def test_scraping():
-    """Test OddsHarvester scraping directly"""
-    
-    print("=" * 80)
-    print("🔍 TESTING ODDSHARVESTER DIRECTLY")
-    print("=" * 80)
+raise SystemExit("OddsHarvester removed — debug_oddsharvester_direct is deprecated.")
     
     # Test with England Championship
     sport = "football"
@@ -97,4 +85,4 @@ async def test_scraping():
         print(f"✅ Closed")
 
 if __name__ == "__main__":
-    asyncio.run(test_scraping())
+    raise SystemExit("OddsHarvester removed — debug_oddsharvester_direct is deprecated.")

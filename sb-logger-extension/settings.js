@@ -945,38 +945,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial load of props API usage
     updatePropsApiUsage();
     
-    // Clear CLV cache
+    // Clear CLV cache (CSV-based)
     const clearClvCacheBtn = document.getElementById('clv-clear-cache-btn');
     if (clearClvCacheBtn) {
       clearClvCacheBtn.addEventListener('click', async () => {
-        if (!confirm('Clear all cached CLV data? This will not affect stored CLV values on bets.')) {
+        if (!confirm('Clear all cached CSV CLV data? This will remove all downloaded CSVs (current season entries will be redownloaded on demand).')) {
           return;
         }
-        
         clearClvCacheBtn.disabled = true;
         clearClvCacheBtn.textContent = '🔄 Clearing...';
-        
-        const apiUrl = document.getElementById('clv-api-url')?.value || 'http://127.0.0.1:8765';
-        
-        try {
-          const response = await fetch(`${apiUrl}/api/clear-cache`, {
-            method: 'POST',
-            headers: { 'Accept': 'application/json' }
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            alert(`✅ Cache cleared!\n\nRemoved ${data.deleted_leagues || 0} league entries\nRemoved ${data.deleted_odds || 0} odds entries`);
-            refreshClvCacheStats();
-          } else {
-            alert(`❌ Failed to clear cache: ${response.status}`);
+
+        // Clear all CSV caches from storage
+        api.storage.local.get(null, (allData) => {
+          const cacheKeys = Object.keys(allData).filter(key => key.startsWith('csv_cache_'));
+          if (cacheKeys.length === 0) {
+            alert('ℹ️ No CSV caches to clear.');
+            clearClvCacheBtn.disabled = false;
+            clearClvCacheBtn.textContent = '🗑️ Clear Cache';
+            return;
           }
-        } catch (err) {
-          alert(`❌ Failed to clear cache: ${err.message}`);
-        }
-        
-        clearClvCacheBtn.disabled = false;
-        clearClvCacheBtn.textContent = '🗑️ Clear Cache';
+          api.storage.local.remove(cacheKeys, () => {
+            alert(`✅ Cleared ${cacheKeys.length} CSV cache(s).`);
+            refreshClvCacheStats();
+            clearClvCacheBtn.disabled = false;
+            clearClvCacheBtn.textContent = '🗑️ Clear Cache';
+          });
+        });
       });
     }
     
@@ -986,48 +980,11 @@ document.addEventListener('DOMContentLoaded', () => {
       refreshClvStatsBtn.addEventListener('click', refreshClvCacheStats);
     }
     
-    // Check for OddsHarvester updates
+    // Check updates button is deprecated - OddsHarvester removed
     const checkUpdatesBtn = document.getElementById('clv-check-updates-btn');
     if (checkUpdatesBtn) {
-      checkUpdatesBtn.addEventListener('click', async () => {
-        checkUpdatesBtn.disabled = true;
-        checkUpdatesBtn.textContent = '🔄 Checking...';
-        
-        const apiUrl = document.getElementById('clv-api-url')?.value || 'http://127.0.0.1:8765';
-        const updateStatus = document.getElementById('clv-update-status');
-        
-        try {
-          const response = await fetch(`${apiUrl}/api/check-updates`, {
-            method: 'GET',
-            headers: { 'Accept': 'application/json' }
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            if (updateStatus) {
-              updateStatus.style.display = 'block';
-              if (data.update_available) {
-                updateStatus.innerHTML = `<span style="color: #ffc107;">⚠️ Update available: ${data.latest_version}</span><br>
-                  <span style="font-size: 11px;">Current: ${data.current_version}</span>`;
-              } else {
-                updateStatus.innerHTML = `<span style="color: #28a745;">✅ Up to date (${data.current_version})</span>`;
-              }
-            }
-          } else {
-            if (updateStatus) {
-              updateStatus.style.display = 'block';
-              updateStatus.innerHTML = `<span style="color: #dc3545;">❌ Failed to check updates</span>`;
-            }
-          }
-        } catch (err) {
-          if (updateStatus) {
-            updateStatus.style.display = 'block';
-            updateStatus.innerHTML = `<span style="color: #dc3545;">❌ ${err.message}</span>`;
-          }
-        }
-        
-        checkUpdatesBtn.disabled = false;
-        checkUpdatesBtn.textContent = '🔍 Check for Updates';
+      checkUpdatesBtn.addEventListener('click', () => {
+        alert('OddsHarvester has been removed. CSV-based CLV does not support a local harvester update.');
       });
     }
     
@@ -1039,16 +996,11 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
     
-    // Download installer script link
+    // Download installer script link (deprecated)
     const downloadInstallerLink = document.getElementById('clv-download-installer');
     if (downloadInstallerLink) {
-      downloadInstallerLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        // Detect OS and open appropriate installer script
-        const isWindows = navigator.platform.toLowerCase().includes('win');
-        const scriptFile = isWindows ? 'install_odds_api.ps1' : 'install_odds_api.sh';
-        api.tabs.create({ url: `https://github.com/tacticdemonic/surebet-helper-extension/blob/main/sb-logger-extension/tools/odds_harvester_api/${scriptFile}` });
-      });
+      // Hide link since OddsHarvester has been removed
+      downloadInstallerLink.style.display = 'none';
     }
   }
   
@@ -1079,53 +1031,47 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   async function checkClvConnection() {
-    const apiUrl = document.getElementById('clv-api-url')?.value || 'http://127.0.0.1:8765';
-
-    try {
-      const response = await fetch(`${apiUrl}/health`, {
-        method: 'GET',
-        headers: { 'Accept': 'application/json' }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        updateClvConnectionStatus(true, data);
-        refreshClvCacheStats();
-      } else {
-        updateClvConnectionStatus(false);
-      }
-    } catch (err) {
-      updateClvConnectionStatus(false);
-    }
+    // CSV-based CLV does not require a local server. Set status based on whether CSV CLV is enabled.
+    const clvEnabled = document.getElementById('clv-enabled')?.checked || false;
+    const versionData = clvEnabled ? { version: 'CSV-based' } : null;
+    updateClvConnectionStatus(!!clvEnabled, versionData);
+    // Refresh cache-based stats
+    refreshClvCacheStats();
   }
   
   async function refreshClvCacheStats() {
-    const apiUrl = document.getElementById('clv-api-url')?.value || 'http://127.0.0.1:8765';
     const dbSizeEl = document.getElementById('clv-db-size');
     const cacheStatsEl = document.getElementById('clv-cache-stats');
-    
     try {
-      const response = await fetch(`${apiUrl}/health`, {
-        method: 'GET',
-        headers: { 'Accept': 'application/json' }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        
-        if (dbSizeEl) {
-          const sizeKb = data.cache_size_kb || 0;
-          if (sizeKb >= 1024) {
-            dbSizeEl.textContent = `${(sizeKb / 1024).toFixed(1)} MB`;
-          } else {
-            dbSizeEl.textContent = `${sizeKb.toFixed(0)} KB`;
+      api.storage.local.get(null, (allData) => {
+        const cacheKeys = Object.keys(allData).filter(k => k.startsWith('csv_cache_'));
+        const cachedLeagues = cacheKeys.length;
+        let cachedOdds = 0;
+        let approxBytes = 0;
+        for (const k of cacheKeys) {
+          try {
+            const val = allData[k];
+            if (val && val.rows && Array.isArray(val.rows)) {
+              cachedOdds += val.rows.length;
+              // rough size estimate - stringified length
+              approxBytes += JSON.stringify(val).length;
+            }
+          } catch (e) {
+            // ignore errors
           }
         }
-        
-        if (cacheStatsEl) {
-          cacheStatsEl.innerHTML = `Leagues cached: ${data.cached_leagues || 0}<br>Odds cached: ${data.cached_odds || 0}`;
+
+        if (dbSizeEl) {
+          if (approxBytes >= 1024 * 1024) {
+            dbSizeEl.textContent = `${(approxBytes / (1024 * 1024)).toFixed(1)} MB`;
+          } else {
+            dbSizeEl.textContent = `${Math.round(approxBytes / 1024)} KB`;
+          }
         }
-      }
+        if (cacheStatsEl) {
+          cacheStatsEl.innerHTML = `Leagues cached: ${cachedLeagues || 0}<br>Odds cached: ${cachedOdds || 0}`;
+        }
+      });
     } catch (err) {
       if (dbSizeEl) dbSizeEl.textContent = '--';
       if (cacheStatsEl) cacheStatsEl.innerHTML = 'Leagues cached: --<br>Odds cached: --';
