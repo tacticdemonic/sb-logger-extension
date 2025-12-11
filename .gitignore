@@ -51,3 +51,6 @@ temp/
 
 # Extension store assets (screenshots, promotional images)
 store-assets/
+ 
+# Deprecated OddsHarvester tools (archived, keep for reference in archive/)
+tools/odds_harvester_api/
