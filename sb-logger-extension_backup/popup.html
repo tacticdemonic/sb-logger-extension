@@ -1,0 +1,183 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>SB Logger</title>
+  <style>
+    body { font-family: Arial, sans-serif; width: 520px; margin: 10px; color: #222; }
+    h1 { font-size: 16px; margin: 4px 0 10px; }
+    #bets { max-height: 350px; overflow: auto; border: 1px solid #ddd; padding: 6px; background: #fafafa; }
+    table { border-collapse: collapse; width: 100%; font-size: 12px; background: #fff; }
+    th, td { padding: 8px; border-bottom: 1px solid #eee; text-align: left; vertical-align: top; }
+    th { background: #f0f0f0; font-weight: 600; font-size: 12px; }
+    tr:hover { background: #f8f8f8; }
+    .controls { margin-top: 8px; display:flex; gap:8px; }
+    button { padding: 6px 10px; font-size: 12px; cursor: pointer; border: 1px solid #ccc; background: #fff; border-radius: 3px; }
+    button:hover { background: #f0f0f0; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    #check-results { background: #28a745; color: #fff; border-color: #28a745; font-weight: 500; }
+    #check-results:hover:not(:disabled) { background: #218838; }
+    #api-setup { background: #6c757d; color: #fff; border-color: #6c757d; }
+    #api-setup:hover { background: #5a6268; }
+    #clear-all { color: #c00; border-color: #c00; }
+    #clear-all:hover { background: #fee; }
+    .note { color: #666; font-size: 11px; margin-top: 2px; }
+    .small { font-size: 11px; color: #555; }
+    .badge { display: inline-block; border-radius: 3px; }
+    .status-btn { pointer-events: auto !important; position: relative; z-index: 10; }
+    .status-btn:hover { opacity: 0.85; transform: scale(1.05); transition: all 0.15s; }
+    #chart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; }
+    #chart-modal.active { display: flex; align-items: center; justify-content: center; }
+    #chart-container { background: #fff; padding: 25px; border-radius: 8px; width: 95%; max-width: 750px; max-height: 85%; overflow: auto; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    #close-chart { position: absolute; top: 15px; right: 15px; background: #dc3545; color: #fff; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 14px; }
+    #close-chart:hover { background: #c82333; }
+    #chart-container h2 { margin: 0 0 15px 0; font-size: 18px; color: #333; font-weight: 600; }
+    canvas { display: block; max-width: 100%; height: auto; }
+  </style>
+</head>
+<body>
+  <h1>SB Logger — Saved Bets</h1>
+  <div style="margin-bottom:8px;display:flex;align-items:center;gap:8px;font-size:12px">
+    <label style="font-weight:600">Sort by:</label>
+    <select id="sort-select" style="padding:4px 8px;border:1px solid #ccc;border-radius:3px;font-size:12px">
+      <option value="saved-desc">Saved (newest first)</option>
+      <option value="saved-asc">Saved (oldest first)</option>
+      <option value="event-asc">Event Time (soonest first)</option>
+      <option value="event-desc">Event Time (latest first)</option>
+      <option value="status">Status (pending first)</option>
+    </select>
+    <label style="display:flex;align-items:center;gap:4px;cursor:pointer">
+      <input type="checkbox" id="hide-lay-bets" style="cursor:pointer">
+      <span>Hide Lay Bets</span>
+    </label>
+    <button id="commission-settings" style="padding:4px 8px;border:1px solid #007bff;background:#007bff;color:#fff;border-radius:3px;font-size:12px;cursor:pointer;margin-left:auto">⚙️ Commission</button>
+    <button id="rounding-settings" style="padding:4px 8px;border:1px solid #007bff;background:#007bff;color:#fff;border-radius:3px;font-size:12px;cursor:pointer;margin-left:auto">⚙️ Rounding</button>
+  </div>
+  <div id="commission-panel" style="display:none;margin-bottom:8px;padding:10px;background:#f8f9fa;border:1px solid #dee2e6;border-radius:4px;font-size:12px">
+    <div style="font-weight:600;margin-bottom:8px">Exchange Commission Rates (%)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div>
+        <label style="display:block;color:#666;margin-bottom:2px">Betfair:</label>
+        <input type="number" id="comm-betfair" step="0.1" min="0" max="100" style="width:100%;padding:4px;border:1px solid #ccc;border-radius:3px" />
+      </div>
+      <div>
+        <label style="display:block;color:#666;margin-bottom:2px">Betdaq:</label>
+        <input type="number" id="comm-betdaq" step="0.1" min="0" max="100" style="width:100%;padding:4px;border:1px solid #ccc;border-radius:3px" />
+      </div>
+      <div>
+        <label style="display:block;color:#666;margin-bottom:2px">Matchbook:</label>
+        <input type="number" id="comm-matchbook" step="0.1" min="0" max="100" style="width:100%;padding:4px;border:1px solid #ccc;border-radius:3px" />
+      </div>
+      <div>
+        <label style="display:block;color:#666;margin-bottom:2px">Smarkets:</label>
+        <input type="number" id="comm-smarkets" step="0.1" min="0" max="100" style="width:100%;padding:4px;border:1px solid #ccc;border-radius:3px" />
+      </div>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:6px;justify-content:flex-end">
+      <button id="save-commission" style="padding:4px 12px;background:#28a745;color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:11px">Save</button>
+      <button id="cancel-commission" style="padding:4px 12px;background:#6c757d;color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:11px">Cancel</button>
+    </div>
+    <div class="note" style="margin-top:6px">Commission is deducted from winning bets only. Default: Betfair 5%, Betdaq 2%, Matchbook 1%, Smarkets 2%</div>
+  </div>
+  <div id="rounding-panel" style="display:none;margin-bottom:8px;padding:10px;background:#f8f9fa;border:1px solid #dee2e6;border-radius:4px;font-size:12px">
+    <div style="font-weight:600;margin-bottom:8px">Stake Rounding</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+        <input type="checkbox" id="rounding-enabled" style="cursor:pointer;width:16px;height:16px" />
+        <span>Enable stake rounding for new bets</span>
+      </label>
+      <div>
+        <label style="display:block;color:#666;margin-bottom:2px">Rounding increment:</label>
+        <input type="number" id="rounding-increment" min="0.01" max="100" step="0.01" placeholder="e.g., 0.50" style="width:100%;padding:4px;border:1px solid #ccc;border-radius:3px" />
+      </div>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:6px;justify-content:flex-end">
+      <button id="save-rounding" style="padding:4px 12px;background:#28a745;color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:11px">Save</button>
+      <button id="cancel-rounding" style="padding:4px 12px;background:#6c757d;color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:11px">Cancel</button>
+    </div>
+    <div class="note" style="margin-top:6px">Rounding increment (e.g., 0.50 rounds £10.23 → £10.50). Only applies to new bets.</div>
+  </div>
+  <div id="bets">
+    <div class="small">Loading...</div>
+  </div>
+
+  <div class="controls">
+    <button id="check-results">🔍 Check Results</button>
+    <button id="api-setup">⚙️ API Setup</button>
+    <button id="import-csv" style="background:#17a2b8;color:#fff;border-color:#17a2b8">📥 Import Betfair P/L</button>
+    <button id="view-chart">📊 View Chart</button>
+    <button id="export-json">Export JSON</button>
+    <button id="export-csv">Export CSV</button>
+    <button id="clear-all" style="margin-left:auto;color:#c00">Clear All</button>
+  </div>
+
+  <div id="chart-modal">
+    <div id="chart-container">
+      <button id="close-chart">✕</button>
+      <h2>Betting Performance: P/L vs Expected Value</h2>
+      <canvas id="plChart" width="700" height="450"></canvas>
+    </div>
+  </div>
+
+  <div id="edit-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:2000;justify-content:center;align-items:center">
+    <div id="edit-container" style="background:#fff;padding:25px;border-radius:8px;width:90%;max-width:600px;max-height:85%;overflow:auto;box-shadow:0 4px 20px rgba(0,0,0,0.3)">
+      <h2 style="margin:0 0 20px 0;font-size:18px;color:#333;font-weight:600">Edit Bet</h2>
+      <form id="edit-form" style="font-size:12px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div>
+            <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Bookmaker:</label>
+            <input type="text" name="bookmaker" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Sport:</label>
+            <input type="text" name="sport" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box">
+          </div>
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Event Name:</label>
+          <input type="text" name="event" required style="width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box">
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Tournament/League:</label>
+          <input type="text" name="tournament" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box">
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Market/Selection:</label>
+          <input type="text" name="market" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
+          <div>
+            <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Odds:</label>
+            <input type="number" name="odds" step="0.01" min="1.01" required style="width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Probability (%):</label>
+            <input type="number" name="probability" step="0.1" min="0" max="100" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Stake:</label>
+            <input type="number" name="stake" step="0.01" min="0" required style="width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box">
+          </div>
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:600">
+            <input type="checkbox" name="isLay" style="cursor:pointer;width:16px;height:16px">
+            <span>Lay Bet</span>
+          </label>
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Note:</label>
+          <textarea name="note" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box;font-family:Arial;height:60px;resize:vertical"></textarea>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;border-top:1px solid #eee;padding-top:16px">
+          <button type="button" id="cancel-edit" style="padding:8px 16px;background:#6c757d;color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600">Cancel</button>
+          <button type="submit" style="padding:8px 16px;background:#28a745;color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

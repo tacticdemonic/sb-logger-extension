@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Background Script Diagnostic</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #1e1e1e; color: #d4d4d4; }
+    button { padding: 10px 20px; margin: 5px; font-size: 14px; cursor: pointer; }
+    #output { margin-top: 20px; white-space: pre-wrap; background: #252526; padding: 15px; border: 1px solid #3e3e42; }
+    .success { color: #4ec9b0; }
+    .error { color: #f48771; }
+    .info { color: #4fc1ff; }
+  </style>
+</head>
+<body>
+  <h2>🔧 Background Script Diagnostic Tool</h2>
+  <p>This tests if background.js is responding to messages</p>
+  
+  <button onclick="testMessage('forceClvCheck')">Test Force CLV Check</button>
+  <button onclick="testMessage('forcePropsPoll')">Test Force Props Poll</button>
+  <button onclick="testMessage('clearBets')">Test Clear Bets</button>
+  <button onclick="testMessage('unknownAction')">Test Unknown Action</button>
+  <button onclick="clearOutput()">Clear Output</button>
+  
+  <div id="output"></div>
+  
+  <script>
+    const api = typeof chrome !== 'undefined' ? chrome : browser;
+    const output = document.getElementById('output');
+    
+    function log(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const line = document.createElement('div');
+      line.className = type;
+      line.textContent = `[${timestamp}] ${message}`;
+      output.appendChild(line);
+      output.scrollTop = output.scrollHeight;
+    }
+    
+    function clearOutput() {
+      output.innerHTML = '';
+    }
+    
+    function testMessage(action) {
+      log(`Sending message: ${action}`, 'info');
+      
+      const startTime = Date.now();
+      
+      api.runtime.sendMessage({ action }, (response) => {
+        const duration = Date.now() - startTime;
+        
+        // Check for runtime errors
+        if (api.runtime.lastError) {
+          log(`❌ Runtime Error: ${api.runtime.lastError.message}`, 'error');
+          return;
+        }
+        
+        // Check if response is undefined
+        if (response === undefined) {
+          log(`❌ Response is UNDEFINED (took ${duration}ms)`, 'error');
+          log(`   This means background script is NOT responding`, 'error');
+          log(`   Possible causes:`, 'error');
+          log(`   • Background script failed to load`, 'error');
+          log(`   • Syntax error in background.js/prop_poller.js/clv_debug.js`, 'error');
+          log(`   • Message listener not set up`, 'error');
+          log(`   • Handler didn't call sendResponse()`, 'error');
+          log(`   • Handler didn't return true for async`, 'error');
+          return;
+        }
+        
+        // Log response
+        log(`✅ Response received (took ${duration}ms):`, 'success');
+        log(JSON.stringify(response, null, 2), 'success');
+      });
+    }
+    
+    // Log on load
+    log('Diagnostic tool loaded', 'success');
+    log('Browser API: ' + (typeof chrome !== 'undefined' ? 'chrome' : 'browser'), 'info');
+  </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+# Development and test files
+test-*.js
+*.csv
+*.xlsx
+HTML Sourde
+MATCHING_IMPROVEMENTS.md
+
+# Development artifacts
+icon48.png
+icon96.png
+
+# Personal data files
+settled*.csv
+smarkets_account_overview*.csv
+surebet-bets-*.csv
+
+# Build artifacts
+*.zip
+dist/
+build/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Internal development docs
+.github/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Node modules (if you add build tools later)
+node_modules/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Workspace temporary directory containing exports and debug CSVs
+/Temp Files/
+
+# Extension store assets (screenshots, promotional images)
+store-assets/
+ 
+# Deprecated OddsHarvester tools (archived, keep for reference in archive/)
+tools/odds_harvester_api/
+sb-logger-extension/tools/odds_harvester_api/

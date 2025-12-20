@@ -1,0 +1,190 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Surebet Helper</title>
+  <style>
+    body { font-family: Arial, sans-serif; width: 520px; margin: 10px; color: #222; }
+    h1 { font-size: 16px; margin: 4px 0 10px; }
+    #bets { max-height: 350px; overflow: auto; border: 1px solid #ddd; padding: 6px; background: #fafafa; }
+    table { border-collapse: collapse; width: 100%; font-size: 12px; background: #fff; }
+    th, td { padding: 8px; border-bottom: 1px solid #eee; text-align: left; vertical-align: top; }
+    th { background: #f0f0f0; font-weight: 600; font-size: 12px; }
+    tr:hover { background: #f8f8f8; }
+    .controls { margin-top: 8px; display:flex; gap:8px; }
+    button { padding: 6px 10px; font-size: 12px; cursor: pointer; border: 1px solid #ccc; background: #fff; border-radius: 3px; }
+    button:hover { background: #f0f0f0; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    #check-results { background: #28a745; color: #fff; border-color: #28a745; font-weight: 500; }
+    #check-results:hover:not(:disabled) { background: #218838; }
+    #api-setup { background: #6c757d; color: #fff; border-color: #6c757d; }
+    #api-setup:hover { background: #5a6268; }
+    #clear-all { color: #c00; border-color: #c00; }
+    #clear-all:hover { background: #fee; }
+    .note { color: #666; font-size: 11px; margin-top: 2px; }
+    .small { font-size: 11px; color: #555; }
+    .badge { display: inline-block; border-radius: 3px; }
+    .status-btn { pointer-events: auto !important; position: relative; z-index: 10; }
+    .status-btn:hover { opacity: 0.85; transform: scale(1.05); transition: all 0.15s; }
+    #chart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; }
+    #chart-modal.active { display: flex; align-items: center; justify-content: center; }
+    #chart-container { background: #fff; padding: 25px; border-radius: 8px; width: 95%; max-width: 750px; max-height: 85%; overflow: auto; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    #close-chart { position: absolute; top: 15px; right: 15px; background: #dc3545; color: #fff; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 14px; }
+    #close-chart:hover { background: #c82333; }
+    #chart-container h2 { margin: 0 0 15px 0; font-size: 18px; color: #333; font-weight: 600; }
+    canvas { display: block; max-width: 100%; height: auto; }
+    
+    /* Market Filter Styles */
+    .market-blocked { border-left: 3px solid #dc3545 !important; background: #fee !important; }
+  </style>
+</head>
+<body>
+  <h1>Surebet Helper — Saved Bets</h1>
+  
+  <!-- Feature Banner -->
+  <div id="feature-banner-kelly" style="display:none;background:#e7f3ff;border-left:4px solid #0056b3;padding:10px;margin-bottom:8px;border-radius:3px;font-size:12px">
+    🎉 <strong>New Feature:</strong> Kelly Bankroll Protection! Manage risk with pending bet adjustment & max bet caps. 
+    <a href="#" id="kelly-learn-more" style="color:#0056b3;text-decoration:underline;cursor:pointer;margin-left:4px">Learn More</a>
+    <a href="#" id="kelly-dismiss" style="color:#0056b3;text-decoration:underline;cursor:pointer;margin-left:8px">Dismiss</a>
+  </div>
+  
+  <!-- Bankroll Warning Banner -->
+  <div id="bankroll-warning-banner" style="display:none;background:#fff3cd;border-left:4px solid #ffc107;padding:10px;margin-bottom:8px;border-radius:3px;font-size:12px">
+    ⚠️ <strong>Warning:</strong> Pending bets (<span id="pending-total">£0</span>) exceed available bankroll (<span id="available-total">£0</span>). New bet stakes are disabled. 
+    <a href="#" id="open-kelly-settings" style="color:#856404;text-decoration:underline;cursor:pointer;margin-left:4px">View Settings</a>
+  </div>
+
+  <div style="margin-bottom:8px;display:flex;align-items:center;gap:8px;font-size:12px;flex-wrap:wrap">
+    <label style="font-weight:600">Sort by:</label>
+    <select id="sort-select" style="padding:4px 8px;border:1px solid #ccc;border-radius:3px;font-size:12px">
+      <option value="saved-desc">Saved (newest first)</option>
+      <option value="saved-asc">Saved (oldest first)</option>
+      <option value="event-asc">Event Time (soonest first)</option>
+      <option value="event-desc">Event Time (latest first)</option>
+      <option value="status">Status (pending first)</option>
+    </select>
+    <label style="display:flex;align-items:center;gap:4px;cursor:pointer">
+      <input type="checkbox" id="hide-lay-bets" style="cursor:pointer">
+      <span>Hide Lay Bets</span>
+    </label>
+    <label style="display:flex;align-items:center;gap:4px;cursor:pointer">
+      <input type="checkbox" id="show-pending-only" style="cursor:pointer">
+      <span>Pending Only</span>
+    </label>
+  </div>
+  <div id="bets">
+    <div class="small">Loading...</div>
+  </div>
+
+  <div class="controls">
+    <button id="check-results">🔍 Check Results</button>
+    <button id="analysis-btn" style="background:#6c757d;color:#fff;border-color:#6c757d">📊 Analysis</button>
+    <button id="settings-btn" style="background:#6c757d;color:#fff;border-color:#6c757d">⚙️ Settings</button>
+    <button id="import-btn" style="background:#17a2b8;color:#fff;border-color:#17a2b8">📥 Import</button>
+    <button id="contribute" style="background:#6f42c1;color:#fff;border-color:#6f42c1" title="Submit DOM data for an unsupported betting site">🌐 Submit Site</button>
+  </div>
+
+  <div id="edit-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:2000;justify-content:center;align-items:center">
+    <div id="edit-container" style="background:#fff;padding:25px;border-radius:8px;width:90%;max-width:600px;max-height:85%;overflow:auto;box-shadow:0 4px 20px rgba(0,0,0,0.3)">
+      <h2 style="margin:0 0 20px 0;font-size:18px;color:#333;font-weight:600">Edit Bet</h2>
+      <form id="edit-form" style="font-size:12px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div>
+            <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Bookmaker:</label>
+            <input type="text" name="bookmaker" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Sport:</label>
+            <input type="text" name="sport" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box">
+          </div>
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Event Name:</label>
+          <input type="text" name="event" required style="width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box">
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Tournament/League:</label>
+          <input type="text" name="tournament" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box">
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Market/Selection:</label>
+          <input type="text" name="market" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
+          <div>
+            <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Odds:</label>
+            <input type="number" name="odds" step="0.01" required style="width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Probability (%):</label>
+            <input type="number" name="probability" step="0.1" min="0" max="100" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Stake:</label>
+            <input type="number" name="stake" step="0.01" min="0" required style="width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box">
+          </div>
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">CLV Closing Odds (Optional):</label>
+          <input type="number" name="closingOdds" step="0.01" min="0" placeholder="Leave empty to keep current value" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box">
+          <p style="font-size:10px;color:#888;margin:4px 0 0 0">Enter closing odds to set/update CLV. Leave blank to preserve existing CLV data.</p>
+        </div>
+        <div style="margin-bottom:12px;display:flex;gap:12px;align-items:center">
+          <button type="button" id="edit-toggle-lay-btn" style="padding:6px 12px;background:#6f42c1;color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600;flex-shrink:0">To Lay</button>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:600">
+            <input type="checkbox" name="isLay" style="cursor:pointer;width:16px;height:16px;display:none">
+            <span style="display:none">Lay Bet (hidden)</span>
+          </label>
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Note:</label>
+          <textarea name="note" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box;font-family:Arial;height:60px;resize:vertical"></textarea>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;border-top:1px solid #eee;padding-top:16px">
+          <button type="button" id="cancel-edit" style="padding:8px 16px;background:#6c757d;color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600">Cancel</button>
+          <button type="submit" style="padding:8px 16px;background:#28a745;color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- CLV Manual Entry Modal -->
+  <div id="clv-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:2000;justify-content:center;align-items:center">
+    <div style="background:#fff;padding:25px;border-radius:8px;width:90%;max-width:500px;box-shadow:0 4px 20px rgba(0,0,0,0.3)">
+      <h2 style="margin:0 0 20px 0;font-size:18px;color:#333;font-weight:600">📈 Enter Closing Odds (Manual CLV)</h2>
+      <form id="clv-form">
+        <input type="hidden" id="clv-bet-id">
+        
+        <div style="background:#f8f9fa;padding:12px;border-radius:4px;margin-bottom:15px">
+          <div style="font-weight:600;color:#333;margin-bottom:5px" id="clv-event-name">Loading...</div>
+          <div style="font-size:11px;color:#666" id="clv-opening-odds">Opening: - | Bookmaker: -</div>
+        </div>
+        
+        <div style="margin-bottom:15px">
+          <label style="display:block;color:#666;margin-bottom:4px;font-weight:600">Closing Odds (from Pinnacle/OddsPortal):</label>
+          <input type="number" id="clv-closing-odds" step="0.01" min="1.01" required placeholder="e.g., 2.05" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box;font-size:14px">
+          <p style="font-size:11px;color:#666;margin:5px 0 0 0">Enter the closing line from a sharp bookmaker (Pinnacle preferred)</p>
+        </div>
+        
+        <div id="clv-preview" style="display:none;background:#f8f9fa;padding:15px;border-radius:4px;margin-bottom:15px;text-align:center">
+          <div style="font-size:12px;color:#666;margin-bottom:5px">Calculated CLV:</div>
+          <div id="clv-preview-value"></div>
+        </div>
+        
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;border-top:1px solid #eee;padding-top:16px">
+          <button type="button" id="cancel-clv" style="padding:8px 16px;background:#6c757d;color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600">Cancel</button>
+          <button type="submit" style="padding:8px 16px;background:#28a745;color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:600">Save CLV</button>
+        </div>
+        
+        <p style="font-size:11px;color:#666;margin:15px 0 0 0;text-align:center">
+          <a href="#" id="clv-report-mismatch" style="color:#007bff;text-decoration:none">Report incorrect closing line</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
+

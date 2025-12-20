@@ -1,0 +1,1053 @@
+asm.js type error: Asm.js optimizer disabled because debugger is active es-module-shims.min-4ca9b3dd5e434131e3bb4b0c1d7dff3bfd4035672a5086deec6f73979a49be73.js
+Surebet Helper: Script loaded on: en.surebet.com /valuebets contentScript.js:251:11
+Surebet Helper: ✓ On supported page, continuing initialization contentScript.js:261:11
+Surebet Helper: ===== INITIALIZING ===== contentScript.js:2994:13
+Surebet Helper: URL: https://en.surebet.com/valuebets contentScript.js:2995:13
+✅ Surebet Helper: Styles injected contentScript.js:2997:13
+Source map error: Error: request failed with status 404
+Stack in the worker:networkRequest@resource://devtools/client/shared/source-map-loader/utils/network-request.js:43:9
+
+Resource URL: https://en.surebet.com/assets/es-module-shims.min-4ca9b3dd5e434131e3bb4b0c1d7dff3bfd4035672a5086deec6f73979a49be73.js
+Source Map URL: /assets/es-module-shims.js-c69f1a5dd068dfc08a4cedc0ad77b792985bf256e162852bd03cdf764b666c4a.map
+📊 [StakePanel] Loaded settings from storage: 
+Object { bankroll: 284.486815, baseBankroll: 300, fraction: 0.25, useCommission: true, customCommissionRates: {…} }
+contentScript.js:629:17
+💰 [StakePanel] Loaded commission rates (raw): 
+Object { betfair: 5, betdaq: 2, matchbook: 0, smarkets: 0 }
+contentScript.js:630:17
+💰 [StakePanel] Commission keys: 
+Array(4) [ "betfair", "betdaq", "matchbook", "smarkets" ]
+contentScript.js:631:17
+💰 [StakePanel] Commission values: betfair=5%, betdaq=2%, matchbook=0%, smarkets=0% contentScript.js:632:17
+✅ Surebet Helper: Staking settings loaded contentScript.js:2999:13
+Surebet Helper: Initialization complete, observers active contentScript.js:3210:13
+The value of the attribute “expires” for the cookie “_ga_4H2DFG8NDS” has been overwritten. valuebets
+Surebet Helper: Hide Lay Bets button injected contentScript.js:1812:13
+Surebet Helper: Found 21 valuebet rows in main table contentScript.js:1828:13
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/lKovUQ/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607601655802395000, synonym_id: 1361594403, id: 1362078356, similar_size: 110, group_size: 2, gen_surebets: 0, tournament: "UEFA Champions League", teams: (2) […], initial_value: {…}, value_history: (5) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 2.3889 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? true contentScript.js:1994:15
+Surebet Helper: Probability: 0.4576 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0931 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 2.3889 isNaN: false Final: 2.3889 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.560Z", url: "https://en.surebet.com/nav/valuebet/prong/lKovUQ/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607601655802395008%2C%22synonym_id%22%3A1361594403%2C%22id%22%3A1362078356%2C%22similar_size%22%3A110%2C%22group_size%22%3A2%2C%22gen_surebets%22%3A0%2C%22tournament%22%3A%22UEFA+Champions+League%22%2C%22teams%22%3A%5B%22Arsenal%22%2C%22Bayern+Munich%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-19T20%3A04%3A51%22%2C%22value%22%3A2.369%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T06%3A37%3A36%22%2C%22value%22%3A2.3889%7D%2C%7B%22datetime%22%3A%222025-11-25T18%3A52%3A04%22%2C%22value%22%3A2.3158%7D%2C%7B%22datetime%22%3A%222025-11-25T10%3A28%3A01%22%2C%22value%22%3A2.3699%7D%2C%7B%22datetime%22%3A%222025-11-25T10%3A16%3A05%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T10%3A09%3A32%22%2C%22value%22%3A2.3699%7D%5D%2C%22overvalue%22%3A1.0931%2C%22probability%22%3A0.4576%2C%22value%22%3A2.3889%2C%22scan_time%22%3A1764160432000%2C%22unit_scan_time%22%3A1764160432000%2C%22bk_probability%22%3A0.3464%2C%22bk_margin%22%3A0.8787%2C%22commission%22%3A0%2C%22limit%22%3A14%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22n2OQRSk4gGz5W6VQGux6gw%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A615051561%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2365%2C%22time%22%3A%222025-11-26T20%3A00%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244705111%22%2C%22id%22%3A1362078356%2C%22inValue%22%3A1.72%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22326529910_lay%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%229.5%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22shotOnTarget%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22under%22%2C%22back%22%3Afalse%7D%2C%22tr_terse%22%3A%22Under+9.5+-+shot+on+target%3Cspan+class%3D%5C%22minor%5C%22%3E+-+lay%3C%2Fspan%3E%22%2C%22tr_expanded%22%3A%22Total+under+9.5+-+shot+on+target+-+Lay+odds%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGvsl0iC8tXFk6Ocds27BGV5W0xu649MltdfqWadBJxn4t2mycO6z5%5CnU1wKBrtXOl5JWT6Sre%2BVIL5QvhvDRA7g0CT934mb6ro%2F%2FscCt5V1Xb1VPFv7%5Cn84KUyYucJXw7CTYm6OozAU2%2FPfDLC3I9GGFBIs21WY4S5CHXzo87vJO3SjLy%5CnLuNanawIQJy4cHAhnf4b%2BFW3IVT91MEY2UzA%2F%2BoiTX4joC7v5FUpOwFd1xGa%5Cnkh%2FRhemb8tRwH38TM4fcxJAkgxo1OOeWZ0OZo3zDuviV1Q%3D%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1362078356, odds: 2.3889, originalLayOdds: null, probability: 45.76, overvalue: 1.09, bookmaker: "smarkets", sport: "Football", tournament: "UEFA Champions League", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 2.3889 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1362078356, limit: 14 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 14 contentScript.js:1850:21
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.3889", commission: "2%", adjusted: "2.3611", bookmaker: "smarkets" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/9VMDZQ/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607573473407794000, synonym_id: 1633673094, id: 1694716917, similar_size: 13, group_size: 1, gen_surebets: 1334, tournament: "Colombian Categoría Primera A", teams: (2) […], initial_value: {…}, value_history: (1) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 1.6024 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? true contentScript.js:1994:15
+Surebet Helper: Probability: 0.6782 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0868 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 1.6024 isNaN: false Final: 1.6024 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.562Z", url: "https://en.surebet.com/nav/valuebet/prong/9VMDZQ/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607573473407794048%2C%22synonym_id%22%3A1633673094%2C%22id%22%3A1694716917%2C%22similar_size%22%3A13%2C%22group_size%22%3A1%2C%22gen_surebets%22%3A1334%2C%22tournament%22%3A%22Colombian+Categor%C3%ADa+Primera+A%22%2C%22teams%22%3A%5B%22Am%C3%A9rica+de+Cali%22%2C%22Independiente+Medell%C3%ADn%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-25T11%3A02%3A24%22%2C%22value%22%3A1.6024%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-25T11%3A02%3A25%22%2C%22value%22%3A1.6024%7D%5D%2C%22overvalue%22%3A1.0868%2C%22probability%22%3A0.6782%2C%22value%22%3A1.6024%2C%22scan_time%22%3A1764160597000%2C%22unit_scan_time%22%3A1764160597000%2C%22bk_probability%22%3A0.5873%2C%22bk_margin%22%3A0.9306%2C%22commission%22%3A0%2C%22limit%22%3A179%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22rCZkMxpPpNniUoSb1_HCLg%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A1635339868%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A1218%2C%22time%22%3A%222025-11-27T23%3A30%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244733014%22%2C%22id%22%3A1694716917%2C%22inValue%22%3A2.66%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22332613865_lay%22%7D%7D%2C%22type%22%3A%7B%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22corner%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22win2%22%2C%22back%22%3Afalse%7D%2C%22tr_terse%22%3A%222+-+corners%3Cspan+class%3D%5C%22minor%5C%22%3E+-+lay%3C%2Fspan%3E%22%2C%22tr_expanded%22%3A%22Independiente+Medell%C3%ADn+to+win+-+corners+-+Lay+odds%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGbMUoZVbI4w2w2OcKIqXM73BRtPscDX4s%2FxFqSrfxwiv0SQlF%2BcJ%2F%5CneiSoFo7%2FWD51zGitomL0hkjErY5yC32ZVal1C%2BbFpZSutdb%2Bevze3RznD2F1%5Cnyn8kY8US9ni7vZZCUO0OOikjUBbXP7jFzahfW0H7V8JApy0H74P5vpAnjs5k%5CnHvW%2BXg%2Fk9r0NtPInk9kzj6kY3zyWXqOaSSLhPY%2BCRS8JHamDfYSJ1sK9l2bJ%5CnVkwONkqXB9%2BhE6nXeR32yxGBgqcyHEOGUG8IFtFXWdXcunMn5fNp%2BURWFcVs%5CnfHfnGoEFHkME260kWwlyZPBLTjNn%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1694716917, odds: 1.6024, originalLayOdds: null, probability: 67.82, overvalue: 1.09, bookmaker: "smarkets", sport: "Football", tournament: "Colombian Categoría Primera A", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 1.6024 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1694716917, limit: 179 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 179 contentScript.js:1850:21
+Surebet Helper: ✓ Highlighted row with stake limit: 179 contentScript.js:1856:23
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "1.6024", commission: "2%", adjusted: "1.5904", bookmaker: "smarkets" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/RuAMZw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607504008399222300, synonym_id: 1706562489, id: 1728897094, similar_size: 210, group_size: 2, gen_surebets: 116, tournament: "Asia - AFC Champions League 2", teams: (2) […], initial_value: {…}, value_history: (9) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 2.2048 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? true contentScript.js:1994:15
+Surebet Helper: Probability: 0.4859 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0714 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 2.2048 isNaN: false Final: 2.2048 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.564Z", url: "https://en.surebet.com/nav/valuebet/prong/RuAMZw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607504008399222336%2C%22synonym_id%22%3A1706562489%2C%22id%22%3A1728897094%2C%22similar_size%22%3A210%2C%22group_size%22%3A2%2C%22gen_surebets%22%3A116%2C%22tournament%22%3A%22Asia+-+AFC+Champions+League+2%22%2C%22teams%22%3A%5B%22Istiklol+FC%22%2C%22Al-Nassr+Riyadh%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-26T01%3A49%3A53%22%2C%22value%22%3A2.1493%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A36%3A58%22%2C%22value%22%3A2.2048%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A36%3A42%22%2C%22value%22%3A2.1905%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A36%3A35%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A36%3A27%22%2C%22value%22%3A1.8929%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A33%3A28%22%2C%22value%22%3A2.1111%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A33%3A08%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A27%3A08%22%2C%22value%22%3A2.1111%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A15%3A00%22%2C%22value%22%3A2.0989%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A14%3A27%22%2C%22value%22%3A2.087%7D%5D%2C%22overvalue%22%3A1.0714%2C%22probability%22%3A0.4859%2C%22value%22%3A2.2048%2C%22scan_time%22%3A1764160660000%2C%22unit_scan_time%22%3A1764160660000%2C%22bk_probability%22%3A0.4426%2C%22bk_margin%22%3A0.9787%2C%22commission%22%3A0%2C%22limit%22%3A17.128%2C%22currency%22%3A%22USD%22%2C%22source%22%3A%22a8Meg7nikBSSZWXZ8_iPbg%22%2C%22bk%22%3A%22matchbook%22%2C%22event_id%22%3A1728829619%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A859%2C%22time%22%3A%222025-11-26T13%3A45%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fwww.matchbook.com%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2231803502995500053%22%2C%22id%22%3A1728897094%2C%22inValue%22%3A1.83%2C%22bk%22%3A%22matchbook%22%2C%22externalId%22%3A%2231812770521001053%22%2C%22back%22%3A%22lay%22%2C%22marketId%22%3A%2231812770519900053%22%2C%22runner%22%3A1%2C%22runnerId%22%3A%2231812770521001053%22%7D%7D%2C%22type%22%3A%7B%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22goal%22%2C%22period%22%3A%22period1%22%2C%22type%22%3A%22win2%22%2C%22back%22%3Afalse%7D%2C%22tr_terse%22%3A%222+%3Cspan+class%3D%5C%22minor%5C%22%3E1st+period%3C%2Fspan%3E%3Cspan+class%3D%5C%22minor%5C%22%3E+-+lay%3C%2Fspan%3E%22%2C%22tr_expanded%22%3A%22Al-Nassr+Riyadh+to+win+-+goals+1st+period+-+Lay+odds%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZp5f%2F6A%2FSwSVs7qlafnbkBvHqAtdzhx9FiKwh%5Cnlb9rrf5el4XknKAbtIopT0XXwiQWnrVraCr2%2FJ%2FxVMm2BTLjLdUpwLzD6%2Fe%2B%5Cnuf6Qk8Dp1jAhfvbRD6ETHdDc6%2BoATZj7DpPA9gQxuJ8wxKSxgRCnogjqfbu%2F%5Cn7ikRcZzH6Z4eHB9A%2BPRLN8OqeMiHdWWXlhXiOQEQ%2BkPXNd4ksoipZj%2FkZdfC%5CnEZDBSyR872UX%2F6qgrCTnna3Fn5Fc5YJXCQtAy8xz%2BhAxc4S%2BLuxgI%2BkDhDV8%5CnjS0srUAJmnWqwpbiohZ2gRoe7DjQFUzlcDlIFGUn26aLHg8CLveRUmAI60hp%5CnAm12l6noMdu7MtrmXxT1dwBIyk8eySa5h3QjIIJbRNdTCu72PuyS1hQqQ2BX%5CnlzzHlW1hIvVvoC4B8%2F4XAr%2FVgpk78Q4OYFXs7ieD6HlcRKsJz1Uoew%3D%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1728897094, odds: 2.2048, originalLayOdds: null, probability: 48.59, overvalue: 1.07, bookmaker: "matchbook", sport: "Football", tournament: "Asia - AFC Champions League 2", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 2.2048 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1728897094, limit: 17.128 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 17.128 contentScript.js:1850:21
+💰 [Commission] Using default rate for matchbook: 0.01 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.2048", commission: "1%", adjusted: "2.1928", bookmaker: "matchbook" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/lMxqYg/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607477262927911000, synonym_id: 1361755299, id: 1651166356, similar_size: 55, group_size: 2, gen_surebets: 1, tournament: "UEFA Champions League", teams: (2) […], initial_value: {…}, value_history: (6) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 1.83 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? false contentScript.js:1994:15
+Surebet Helper: Probability: 0.5822 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0655 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 1.83 isNaN: false Final: 1.83 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.567Z", url: "https://en.surebet.com/nav/valuebet/prong/lMxqYg/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607477262927911072%2C%22synonym_id%22%3A1361755299%2C%22id%22%3A1651166356%2C%22similar_size%22%3A55%2C%22group_size%22%3A2%2C%22gen_surebets%22%3A1%2C%22tournament%22%3A%22UEFA+Champions+League%22%2C%22teams%22%3A%5B%22Eintracht+Frankfurt%22%2C%22Atalanta%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-24T11%3A59%3A28%22%2C%22value%22%3A1.4697%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A38%3A09%22%2C%22value%22%3A1.83%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A47%3A02%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T03%3A46%3A34%22%2C%22value%22%3A1.45%7D%2C%7B%22datetime%22%3A%222025-11-25T20%3A30%3A51%22%2C%22value%22%3A1.47%7D%2C%7B%22datetime%22%3A%222025-11-25T20%3A25%3A34%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T13%3A50%3A37%22%2C%22value%22%3A1.47%7D%5D%2C%22overvalue%22%3A1.0655%2C%22probability%22%3A0.5822%2C%22value%22%3A1.83%2C%22scan_time%22%3A1764160633000%2C%22unit_scan_time%22%3A1764160633000%2C%22bk_probability%22%3A0.5417%2C%22bk_margin%22%3A0.9907%2C%22commission%22%3A0%2C%22limit%22%3A11%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22YoSbKHm0-AinrH8ISKhTTA%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A614849004%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2365%2C%22time%22%3A%222025-11-26T20%3A00%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244705079%22%2C%22id%22%3A1651166356%2C%22inValue%22%3A1.83%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22326499163_back%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%2224.5%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22shot%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22over%22%7D%2C%22tr_terse%22%3A%22Over+24.5+-+shots%22%2C%22tr_expanded%22%3A%22Total+over+24.5+-+shots%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkG5WN8F87DMjxURe4mMxf9zfGfNJcnhQ18VzKxa%2BOhxrUL4rI0ZzzD%5CnJFXHwdBaP02G%2FwlzEkeGeaywDXQN5w29inWj9YdgP1aHee6q2VT9EBB5hzm8%5CngPk3VscxIenH3cMso66qMsRSZJX9xjkXblJFH7kwdipJJS9l%2Bsqhf0V77DGj%5Cn9QSKCfgo0auJMrofom85D5bzKfEk272tYZYL1Cjb7wWOLtFPU1cZIFtsHCWg%5CnK%2Ftw2I%2Bq9eCKhpR7phlDiKASIZ1DMlbVv5m5V2d6m2q9eI2gfbdcjXA7yVnO%5CnOfy7s0Y%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1651166356, odds: 1.83, originalLayOdds: null, probability: 58.22, overvalue: 1.07, bookmaker: "smarkets", sport: "Football", tournament: "UEFA Champions League", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 1.83 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1651166356, limit: 11 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 11 contentScript.js:1850:21
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "1.8300", commission: "2%", adjusted: "1.8134", bookmaker: "smarkets" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/RqCAZg/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607475868494130000, synonym_id: 1407843725, id: 1719705670, similar_size: 67, group_size: 1, gen_surebets: 30, tournament: "UEFA Europa League", teams: (2) […], initial_value: {…}, value_history: (6) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 1.9259 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? true contentScript.js:1994:15
+Surebet Helper: Probability: 0.5531 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0652 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 1.9259 isNaN: false Final: 1.9259 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.568Z", url: "https://en.surebet.com/nav/valuebet/prong/RqCAZg/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607475868494130304%2C%22synonym_id%22%3A1407843725%2C%22id%22%3A1719705670%2C%22similar_size%22%3A67%2C%22group_size%22%3A1%2C%22gen_surebets%22%3A30%2C%22tournament%22%3A%22UEFA+Europa+League%22%2C%22teams%22%3A%5B%22FC+Viktoria+Plzen%22%2C%22SC+Freiburg%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-25T20%3A05%3A03%22%2C%22value%22%3A1.6095%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A38%3A09%22%2C%22value%22%3A1.9259%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A48%3A31%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A42%3A30%22%2C%22value%22%3A1.6579%7D%2C%7B%22datetime%22%3A%222025-11-25T23%3A31%3A37%22%2C%22value%22%3A1.6098%7D%2C%7B%22datetime%22%3A%222025-11-25T23%3A28%3A13%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T20%3A05%3A05%22%2C%22value%22%3A1.6098%7D%5D%2C%22overvalue%22%3A1.0652%2C%22probability%22%3A0.5531%2C%22value%22%3A1.9259%2C%22scan_time%22%3A1764160455000%2C%22unit_scan_time%22%3A1764160455000%2C%22bk_probability%22%3A0.5032%2C%22bk_margin%22%3A0.9689%2C%22commission%22%3A0%2C%22limit%22%3A119%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22B8OJinm9M0mxafEe0ppEiA%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A718117070%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2367%2C%22time%22%3A%222025-11-27T17%3A45%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244708149%22%2C%22id%22%3A1719705670%2C%22inValue%22%3A2.08%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22326935241_lay%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%223.5%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22card%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22under%22%2C%22back%22%3Afalse%7D%2C%22tr_terse%22%3A%22Under+3.5+-+cards%3Cspan+class%3D%5C%22minor%5C%22%3E+-+lay%3C%2Fspan%3E%22%2C%22tr_expanded%22%3A%22Total+under+3.5+-+cards+-+Lay+odds%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGlOQYS6ha3r%2BNoHVwiQ8yt1alSjcOSWXH3MBlQXBlC%2FKii4isjw8h%5CnoD5lqBZfJA2DBdBnicBp8zUQNQN4SAAMprltKkmNpkxt34wrE%2FqnSvhMi4%2F%2F%5Cn%2FSISSA%2BciK%2Bv%2FKD3aEeysRhJAhkQqy9jiaAczoUvN7qKB0F1%2Bdh237%2FwMR5m%5Cnfo4vmy6qQ%2BYyyLPSvTH3%2FazlsIm4gMgjGXlVbsdj6691cnrPrRIjwWyCWE%2BT%5Cn6YoJzhMRWoPNlew3kj7cSh0qkV0nyUfhyHLN7feyWy%2FFHg%3D%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1719705670, odds: 1.9259, originalLayOdds: null, probability: 55.31, overvalue: 1.07, bookmaker: "smarkets", sport: "Football", tournament: "UEFA Europa League", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 1.9259 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1719705670, limit: 119 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 119 contentScript.js:1850:21
+Surebet Helper: ✓ Highlighted row with stake limit: 119 contentScript.js:1856:23
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "1.9259", commission: "2%", adjusted: "1.9074", bookmaker: "smarkets" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/Qn5hZQ/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607473609741625300, synonym_id: 1407654416, id: 1700888130, similar_size: 15, group_size: 2, gen_surebets: 0, tournament: "UEFA Europa League", teams: (2) […], initial_value: {…}, value_history: (7) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 2.16 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? false contentScript.js:1994:15
+Surebet Helper: Probability: 0.4929 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0647 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 2.16 isNaN: false Final: 2.16 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.570Z", url: "https://en.surebet.com/nav/valuebet/prong/Qn5hZQ/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607473609741625216%2C%22synonym_id%22%3A1407654416%2C%22id%22%3A1700888130%2C%22similar_size%22%3A15%2C%22group_size%22%3A2%2C%22gen_surebets%22%3A0%2C%22tournament%22%3A%22UEFA+Europa+League%22%2C%22teams%22%3A%5B%22PAOK%22%2C%22Brann%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-25T13%3A49%3A42%22%2C%22value%22%3A1.9297%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A38%3A09%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A45%3A04%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T00%3A11%3A17%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-25T21%3A18%3A36%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T15%3A45%3A16%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-25T15%3A30%3A39%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T14%3A17%3A39%22%2C%22value%22%3A2.16%7D%5D%2C%22overvalue%22%3A1.0647%2C%22probability%22%3A0.4929%2C%22value%22%3A2.16%2C%22scan_time%22%3A1764160530000%2C%22unit_scan_time%22%3A1764160530000%2C%22bk_probability%22%3A0.4312%2C%22bk_margin%22%3A0.9408%2C%22commission%22%3A0%2C%22limit%22%3A38%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22-o4rslaaGkEZWO_tz_bh9w%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A718229714%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2367%2C%22time%22%3A%222025-11-27T17%3A45%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244708147%22%2C%22id%22%3A1700888130%2C%22inValue%22%3A2.16%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22326931056_back%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%225%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22card%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22over%22%7D%2C%22tr_terse%22%3A%22Over+5+-+cards%22%2C%22tr_expanded%22%3A%22Total+over+5+-+cards%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGiBlHTswldScLLX0WR5HvczqF9Ikn6uk3xzG3b5O8Vo8kz%2FCdp9JZ%5CnFL55zNsUP5VPeCU67lZGq7Spszv46Hnzkcmr6dzJx2ljgQPHhsLg0h94A8Kz%5CnSDC5fDmTV9qyW75L3QbjS4mO2MaPqvoRC4XYtYW34q%2BF0P%2FwCX4msHGyFhr1%5Cn4WYRBYjoViccDCLIigGMCQzhzkrCu0Keh4tdXQ4LlsbJImsFytQslQAwVQyx%5CnZQbHlzu8YGfIOYRIMgmUaHtQ%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1700888130, odds: 2.16, originalLayOdds: null, probability: 49.29, overvalue: 1.06, bookmaker: "smarkets", sport: "Football", tournament: "UEFA Europa League", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 2.16 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1700888130, limit: 38 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 38 contentScript.js:1850:21
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.1600", commission: "2%", adjusted: "2.1368", bookmaker: "smarkets" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/q6_5Uw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607445837918571000, synonym_id: 1408110633, id: 1408872363, similar_size: 365, group_size: 2, gen_surebets: 937, tournament: "UEFA Europa Conference League", teams: (2) […], initial_value: {…}, value_history: (9) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 2.4085 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? true contentScript.js:1994:15
+Surebet Helper: Probability: 0.4395 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0585 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 2.4085 isNaN: false Final: 2.4085 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.573Z", url: "https://en.surebet.com/nav/valuebet/prong/q6_5Uw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607445837918570944%2C%22synonym_id%22%3A1408110633%2C%22id%22%3A1408872363%2C%22similar_size%22%3A365%2C%22group_size%22%3A2%2C%22gen_surebets%22%3A937%2C%22tournament%22%3A%22UEFA+Europa+Conference+League%22%2C%22teams%22%3A%5B%22Hamrun+Spartans%22%2C%22Lincoln+Red+Imps+FC%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-20T17%3A49%3A55%22%2C%22value%22%3A2.124%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T11%3A12%3A05%22%2C%22value%22%3A2.4085%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A38%3A34%22%2C%22value%22%3A2.4706%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A14%3A07%22%2C%22value%22%3A2.4286%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A38%3A08%22%2C%22value%22%3A2.2658%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A09%3A23%22%2C%22value%22%3A2.2987%7D%2C%7B%22datetime%22%3A%222025-11-26T08%3A38%3A47%22%2C%22value%22%3A2.2658%7D%2C%7B%22datetime%22%3A%222025-11-26T08%3A37%3A00%22%2C%22value%22%3A2.25%7D%2C%7B%22datetime%22%3A%222025-11-26T08%3A26%3A42%22%2C%22value%22%3A2.3158%7D%2C%7B%22datetime%22%3A%222025-11-26T08%3A23%3A06%22%2C%22value%22%3A2.2987%7D%5D%2C%22overvalue%22%3A1.0585%2C%22probability%22%3A0.4395%2C%22value%22%3A2.4085%2C%22scan_time%22%3A1764160512000%2C%22unit_scan_time%22%3A1764160512000%2C%22bk_probability%22%3A0.3677%2C%22bk_margin%22%3A0.9152%2C%22commission%22%3A0%2C%22limit%22%3A200%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22UYKabbDCJpDu-owMpDo6zA%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A1261738086%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A4568%2C%22time%22%3A%222025-11-27T17%3A45%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244723020%22%2C%22id%22%3A1408872363%2C%22inValue%22%3A1.71%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22330405732_lay%22%7D%7D%2C%22type%22%3A%7B%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22goal%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22win1%22%2C%22back%22%3Afalse%7D%2C%22tr_terse%22%3A%221%3Cspan+class%3D%5C%22minor%5C%22%3E+-+lay%3C%2Fspan%3E%22%2C%22tr_expanded%22%3A%22Hamrun+Spartans+to+win+-+goals+-+Lay+odds%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGWFjA5KA9XLudhs3uEd6oR0uwQLsJGAHRPkIiMmfTUvM6sOgVpvlt%5CnSMII6c%2Fwp%2B7RRZOgsPTqIzPl1r9YISvH6bHhrDuhlWOQ04lZTl9FKPyiP8eZ%5CnWUzVN4yshkxlkF7iLG7GcmxG5F5pRL1vZicHdogyDLZQSAHc1Z8ql7BAjHi4%5CnrszLWjMyFzHiJUXDR3qz%2FBPflNLPYNqcCRkHFW3RDq3Ptp9CwUmvMU9XfmGj%5CnmSRzOaki9jZSdN69L6oWFJi3hB4AJeTDpVxTfyCrtIwkwfA%2FWRu0FqSo7Yd4%5CnvoEbXlQ%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1408872363, odds: 2.4085, originalLayOdds: null, probability: 43.95, overvalue: 1.06, bookmaker: "smarkets", sport: "Football", tournament: "UEFA Europa Conference League", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 2.4085 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1408872363, limit: 200 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 200 contentScript.js:1850:21
+Surebet Helper: ✓ Highlighted row with stake limit: 200 contentScript.js:1856:23
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.4085", commission: "2%", adjusted: "2.3803", bookmaker: "smarkets" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/sFnAYw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607432930668691500, synonym_id: 1603828578, id: 1673550256, similar_size: 12, group_size: 1, gen_surebets: 7, tournament: "Mexican Liga MX", teams: (2) […], initial_value: {…}, value_history: (5) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 2.1236 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? true contentScript.js:1994:15
+Surebet Helper: Probability: 0.4971 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0556 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 2.1236 isNaN: false Final: 2.1236 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.575Z", url: "https://en.surebet.com/nav/valuebet/prong/sFnAYw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607432930668691552%2C%22synonym_id%22%3A1603828578%2C%22id%22%3A1673550256%2C%22similar_size%22%3A12%2C%22group_size%22%3A1%2C%22gen_surebets%22%3A7%2C%22tournament%22%3A%22Mexican+Liga+MX%22%2C%22teams%22%3A%5B%22Club+Tijuana%22%2C%22Tigres+de+la+UANL%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-24T20%3A53%3A49%22%2C%22value%22%3A2.124%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-25T23%3A47%3A00%22%2C%22value%22%3A2.1236%7D%2C%7B%22datetime%22%3A%222025-11-25T23%3A44%3A00%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T03%3A30%3A30%22%2C%22value%22%3A2.1236%7D%2C%7B%22datetime%22%3A%222025-11-25T03%3A28%3A05%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-24T20%3A53%3A52%22%2C%22value%22%3A2.1236%7D%5D%2C%22overvalue%22%3A1.0556%2C%22probability%22%3A0.4971%2C%22value%22%3A2.1236%2C%22scan_time%22%3A1764160403000%2C%22unit_scan_time%22%3A1764160403000%2C%22bk_probability%22%3A0.4301%2C%22bk_margin%22%3A0.9254%2C%22commission%22%3A0%2C%22limit%22%3A179%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%229D93PmuE0EtqvxcOOLMoBA%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A1472485436%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A1896%2C%22time%22%3A%222025-11-27T05%3A00%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244729661%22%2C%22id%22%3A1673550256%2C%22inValue%22%3A1.89%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22331491906_lay%22%7D%7D%2C%22type%22%3A%7B%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22corner%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22win2%22%2C%22back%22%3Afalse%7D%2C%22tr_terse%22%3A%222+-+corners%3Cspan+class%3D%5C%22minor%5C%22%3E+-+lay%3C%2Fspan%3E%22%2C%22tr_expanded%22%3A%22Tigres+de+la+UANL+to+win+-+corners+-+Lay+odds%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGN1%2BXEVhODQQiYO3VifeIRgDWkRp36BXasOO937Adxf2wj13RwpO5%5CniALtNohEZ81XKOydbyR5ZS0hYoc4%2F3TH04F35HZdXrCNkOp%2BpCc%2FWfWmpT6V%5CnEtNgm4tMZIF31SSQm9fcj5TYlOJVRPcUYckj48avsjtP277S7HzbC5gNuAWH%5Cn9cBOyAO1KSNpfPd6xGilVNcbh0OixQ6dE8Gad%2BYa9ncEnwE5F0P7lyyLt1JK%5CnBTAjlTbI9mxKjI3Ve2akHaXRIkbikF%2F9jQSPcPwiQrIEZA%3D%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1673550256, odds: 2.1236, originalLayOdds: null, probability: 49.71, overvalue: 1.06, bookmaker: "smarkets", sport: "Football", tournament: "Mexican Liga MX", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 2.1236 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1673550256, limit: 179 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 179 contentScript.js:1850:21
+Surebet Helper: ✓ Highlighted row with stake limit: 179 contentScript.js:1856:23
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.1236", commission: "2%", adjusted: "2.1011", bookmaker: "smarkets" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/nWSTVQ/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607408938360763400, synonym_id: 1433119532, id: 1435722909, similar_size: 273, group_size: 4, gen_surebets: 809, tournament: "South African Premier Soccer League", teams: (2) […], initial_value: {…}, value_history: (9) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 1.5495 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? true contentScript.js:1994:15
+Surebet Helper: Probability: 0.6779 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0503 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 1.5495 isNaN: false Final: 1.5495 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.576Z", url: "https://en.surebet.com/nav/valuebet/prong/nWSTVQ/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607408938360763584%2C%22synonym_id%22%3A1433119532%2C%22id%22%3A1435722909%2C%22similar_size%22%3A273%2C%22group_size%22%3A4%2C%22gen_surebets%22%3A809%2C%22tournament%22%3A%22South+African+Premier+Soccer+League%22%2C%22teams%22%3A%5B%22Orbit+College+FC%22%2C%22Stellenbosch+FC%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-21T07%3A47%3A48%22%2C%22value%22%3A1.4166%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T11%3A59%3A47%22%2C%22value%22%3A1.5495%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A50%3A43%22%2C%22value%22%3A1.5376%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A40%3A09%22%2C%22value%22%3A1.5319%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A28%3A26%22%2C%22value%22%3A1.5263%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A06%3A25%22%2C%22value%22%3A1.4878%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A31%3A54%22%2C%22value%22%3A1.4762%7D%2C%7B%22datetime%22%3A%222025-11-26T08%3A40%3A52%22%2C%22value%22%3A1.5%7D%2C%7B%22datetime%22%3A%222025-11-26T08%3A22%3A31%22%2C%22value%22%3A1.5051%7D%2C%7B%22datetime%22%3A%222025-11-26T08%3A21%3A00%22%2C%22value%22%3A1.5%7D%5D%2C%22overvalue%22%3A1.0503%2C%22probability%22%3A0.6779%2C%22value%22%3A1.5495%2C%22scan_time%22%3A1764160585000%2C%22unit_scan_time%22%3A1764160585000%2C%22bk_probability%22%3A0.6372%2C%22bk_margin%22%3A0.9838%2C%22commission%22%3A0%2C%22limit%22%3A22%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22maC7S-tilqxWUqTT-OsQgg%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A1435704633%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2211%2C%22time%22%3A%222025-11-26T17%3A30%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244728399%22%2C%22id%22%3A1435722909%2C%22inValue%22%3A2.82%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22331380417_lay%22%7D%7D%2C%22type%22%3A%7B%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22goal%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22draw%22%2C%22back%22%3Afalse%7D%2C%22tr_terse%22%3A%22X%3Cspan+class%3D%5C%22minor%5C%22%3E+-+lay%3C%2Fspan%3E%22%2C%22tr_expanded%22%3A%22Draw+-+goals+-+Lay+odds%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGy3nTa3dtC5dwnxhBnbeVu1Yg0kWIamLwMlgmEenilBr7wvEvg7B4%5CnEUpjtSS1Ihuj9ZPpKV8ZYRa8h%2B%2FMm%2B7zcf7%2FmlWXpt9iEBi1pgXIgMDKwKN6%5CnWw%2BgbKmYd8siTmYowpEl6s1oXaeCVHQszTTI%2FJUJKarOwx6XKRAsvmhpeMht%5CnHVwebmbQi1DWqugtWFLuN5gN16hl%2BpgiRTY40QA1U6sii1yvP8FL%2Boj1sLwl%5CnuRmHcJwqpgR5nU3K9eu941kmWCMlg22F79wciosLUGYLMQWQvZ6ON17f6HD3%5Cnc91%2FPjclm9Hrbutw4DgZbPDxJLvE%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1435722909, odds: 1.5495, originalLayOdds: null, probability: 67.79, overvalue: 1.05, bookmaker: "smarkets", sport: "Football", tournament: "South African Premier Soccer League", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 1.5495 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1435722909, limit: 22 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 22 contentScript.js:1850:21
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "1.5495", commission: "2%", adjusted: "1.5385", bookmaker: "smarkets" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/FOWFYg/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607384462060397600, synonym_id: 1701085396, id: 1652942100, similar_size: 276, group_size: 1, gen_surebets: 3, tournament: "Georgia Erovnuli Liga", teams: (2) […], initial_value: {…}, value_history: (9) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 2.2048 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? true contentScript.js:1994:15
+Surebet Helper: Probability: 0.4739 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0449 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 2.2048 isNaN: false Final: 2.2048 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.577Z", url: "https://en.surebet.com/nav/valuebet/prong/FOWFYg/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607384462060397760%2C%22synonym_id%22%3A1701085396%2C%22id%22%3A1652942100%2C%22similar_size%22%3A276%2C%22group_size%22%3A1%2C%22gen_surebets%22%3A3%2C%22tournament%22%3A%22Georgia+Erovnuli+Liga%22%2C%22teams%22%3A%5B%22FC+Saburtalo+Tbilisi%22%2C%22Dinamo+Tbilisi%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-24T12%3A41%3A51%22%2C%22value%22%3A1.9429%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A22%3A56%22%2C%22value%22%3A2.2048%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A21%3A23%22%2C%22value%22%3A2.2195%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A16%3A36%22%2C%22value%22%3A2.2048%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A15%3A22%22%2C%22value%22%3A2.25%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A02%3A49%22%2C%22value%22%3A1.8333%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A47%3A19%22%2C%22value%22%3A1.8772%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A29%3A17%22%2C%22value%22%3A1.0001%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A24%3A24%22%2C%22value%22%3A1.8772%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A16%3A52%22%2C%22value%22%3A1.0001%7D%5D%2C%22overvalue%22%3A1.0449%2C%22probability%22%3A0.4739%2C%22value%22%3A2.2048%2C%22scan_time%22%3A1764160543000%2C%22unit_scan_time%22%3A1764160543000%2C%22bk_probability%22%3A0.3779%2C%22bk_margin%22%3A0.8727%2C%22commission%22%3A0%2C%22limit%22%3A7%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22MSnLjKexet9FtijmplDERg%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A1651885720%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A1518%2C%22time%22%3A%222025-11-26T15%3A00%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244733631%22%2C%22id%22%3A1652942100%2C%22inValue%22%3A1.83%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22332667665_lay%22%7D%7D%2C%22type%22%3A%7B%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22goal%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22win1%22%2C%22back%22%3Afalse%7D%2C%22tr_terse%22%3A%221%3Cspan+class%3D%5C%22minor%5C%22%3E+-+lay%3C%2Fspan%3E%22%2C%22tr_expanded%22%3A%22FC+Saburtalo+Tbilisi+to+win+-+goals+-+Lay+odds%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGRjrQpyfJy4kxq8EwyzZC5b9KatsamRxtAUIUTfa7WF2YxDRfzx7g%5CnptFmzmonxwz9MBor8ZsbbEvhgUkE7U4L9DyzW%2FOvwCZXrSNOp%2FqXu%2F2tosTI%5CnMEQwnLDdzQyrYcsIMpv2USL0OiHghShsa7L34beqYELi9yzpFehPZXmb4Zjd%5Cn3jEOhiMfpxGfObzrJu%2FUTNNWlb1pJVMELWFWQrH2DCgDdDfo7hTzPrU%2B7f3d%5Cn6yI3OA%2FIoWB6oqpZSV4LoWTWvAeMVgs68lzRV07ZM7ZCUm45PGqQBJd5BRO8%5CnyakY5YQ%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1652942100, odds: 2.2048, originalLayOdds: null, probability: 47.39, overvalue: 1.04, bookmaker: "smarkets", sport: "Football", tournament: "Georgia Erovnuli Liga", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 2.2048 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1652942100, limit: 7 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 7 contentScript.js:1850:21
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.2048", commission: "2%", adjusted: "2.1807", bookmaker: "smarkets" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/PX5vYg/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607382704869081000, synonym_id: 1361773289, id: 1651473981, similar_size: 58, group_size: 4, gen_surebets: 17, tournament: "UEFA Champions League", teams: (2) […], initial_value: {…}, value_history: (8) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 2.25 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? true contentScript.js:1994:15
+Surebet Helper: Probability: 0.4642 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0445 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 2.25 isNaN: false Final: 2.25 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.578Z", url: "https://en.surebet.com/nav/valuebet/prong/PX5vYg/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607382704869081088%2C%22synonym_id%22%3A1361773289%2C%22id%22%3A1651473981%2C%22similar_size%22%3A58%2C%22group_size%22%3A4%2C%22gen_surebets%22%3A17%2C%22tournament%22%3A%22UEFA+Champions+League%22%2C%22teams%22%3A%5B%22Sporting%22%2C%22Club+Brugge%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-24T12%3A06%3A50%22%2C%22value%22%3A2.0756%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A12%3A48%22%2C%22value%22%3A2.25%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A45%3A56%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A27%3A51%22%2C%22value%22%3A2.1765%7D%2C%7B%22datetime%22%3A%222025-11-26T03%3A18%3A56%22%2C%22value%22%3A2.1905%7D%2C%7B%22datetime%22%3A%222025-11-26T03%3A13%3A57%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T23%3A38%3A29%22%2C%22value%22%3A2.1905%7D%2C%7B%22datetime%22%3A%222025-11-25T17%3A42%3A35%22%2C%22value%22%3A2.1628%7D%2C%7B%22datetime%22%3A%222025-11-25T17%3A21%3A53%22%2C%22value%22%3A2.1494%7D%5D%2C%22overvalue%22%3A1.0445%2C%22probability%22%3A0.4642%2C%22value%22%3A2.25%2C%22scan_time%22%3A1764160416000%2C%22unit_scan_time%22%3A1764160416000%2C%22bk_probability%22%3A0.3801%2C%22bk_margin%22%3A0.8891%2C%22commission%22%3A0%2C%22limit%22%3A14%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22_LiCPtzRXtP80NDwfnPuHg%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A615004990%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2365%2C%22time%22%3A%222025-11-26T20%3A00%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244705082%22%2C%22id%22%3A1651473981%2C%22inValue%22%3A1.8%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22326504103_lay%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%2227.5%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22shot%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22under%22%2C%22back%22%3Afalse%7D%2C%22tr_terse%22%3A%22Under+27.5+-+shots%3Cspan+class%3D%5C%22minor%5C%22%3E+-+lay%3C%2Fspan%3E%22%2C%22tr_expanded%22%3A%22Total+under+27.5+-+shots+-+Lay+odds%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGo4XwOHlTSTB4EzGj7x6LZeystcPmArFNz%2Bh8iRMzes3GWPhOaGc6%5Cn%2BmELSIH9RtHE%2B7kI2Z7wDOqgiTfxVNOm0oLM7l33ba6H4jpUBmDPwPoEnoPk%5CnLcBJ%2BoGNi7Dh%2BSkIBjjOkpZ5q1%2FEr2znz7oph7G0mmRSqupJgw7zsUwPvBLS%5CnMC2qnOZh%2Fcp0I6UB9d89ZhYcYbTtLLZG%2B6RzDfXyLwijtlVX9xVrSF8Z6Ky8%5Cnl5ZKhoNUsY9yDssoVtqcbYIdgLxE%2FOohd2cPF05PR%2Bwihw%3D%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1651473981, odds: 2.25, originalLayOdds: null, probability: 46.42, overvalue: 1.04, bookmaker: "smarkets", sport: "Football", tournament: "UEFA Champions League", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 2.25 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1651473981, limit: 14 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 14 contentScript.js:1850:21
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.2500", commission: "2%", adjusted: "2.2250", bookmaker: "smarkets" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/M8bvUw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607381791523747000, synonym_id: 1408269455, id: 1408222771, similar_size: 365, group_size: 1, gen_surebets: 685, tournament: "UEFA Europa League", teams: (2) […], initial_value: {…}, value_history: (8) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 2.3158 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? true contentScript.js:1994:15
+Surebet Helper: Probability: 0.4509 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0443 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 2.3158 isNaN: false Final: 2.3158 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.579Z", url: "https://en.surebet.com/nav/valuebet/prong/M8bvUw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607381791523746912%2C%22synonym_id%22%3A1408269455%2C%22id%22%3A1408222771%2C%22similar_size%22%3A365%2C%22group_size%22%3A1%2C%22gen_surebets%22%3A685%2C%22tournament%22%3A%22UEFA+Europa+League%22%2C%22teams%22%3A%5B%22Feyenoord%22%2C%22Celtic%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-20T17%3A46%3A36%22%2C%22value%22%3A2.1493%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A09%3A58%22%2C%22value%22%3A2.3158%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A12%3A22%22%2C%22value%22%3A2.25%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A59%3A26%22%2C%22value%22%3A2.2821%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A54%3A51%22%2C%22value%22%3A2.25%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A52%3A48%22%2C%22value%22%3A2.2821%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A33%3A35%22%2C%22value%22%3A2.3158%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A30%3A53%22%2C%22value%22%3A2.2821%7D%2C%7B%22datetime%22%3A%222025-11-26T08%3A31%3A21%22%2C%22value%22%3A2.2987%7D%5D%2C%22overvalue%22%3A1.0443%2C%22probability%22%3A0.4509%2C%22value%22%3A2.3158%2C%22scan_time%22%3A1764160543000%2C%22unit_scan_time%22%3A1764160543000%2C%22bk_probability%22%3A0.4225%2C%22bk_margin%22%3A0.9817%2C%22commission%22%3A0%2C%22limit%22%3A90%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22XDyM37_Kote8bml3t6Hohg%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A690324843%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2367%2C%22time%22%3A%222025-11-27T17%3A45%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244707149%22%2C%22id%22%3A1408222771%2C%22inValue%22%3A1.76%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22326841521_lay%22%7D%7D%2C%22type%22%3A%7B%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22goal%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22win1%22%2C%22back%22%3Afalse%7D%2C%22tr_terse%22%3A%221%3Cspan+class%3D%5C%22minor%5C%22%3E+-+lay%3C%2Fspan%3E%22%2C%22tr_expanded%22%3A%22Feyenoord+to+win+-+goals+-+Lay+odds%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGM5HMoRz62AQ1cJEbq7H73rX19xZULn2rhxicGdezRQwt4JI6d331%5Cnagl5K5Iw%2BpmpmJEZ8Kcphk9BdN3%2BAFGykb67vkt2uRfmz6Y3IW4xZFsSJsrG%5CnQ37UCVExIjszixMe4li0SH9ixZao0v%2Fnj3ZwTg0f0tvEqqwVYmHt0UkDxK%2FM%5CnaBBq9594jEO8EZsqP%2Fg%2FY7kIKW%2Fz8RwNJozuyt1gTaR%2BUFtrKaL9gTj93MPT%5CnNkk5cr%2BheCht6altXZzyXripAVwEQYbWNfAu2e8XgNQ54w%3D%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1408222771, odds: 2.3158, originalLayOdds: null, probability: 45.09, overvalue: 1.04, bookmaker: "smarkets", sport: "Football", tournament: "UEFA Europa League", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 2.3158 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1408222771, limit: 90 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 90 contentScript.js:1850:21
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.3158", commission: "2%", adjusted: "2.2895", bookmaker: "smarkets" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/McR_Yw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607360854487134700, synonym_id: 1570176243, id: 1669317681, similar_size: 134, group_size: 1, gen_surebets: 0, tournament: "Brazilian Serie A", teams: (2) […], initial_value: {…}, value_history: (8) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 2.18 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? false contentScript.js:1994:15
+Surebet Helper: Probability: 0.4769 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0396 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 2.18 isNaN: false Final: 2.18 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.581Z", url: "https://en.surebet.com/nav/valuebet/prong/McR_Yw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607360854487134592%2C%22synonym_id%22%3A1570176243%2C%22id%22%3A1669317681%2C%22similar_size%22%3A134%2C%22group_size%22%3A1%2C%22gen_surebets%22%3A0%2C%22tournament%22%3A%22Brazilian+Serie+A%22%2C%22teams%22%3A%5B%22Bragantino%22%2C%22Fortaleza%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-24T18%3A54%3A55%22%2C%22value%22%3A1.8096%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A37%3A55%22%2C%22value%22%3A2.18%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A37%3A15%22%2C%22value%22%3A2.12%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A36%3A32%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A34%3A29%22%2C%22value%22%3A2.14%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A33%3A21%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A31%3A35%22%2C%22value%22%3A2.12%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A30%3A29%22%2C%22value%22%3A2.14%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A29%3A24%22%2C%22value%22%3A2.12%7D%5D%2C%22overvalue%22%3A1.0396%2C%22probability%22%3A0.4769%2C%22value%22%3A2.18%2C%22scan_time%22%3A1764160644000%2C%22unit_scan_time%22%3A1764160644000%2C%22bk_probability%22%3A0.4182%2C%22bk_margin%22%3A0.926%2C%22commission%22%3A0%2C%22limit%22%3A94%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22b9EEsiExkYNP4UmyMmsexQ%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A1570171683%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A1152%2C%22time%22%3A%222025-11-26T22%3A00%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244731485%22%2C%22id%22%3A1669317681%2C%22inValue%22%3A2.18%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22332086716_back%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%220.5%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22corner%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22ah2%22%7D%2C%22tr_terse%22%3A%22AH2%28%2B0.5%29+-+corners%22%2C%22tr_expanded%22%3A%22Fortaleza+to+win+with+a+handicap+of+%2B0.5+%28Asian+handicap%29+-+corners%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGQYgQzfqqTHORzIceKIGfyAIbXzUa9YiKrJwPhtSVPCGLyWWfmfpF%5CnldwlU2Ii1GYlTm2PpLi2T14O7yxUU4jDNV7SKBIXj48W07nsF21NZ4Mie0Rx%5CnNmOzSLXP6nkEuDRkiVKHJrnwXUpYMxKANs4emVtUuRgD2LhufaFr28LNMnMd%5CnLCxoVLDopGratou8tE8yDoRwGSkmS5eLwl86H5EfF1qFbtrhk1EGZ%2B3jzNOe%5CnPvvhID%2BRo%2BHYffirdTKEl%2Bb72uN4ZI4j4UesSSG2uppsLg%3D%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1669317681, odds: 2.18, originalLayOdds: null, probability: 47.69, overvalue: 1.04, bookmaker: "smarkets", sport: "Football", tournament: "Brazilian Serie A", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 2.18 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1669317681, limit: 94 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 94 contentScript.js:1850:21
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.1800", commission: "2%", adjusted: "2.1564", bookmaker: "smarkets" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/defEXg/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607355997467954000, synonym_id: 1361804904, id: 1589962613, similar_size: 27, group_size: 2, gen_surebets: 22, tournament: "EFL Championship", teams: (2) […], initial_value: {…}, value_history: (8) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 2.1628 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? true contentScript.js:1994:15
+Surebet Helper: Probability: 0.4802 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0385 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 2.1628 isNaN: false Final: 2.1628 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.583Z", url: "https://en.surebet.com/nav/valuebet/prong/defEXg/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607355997467954048%2C%22synonym_id%22%3A1361804904%2C%22id%22%3A1589962613%2C%22similar_size%22%3A27%2C%22group_size%22%3A2%2C%22gen_surebets%22%3A22%2C%22tournament%22%3A%22EFL+Championship%22%2C%22teams%22%3A%5B%22West+Brom%22%2C%22Birmingham%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-23T09%3A43%3A48%22%2C%22value%22%3A1.9624%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A14%3A21%22%2C%22value%22%3A2.1628%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A48%3A36%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T06%3A52%3A26%22%2C%22value%22%3A2.1628%7D%2C%7B%22datetime%22%3A%222025-11-26T03%3A21%3A53%22%2C%22value%22%3A2%7D%2C%7B%22datetime%22%3A%222025-11-26T02%3A21%3A43%22%2C%22value%22%3A2.1494%7D%2C%7B%22datetime%22%3A%222025-11-26T01%3A14%3A13%22%2C%22value%22%3A2%7D%2C%7B%22datetime%22%3A%222025-11-26T00%3A11%3A04%22%2C%22value%22%3A2.1494%7D%2C%7B%22datetime%22%3A%222025-11-25T21%3A21%3A12%22%2C%22value%22%3A2%7D%5D%2C%22overvalue%22%3A1.0385%2C%22probability%22%3A0.4802%2C%22value%22%3A2.1628%2C%22scan_time%22%3A1764160507000%2C%22unit_scan_time%22%3A1764160507000%2C%22bk_probability%22%3A0.4259%2C%22bk_margin%22%3A0.9327%2C%22commission%22%3A0%2C%22limit%22%3A90%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%223thhKFAMYAG7l1LxENQS6g%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A1307553431%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A1439%2C%22time%22%3A%222025-11-26T20%3A00%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244724481%22%2C%22id%22%3A1589962613%2C%22inValue%22%3A1.86%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22330664983_lay%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%220.5%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22card%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22ah1%22%2C%22back%22%3Afalse%7D%2C%22tr_terse%22%3A%22AH1%28%2B0.5%29+-+cards%3Cspan+class%3D%5C%22minor%5C%22%3E+-+lay%3C%2Fspan%3E%22%2C%22tr_expanded%22%3A%22West+Brom+to+win+with+a+handicap+of+%2B0.5+%28Asian+handicap%29+-+cards+-+Lay+odds%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGYEuPQ%2FkCvicQF72VzuLllTN93r5lBzv%2Bm3pdVBQx6tWGK8%2Fsi0c%2B%5CnRxMOSTwCm4bh59ey08zlhbwOWrkHmf6qAlG2Rap0%2BbyGlOI6WoM06Fp%2B2wK5%5Cn7JFMifGEpnWXq3xHirzS5WCgnwCtmAQbNpG%2Fs0967b%2BlAvq%2FQx%2BbqAl6c9HR%5CnjoRGnFtvasXVNs4umlozNA2Q7wAzfyR0WVx64QHVxye6SPF4w%2F6yej62yA6H%5CnD3hg1ukMqRkVLUYUVgL6HOdDpZB1ZntJPaxz%2FFExoZhjYj%2Fr2lTdmNeut4Tz%5CnoCIwJQ4%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1589962613, odds: 2.1628, originalLayOdds: null, probability: 48.02, overvalue: 1.04, bookmaker: "smarkets", sport: "Football", tournament: "EFL Championship", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 2.1628 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1589962613, limit: 90 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 90 contentScript.js:1850:21
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.1628", commission: "2%", adjusted: "2.1395", bookmaker: "smarkets" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/BL89Zw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607345772657766400, synonym_id: 1690833299, id: 1732099844, similar_size: 267, group_size: 1, gen_surebets: 187, tournament: "Euroleague Women", teams: (2) […], initial_value: {…}, value_history: (9) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 2.12 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? false contentScript.js:1994:15
+Surebet Helper: Probability: 0.4888 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0363 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 2.12 isNaN: false Final: 2.12 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.586Z", url: "https://en.surebet.com/nav/valuebet/prong/BL89Zw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607345772657766656%2C%22synonym_id%22%3A1690833299%2C%22id%22%3A1732099844%2C%22similar_size%22%3A267%2C%22group_size%22%3A1%2C%22gen_surebets%22%3A187%2C%22tournament%22%3A%22Euroleague+Women%22%2C%22teams%22%3A%5B%22Valencia+BC%22%2C%22DVTK+Miskolc%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-26T04%3A33%3A27%22%2C%22value%22%3A1.7402%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A19%3A38%22%2C%22value%22%3A2.12%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A55%3A58%22%2C%22value%22%3A2.14%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A55%3A04%22%2C%22value%22%3A2.1%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A31%3A07%22%2C%22value%22%3A2.06%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A21%3A52%22%2C%22value%22%3A1.95%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A35%3A01%22%2C%22value%22%3A1.88%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A32%3A51%22%2C%22value%22%3A1.87%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A55%3A09%22%2C%22value%22%3A1.9%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A54%3A26%22%2C%22value%22%3A1.89%7D%5D%2C%22overvalue%22%3A1.0363%2C%22probability%22%3A0.4888%2C%22value%22%3A2.12%2C%22scan_time%22%3A1764160646000%2C%22unit_scan_time%22%3A1764160646000%2C%22bk_probability%22%3A0.4423%2C%22bk_margin%22%3A0.9447%2C%22commission%22%3A0%2C%22limit%22%3A17%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22ldmiF9FsTkgrQhRnOzKTxw%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A1688685548%2C%22sport_id%22%3A4%2C%22tournament_id%22%3A276%2C%22time%22%3A%222025-11-26T19%3A00%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244734669%22%2C%22id%22%3A1732099844%2C%22inValue%22%3A2.12%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22333120005_back%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%2221.5%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22point%22%2C%22period%22%3A%22overtime%22%2C%22type%22%3A%22ah2%22%7D%2C%22tr_terse%22%3A%22AH2%28%2B21.5%29+%3Cspan+class%3D%5C%22minor%5C%22%3EOT%3C%2Fspan%3E%22%2C%22tr_expanded%22%3A%22DVTK+Miskolc+to+win+with+a+handicap+of+%2B21.5+%28Asian+handicap%29+-+points+scored+including+overtime%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGpWqW2vMIUODsUkazMk9Yz6E7SSVepfbcLirKWi2u4Bz0V%2FYLwyNI%5CnL%2FUomooOB6q3vjVpeTCwBIaLg%2BczwGBdVwnaGj%2B3CAkXHXeG6JFQ27Hr0mch%5Cnw9w2k506V%2BfIh05kCjiYBfFPAudHS9Npre%2Fw2l3odi6RgO98uzeipwnDcJcD%5CnxmAvfF9iuNldzeS0i6sXZczK%2FQfkX5xDqPSNovplMHuoA3pp4oMXcqAs04kg%5Cn7XKVGIPz1ftZBa78E22Pde3mpgdYKtcpi1uAJzwDKK6mWQ%3D%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1732099844, odds: 2.12, originalLayOdds: null, probability: 48.88, overvalue: 1.04, bookmaker: "smarkets", sport: "Other", tournament: "Euroleague Women", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 2.12 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1732099844, limit: 17 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 17 contentScript.js:1850:21
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.1200", commission: "2%", adjusted: "2.0976", bookmaker: "smarkets" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/YesmUQ/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607343015373736000, synonym_id: 1361620981, id: 1361505121, similar_size: 112, group_size: 1, gen_surebets: 170, tournament: "UEFA Champions League", teams: (2) […], initial_value: {…}, value_history: (6) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 1.8197 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? true contentScript.js:1994:15
+Surebet Helper: Probability: 0.5691 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0357 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 1.8197 isNaN: false Final: 1.8197 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.587Z", url: "https://en.surebet.com/nav/valuebet/prong/YesmUQ/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607343015373736192%2C%22synonym_id%22%3A1361620981%2C%22id%22%3A1361505121%2C%22similar_size%22%3A112%2C%22group_size%22%3A1%2C%22gen_surebets%22%3A170%2C%22tournament%22%3A%22UEFA+Champions+League%22%2C%22teams%22%3A%5B%22Liverpool%22%2C%22PSV%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-19T20%3A00%3A53%22%2C%22value%22%3A1.7043%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A38%3A09%22%2C%22value%22%3A1.8197%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A50%3A38%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A36%3A15%22%2C%22value%22%3A1.5495%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A01%3A41%22%2C%22value%22%3A1.5556%7D%2C%7B%22datetime%22%3A%222025-11-26T06%3A41%3A21%22%2C%22value%22%3A1.6329%7D%2C%7B%22datetime%22%3A%222025-11-26T02%3A55%3A16%22%2C%22value%22%3A1.6667%7D%5D%2C%22overvalue%22%3A1.0357%2C%22probability%22%3A0.5691%2C%22value%22%3A1.8197%2C%22scan_time%22%3A1764160330000%2C%22unit_scan_time%22%3A1764160330000%2C%22bk_probability%22%3A0.4985%2C%22bk_margin%22%3A0.9074%2C%22commission%22%3A0%2C%22limit%22%3A14%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22Ambv4qzTUer9Py91r0AvVQ%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A614908574%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2365%2C%22time%22%3A%222025-11-26T20%3A00%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244705088%22%2C%22id%22%3A1361505121%2C%22inValue%22%3A2.22%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22326515443_lay%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%229.5%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22shotOnTarget%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22under%22%2C%22back%22%3Afalse%7D%2C%22tr_terse%22%3A%22Under+9.5+-+shot+on+target%3Cspan+class%3D%5C%22minor%5C%22%3E+-+lay%3C%2Fspan%3E%22%2C%22tr_expanded%22%3A%22Total+under+9.5+-+shot+on+target+-+Lay+odds%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGmMR5kavQtuFYQr7h%2B4HMRzc0eVqNfkTwJ0zDeDyf0oXQ6xx0jHT2%5Cn9Je3pHw%2BUL1yrcYMXJfarhvXNqBdESr2V5oJjG9%2ByfquuEh2nwAh6JpfUtga%5CntIaUgLecLdN9y%2FKNZQqSFHuoScnctsR27OV9WG6qmUwugz%2Fm1y1y7303DHGX%5Cn6u7uYYzo6Kx2%2B8ESU0pTIJ%2BIE8Y4QY7iIn44q4TrAW5oUDmE9DRs%2FggNUXKg%5Cn0WTEX3gxBgY3ChgnemYxI983Reg%2BHPiMfdcp%2Bx8XVdMr5Q%3D%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1361505121, odds: 1.8197, originalLayOdds: null, probability: 56.91, overvalue: 1.04, bookmaker: "smarkets", sport: "Football", tournament: "UEFA Champions League", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 1.8197 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1361505121, limit: 14 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 14 contentScript.js:1850:21
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "1.8197", commission: "2%", adjusted: "1.8033", bookmaker: "smarkets" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/PPvIXw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607341822804580000, synonym_id: 1356283902, id: 1607007036, similar_size: 270, group_size: 2, gen_surebets: 308, tournament: "Europe - UEFA Champions League", teams: (2) […], initial_value: {…}, value_history: (9) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 2.2658 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? true contentScript.js:1994:15
+Surebet Helper: Probability: 0.457 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0354 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 2.2658 isNaN: false Final: 2.2658 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.588Z", url: "https://en.surebet.com/nav/valuebet/prong/PPvIXw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607341822804579712%2C%22synonym_id%22%3A1356283902%2C%22id%22%3A1607007036%2C%22similar_size%22%3A270%2C%22group_size%22%3A2%2C%22gen_surebets%22%3A308%2C%22tournament%22%3A%22Europe+-+UEFA+Champions+League%22%2C%22teams%22%3A%5B%22FC+K%C3%B8benhavn%22%2C%22FC+Kairat+Almaty%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-23T14%3A26%3A59%22%2C%22value%22%3A1.8767%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T10%3A32%3A13%22%2C%22value%22%3A2.2658%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A30%3A17%22%2C%22value%22%3A2.25%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A29%3A47%22%2C%22value%22%3A2.2195%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A26%3A14%22%2C%22value%22%3A2.2658%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A17%3A28%22%2C%22value%22%3A2.25%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A14%3A07%22%2C%22value%22%3A2.2658%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A13%3A59%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A05%3A37%22%2C%22value%22%3A2.2658%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A04%3A03%22%2C%22value%22%3A2.25%7D%5D%2C%22overvalue%22%3A1.0354%2C%22probability%22%3A0.457%2C%22value%22%3A2.2658%2C%22scan_time%22%3A1764160662000%2C%22unit_scan_time%22%3A1764160662000%2C%22bk_probability%22%3A0.4382%2C%22bk_margin%22%3A0.9937%2C%22commission%22%3A0%2C%22limit%22%3A13.1754%2C%22currency%22%3A%22USD%22%2C%22source%22%3A%22a4D0cMton3lIaSbU3aViWQ%22%2C%22bk%22%3A%22matchbook%22%2C%22event_id%22%3A1356516602%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2365%2C%22time%22%3A%222025-11-26T17%3A45%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fwww.matchbook.com%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2231642578153500053%22%2C%22id%22%3A1607007036%2C%22inValue%22%3A1.79%2C%22bk%22%3A%22matchbook%22%2C%22externalId%22%3A%2231642579876500053%22%2C%22back%22%3A%22lay%22%2C%22marketId%22%3A%2231642579876100053%22%2C%22runner%22%3A0%2C%22runnerId%22%3A%2231642579876500053%22%7D%7D%2C%22type%22%3A%7B%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22goal%22%2C%22period%22%3A%22period1%22%2C%22type%22%3A%22win1%22%2C%22back%22%3Afalse%7D%2C%22tr_terse%22%3A%221+%3Cspan+class%3D%5C%22minor%5C%22%3E1st+period%3C%2Fspan%3E%3Cspan+class%3D%5C%22minor%5C%22%3E+-+lay%3C%2Fspan%3E%22%2C%22tr_expanded%22%3A%22FC+K%C3%B8benhavn+to+win+-+goals+1st+period+-+Lay+odds%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZp5f%2F6A%2FSwSVs7qlafnbkBvHqAtdzhx9FiKwh%5Cnlb9rrf5el4XknKAbtIopT0XXwiQWnkdaN2LN7phM%2BKVkTyXi4Ash0LqARmlP%5CnOn87Bo%2FacUj2ujz%2Fm1EuJJqjG2hoEhROoLOOuRAE7T%2Bl1g13qKUR9N6hjs3y%5Cn6HiazwW2ZUk0w5gBQOboSp6Eh26ZMC7ljQ%2BZOIJbdBDRQgUuaIxG45avGA9h%5CnaC2DodFjSwOCUemefkk3RVSZWCYvKHNdVV65%2FjUtAxl%2FL3AyrTbbFckGDbyb%5CnwhPIPnjmG0ACpPyBYi3wwyD9WJ4PB67CeGLAHhJN9xVQ14kwDKn9GC5OvNNO%5Cnu%2F2ocMaGV%2FEIjuA5rPItLktV6s6dwnGhC0V9n5ip6w8%2BMe5uXz40LWNIfpCy%5Cnrs5KBzygUilOUH9j2YU2Kq51BYdhIboo20wrv0HpzbxDC%2BUs7PY24Q%3D%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1607007036, odds: 2.2658, originalLayOdds: null, probability: 45.7, overvalue: 1.04, bookmaker: "matchbook", sport: "Football", tournament: "Europe - UEFA Champions League", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 2.2658 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1607007036, limit: 13.1754 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 13.1754 contentScript.js:1850:21
+💰 [Commission] Using default rate for matchbook: 0.01 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.2658", commission: "1%", adjusted: "2.2531", bookmaker: "matchbook" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/bwBNZw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607333328785757000, synonym_id: 1631184052, id: 1733099631, similar_size: 255, group_size: 1, gen_surebets: 11, tournament: "Bolivia - Bolivia Cup", teams: (2) […], initial_value: {…}, value_history: (9) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 1.8772 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? true contentScript.js:1994:15
+Surebet Helper: Probability: 0.5506 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0335 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 1.8772 isNaN: false Final: 1.8772 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.589Z", url: "https://en.surebet.com/nav/valuebet/prong/bwBNZw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607333328785757152%2C%22synonym_id%22%3A1631184052%2C%22id%22%3A1733099631%2C%22similar_size%22%3A255%2C%22group_size%22%3A1%2C%22gen_surebets%22%3A11%2C%22tournament%22%3A%22Bolivia+-+Bolivia+Cup%22%2C%22teams%22%3A%5B%22Guabira%22%2C%22The+Strongest%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-26T05%3A24%3A45%22%2C%22value%22%3A1.5209%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A19%3A26%22%2C%22value%22%3A1.8772%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A13%3A58%22%2C%22value%22%3A1.8621%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A13%3A09%22%2C%22value%22%3A1.8772%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A28%3A56%22%2C%22value%22%3A1.8621%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A21%3A52%22%2C%22value%22%3A1.8772%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A21%3A26%22%2C%22value%22%3A1.8475%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A28%3A18%22%2C%22value%22%3A1.8333%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A25%3A22%22%2C%22value%22%3A1.7813%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A21%3A44%22%2C%22value%22%3A1.6494%7D%5D%2C%22overvalue%22%3A1.0335%2C%22probability%22%3A0.5506%2C%22value%22%3A1.8772%2C%22scan_time%22%3A1764160664000%2C%22unit_scan_time%22%3A1764160664000%2C%22bk_probability%22%3A0.5045%2C%22bk_margin%22%3A0.9465%2C%22commission%22%3A0%2C%22limit%22%3A10.6668%2C%22currency%22%3A%22USD%22%2C%22source%22%3A%22_YFvQRO072IUqPKaKJF_fw%22%2C%22bk%22%3A%22matchbook%22%2C%22event_id%22%3A1716663763%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A1077%2C%22time%22%3A%222025-11-26T19%3A00%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fwww.matchbook.com%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2231798392773900053%22%2C%22id%22%3A1733099631%2C%22inValue%22%3A2.14%2C%22bk%22%3A%22matchbook%22%2C%22externalId%22%3A%2231798392778800053%22%2C%22back%22%3A%22lay%22%2C%22marketId%22%3A%2231798392777400053%22%2C%22runner%22%3A0%2C%22runnerId%22%3A%2231798392778800053%22%7D%7D%2C%22type%22%3A%7B%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22goal%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22win1%22%2C%22back%22%3Afalse%7D%2C%22tr_terse%22%3A%221%3Cspan+class%3D%5C%22minor%5C%22%3E+-+lay%3C%2Fspan%3E%22%2C%22tr_expanded%22%3A%22Guabira+to+win+-+goals+-+Lay+odds%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZp5f%2F6A%2FSwSVs7qlafnbkBvHqAtdzhx9FiKwh%5Cnlb9rrf5el4XknKAbtIopT0XXwiQWnrK6KwUIL%2BObVyIMLXjAZQtr6rilY7ya%5CnUV%2Fb0ifuJzYqfpiTjmF67BgCUYiXaqifj%2BEv1D6W9cTkhvxAPxpzPu8K9hcX%5CnyKP8IiFt283a%2FpzBobC2GUywD4bgipvSTx4x%2FnK79P1zYUR3S%2FunKh9tILaI%5CnQ5TkcvtdnOAxpZFjXfhl4dA6EHu5lrYG5M9eYG48PK8VqpziKQBxI8Xs4kTD%5Cn16sJeTLCO%2F5JsQao82h704jviP8VWN3nCbtwDvE3DLvlfMdk5pkWy5E%2BGKWk%5CnmlMj5ZP2hOONhmsLIu2L8EJE5BXLZD89r%2BowxUFAy%2FWYfrDvFVd25169oJAw%5CnI0mIpuvFxrJAndjvwGRT2g%2BGypbB8W8O%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1733099631, odds: 1.8772, originalLayOdds: null, probability: 55.06, overvalue: 1.03, bookmaker: "matchbook", sport: "Football", tournament: "Bolivia - Bolivia Cup", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 1.8772 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1733099631, limit: 10.6668 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 10.6668 contentScript.js:1850:21
+💰 [Commission] Using default rate for matchbook: 0.01 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "1.8772", commission: "1%", adjusted: "1.8684", bookmaker: "matchbook" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/dy3KYw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607326916952107000, synonym_id: 1414449334, id: 1674194295, similar_size: 364, group_size: 1, gen_surebets: 344, tournament: "Europe - UEFA Europa Conference League", teams: (2) […], initial_value: {…}, value_history: (9) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 1.7692 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? true contentScript.js:1994:15
+Surebet Helper: Probability: 0.5834 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0321 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 1.7692 isNaN: false Final: 1.7692 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.590Z", url: "https://en.surebet.com/nav/valuebet/prong/dy3KYw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607326916952107264%2C%22synonym_id%22%3A1414449334%2C%22id%22%3A1674194295%2C%22similar_size%22%3A364%2C%22group_size%22%3A1%2C%22gen_surebets%22%3A344%2C%22tournament%22%3A%22Europe+-+UEFA+Europa+Conference+League%22%2C%22teams%22%3A%5B%22HNK+Rijeka%22%2C%22AEK+Larnaca%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-24T21%3A16%3A20%22%2C%22value%22%3A1.7141%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A29%3A03%22%2C%22value%22%3A1.7692%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A28%3A50%22%2C%22value%22%3A1.7576%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A20%3A55%22%2C%22value%22%3A1.7353%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A19%3A13%22%2C%22value%22%3A1.7463%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A07%3A48%22%2C%22value%22%3A1.7246%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A06%3A26%22%2C%22value%22%3A1.7353%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A59%3A02%22%2C%22value%22%3A1.7246%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A53%3A53%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A50%3A11%22%2C%22value%22%3A1.7353%7D%5D%2C%22overvalue%22%3A1.0321%2C%22probability%22%3A0.5834%2C%22value%22%3A1.7692%2C%22scan_time%22%3A1764160662000%2C%22unit_scan_time%22%3A1764160662000%2C%22bk_probability%22%3A0.5404%2C%22bk_margin%22%3A0.9526%2C%22commission%22%3A0%2C%22limit%22%3A13.0041%2C%22currency%22%3A%22USD%22%2C%22source%22%3A%22ZM58M4LNWQCnXXgGtDvdCQ%22%2C%22bk%22%3A%22matchbook%22%2C%22event_id%22%3A1671895492%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A4568%2C%22time%22%3A%222025-11-27T20%3A00%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fwww.matchbook.com%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2231691599712300053%22%2C%22id%22%3A1674194295%2C%22inValue%22%3A2.3%2C%22bk%22%3A%22matchbook%22%2C%22externalId%22%3A%2231691601123301053%22%2C%22back%22%3A%22lay%22%2C%22marketId%22%3A%2231691601121200053%22%2C%22runner%22%3A0%2C%22runnerId%22%3A%2231691601123301053%22%7D%7D%2C%22type%22%3A%7B%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22goal%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22win1%22%2C%22back%22%3Afalse%7D%2C%22tr_terse%22%3A%221%3Cspan+class%3D%5C%22minor%5C%22%3E+-+lay%3C%2Fspan%3E%22%2C%22tr_expanded%22%3A%22HNK+Rijeka+to+win+-+goals+-+Lay+odds%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZp5f%2F6A%2FSwSVs7qlafnbkBvHqAtdzhx9FiKwh%5Cnlb9rrf5el4XknKAbtIopT0XXwiQWngHmoGE1kYx%2FzJi53KxmatuhYYAeRw2D%5CnxkdSRPuFuS5R0q%2FvkzsqHeAdQMe9rwaHd0NLGgMCYtfZ3fUQMZsQwHEoNkG7%5Cn7xlfx0SeRwQpi1x0qM7U4TGxnvtTlPqeY8m0Ie3p0rciNpyysMmRUvgbWlEZ%5CnnhZgqlsN%2BEJdxrZi4tvoUYM5%2FZKGQnsMFF6YBLGIyeK1mstQriliwhy8igBD%5CnCuL0DNzPULMkR9uUGWGL3Wq%2FjnXXLbDL7YyN4b10QpZ1iRkwDg%2FNvMSqZ4Ti%5CnAZi4gF1LMgJDXhZOCywQahceYy4xNLbYxJ5jmi4IxCIIeq9Q%2Br1G7UsPzc6X%5CniSZOrAEpAyfXkHZ%2FO5RZqVh%2FcXR2sLyL%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1674194295, odds: 1.7692, originalLayOdds: null, probability: 58.34, overvalue: 1.03, bookmaker: "matchbook", sport: "Football", tournament: "Europe - UEFA Europa Conference League", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 1.7692 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1674194295, limit: 13.0041 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 13.0041 contentScript.js:1850:21
+💰 [Commission] Using default rate for matchbook: 0.01 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "1.7692", commission: "1%", adjusted: "1.7615", bookmaker: "matchbook" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/TcryUw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607324876523438000, synonym_id: 1407722170, id: 1408420429, similar_size: 362, group_size: 1, gen_surebets: 34, tournament: "UEFA Europa League", teams: (2) […], initial_value: {…}, value_history: (9) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 2.25 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? true contentScript.js:1994:15
+Surebet Helper: Probability: 0.4585 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0316 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 2.25 isNaN: false Final: 2.25 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.591Z", url: "https://en.surebet.com/nav/valuebet/prong/TcryUw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607324876523438080%2C%22synonym_id%22%3A1407722170%2C%22id%22%3A1408420429%2C%22similar_size%22%3A362%2C%22group_size%22%3A1%2C%22gen_surebets%22%3A34%2C%22tournament%22%3A%22UEFA+Europa+League%22%2C%22teams%22%3A%5B%22Ludogorets+Razgrad%22%2C%22Celta+Vigo%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-20T17%3A47%3A09%22%2C%22value%22%3A2.2816%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A08%3A44%22%2C%22value%22%3A2.25%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A32%3A59%22%2C%22value%22%3A2.2048%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A31%3A41%22%2C%22value%22%3A2.1905%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A46%3A48%22%2C%22value%22%3A2.2048%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A42%3A33%22%2C%22value%22%3A2.25%7D%2C%7B%22datetime%22%3A%222025-11-26T08%3A07%3A58%22%2C%22value%22%3A2.2346%7D%2C%7B%22datetime%22%3A%222025-11-26T08%3A05%3A53%22%2C%22value%22%3A2.25%7D%2C%7B%22datetime%22%3A%222025-11-26T07%3A53%3A21%22%2C%22value%22%3A2.2346%7D%2C%7B%22datetime%22%3A%222025-11-26T07%3A50%3A32%22%2C%22value%22%3A2.25%7D%5D%2C%22overvalue%22%3A1.0316%2C%22probability%22%3A0.4585%2C%22value%22%3A2.25%2C%22scan_time%22%3A1764160629000%2C%22unit_scan_time%22%3A1764160629000%2C%22bk_probability%22%3A0.434%2C%22bk_margin%22%3A0.9797%2C%22commission%22%3A0%2C%22limit%22%3A15%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22RlA2wzJm2fNullDPBhpcPw%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A696524379%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2367%2C%22time%22%3A%222025-11-27T17%3A45%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244707581%22%2C%22id%22%3A1408420429%2C%22inValue%22%3A1.8%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22326866506_lay%22%7D%7D%2C%22type%22%3A%7B%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22goal%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22win2%22%2C%22back%22%3Afalse%7D%2C%22tr_terse%22%3A%222%3Cspan+class%3D%5C%22minor%5C%22%3E+-+lay%3C%2Fspan%3E%22%2C%22tr_expanded%22%3A%22Celta+Vigo+to+win+-+goals+-+Lay+odds%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGhMBrhNnhaEUO%2BYC1UQ9Uw%2BDtD8Vh2lugDPbhXODKfNs3pTDX%2Fb3Y%5Cnv%2F8jgaprtJ2wbe1usvz4BiEddzeAjlkZIFHqPT04XhXGqz7TZtgy5s%2FoCx34%5Cntb4%2B8KP32OGr7kieDe6nsx%2FQSVjCkgYL5u%2BGRmCf6DNl9zFZGjGEDA%2By9sof%5CnpoF8CYTxkNyBhc8kw2aEIXIt6X2yRpr14nFwQ3pCZwKidHJkDFonM1fE0G9Z%5CnB6Av4L9a2dIlpT9M4Tuur2xyGseDoeg7rdi0d%2F3FPpPCDEZNrBmoOV9ySmhg%5Cnt9huhHI%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1408420429, odds: 2.25, originalLayOdds: null, probability: 45.85, overvalue: 1.03, bookmaker: "smarkets", sport: "Football", tournament: "UEFA Europa League", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 2.25 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1408420429, limit: 15 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 15 contentScript.js:1850:21
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.2500", commission: "2%", adjusted: "2.2250", bookmaker: "smarkets" }
+contentScript.js:774:17
+Surebet Helper: Parsing link for stake limit: https://en.surebet.com/nav/valuebet/prong/piL8Zg/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4 contentScript.js:1844:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607323302667105300, synonym_id: 1725799083, id: 1727799974, similar_size: 271, group_size: 1, gen_surebets: 15, tournament: "UK Championship, Round match", teams: (2) […], initial_value: {…}, value_history: (8) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 1.7246 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? true contentScript.js:1994:15
+Surebet Helper: Probability: 0.598 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0313 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 1.7246 isNaN: false Final: 1.7246 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.592Z", url: "https://en.surebet.com/nav/valuebet/prong/piL8Zg/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607323302667105440%2C%22synonym_id%22%3A1725799083%2C%22id%22%3A1727799974%2C%22similar_size%22%3A271%2C%22group_size%22%3A1%2C%22gen_surebets%22%3A15%2C%22tournament%22%3A%22UK+Championship%2C+Round+match%22%2C%22teams%22%3A%5B%22Daniel+Wells%22%2C%22David+Brown+Gilbert%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-26T00%3A55%3A22%22%2C%22value%22%3A1.5553%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T11%3A44%3A27%22%2C%22value%22%3A1.7246%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A14%3A04%22%2C%22value%22%3A1.7143%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A10%3A34%22%2C%22value%22%3A1.6849%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A49%3A02%22%2C%22value%22%3A1.6944%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A46%3A35%22%2C%22value%22%3A1.6757%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A40%3A15%22%2C%22value%22%3A1.6667%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A26%3A53%22%2C%22value%22%3A1.6494%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A20%3A17%22%2C%22value%22%3A1.5556%7D%5D%2C%22overvalue%22%3A1.0313%2C%22probability%22%3A0.598%2C%22value%22%3A1.7246%2C%22scan_time%22%3A1764160548000%2C%22unit_scan_time%22%3A1764160548000%2C%22bk_probability%22%3A0.5647%2C%22bk_margin%22%3A0.9706%2C%22commission%22%3A0%2C%22limit%22%3A6%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22LLoEOOAgSbelLRgD7JwiPQ%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A1727776505%2C%22sport_id%22%3A21%2C%22tournament_id%22%3A3393%2C%22time%22%3A%222025-11-26T13%3A00%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244734646%22%2C%22id%22%3A1727799974%2C%22inValue%22%3A2.38%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22333095070_lay%22%7D%7D%2C%22type%22%3A%7B%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22frame%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22winOnly1%22%2C%22back%22%3Afalse%7D%2C%22tr_terse%22%3A%221%3Csup%3E1-2%3C%2Fsup%3E%3Cspan+class%3D%5C%22minor%5C%22%3E+-+lay%3C%2Fspan%3E%22%2C%22tr_expanded%22%3A%22Daniel+Wells+to+win+%28no+draw%29+-+frame+-+Lay+odds%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGGMB6USETagfHtcE4QgPpzHQ5PjJKWXk3TbS2OARWX4YZzKaxhI5i%5CnlLL3ihde3z6VPuOShw8hOYYLG%2BTgrA%2FoOgeSK2RS49aywBSelZOORwK%2BLSRe%5CnNC645EfZKLdJpwQBgFor0%2FtJgRir8GmIc%2FS8PwdUopTfuYClbfJS6gnmJKj9%5Cn%2BsDRnRbpfB6JpTBgpprrTW0wcnSgASJ3x9eeE3KiF01QMp1meXBn9yW8dr0R%5Cnj9CTENfX85nn2Sd8oWV0QVIKUJkiuChVWTbBa87A6iXGekqO65sJum6vDDPy%5CnAeBSMwA%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1727799974, odds: 1.7246, originalLayOdds: null, probability: 59.8, overvalue: 1.03, bookmaker: "smarkets", sport: "Other", tournament: "UK Championship, Round match", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 1.7246 Type: number contentScript.js:2043:15
+Surebet Helper: Parsed link data: id: 1727799974, limit: 6 contentScript.js:1846:19
+Surebet Helper: Found stake limit from link: 6 contentScript.js:1850:21
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "1.7246", commission: "2%", adjusted: "1.7101", bookmaker: "smarkets" }
+contentScript.js:774:17
+An AudioContext was prevented from starting automatically. It must be created or resumed after a user gesture on the page. valuebets
+An AudioContext was prevented from starting automatically. It must be created or resumed after a user gesture on the page. contentScript.js:1968:18
+Surebet Helper: ♪ Notification sound played for high stake bet(s) contentScript.js:1971:15
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.3889", commission: "2%", adjusted: "2.3611", bookmaker: "smarkets" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "1.6024", commission: "2%", adjusted: "1.5904", bookmaker: "smarkets" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for matchbook: 0.01 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.2048", commission: "1%", adjusted: "2.1928", bookmaker: "matchbook" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "1.8300", commission: "2%", adjusted: "1.8134", bookmaker: "smarkets" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "1.9259", commission: "2%", adjusted: "1.9074", bookmaker: "smarkets" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.1600", commission: "2%", adjusted: "2.1368", bookmaker: "smarkets" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.4085", commission: "2%", adjusted: "2.3803", bookmaker: "smarkets" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.1236", commission: "2%", adjusted: "2.1011", bookmaker: "smarkets" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "1.5495", commission: "2%", adjusted: "1.5385", bookmaker: "smarkets" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.2048", commission: "2%", adjusted: "2.1807", bookmaker: "smarkets" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.2500", commission: "2%", adjusted: "2.2250", bookmaker: "smarkets" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.3158", commission: "2%", adjusted: "2.2895", bookmaker: "smarkets" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.1800", commission: "2%", adjusted: "2.1564", bookmaker: "smarkets" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.1628", commission: "2%", adjusted: "2.1395", bookmaker: "smarkets" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.1200", commission: "2%", adjusted: "2.0976", bookmaker: "smarkets" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "1.8197", commission: "2%", adjusted: "1.8033", bookmaker: "smarkets" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for matchbook: 0.01 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.2658", commission: "1%", adjusted: "2.2531", bookmaker: "matchbook" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for matchbook: 0.01 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "1.8772", commission: "1%", adjusted: "1.8684", bookmaker: "matchbook" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for matchbook: 0.01 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "1.7692", commission: "1%", adjusted: "1.7615", bookmaker: "matchbook" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "2.2500", commission: "2%", adjusted: "2.2250", bookmaker: "smarkets" }
+contentScript.js:774:17
+💰 [Commission] Using default rate for smarkets: 0.02 contentScript.js:752:13
+📊 [StakePanel] Commission adjusted odds: 
+Object { original: "1.7246", commission: "2%", adjusted: "1.7101", bookmaker: "smarkets" }
+contentScript.js:774:17
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607477262927911000, synonym_id: 1361755299, id: 1651166356, similar_size: 55, group_size: 2, gen_surebets: 1, tournament: "UEFA Champions League", teams: (2) […], initial_value: {…}, value_history: (6) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 1.83 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? false contentScript.js:1994:15
+Surebet Helper: Probability: 0.5822 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0655 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 1.83 isNaN: false Final: 1.83 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.738Z", url: "https://en.surebet.com/nav/valuebet/prong/lMxqYg/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607477262927911072%2C%22synonym_id%22%3A1361755299%2C%22id%22%3A1651166356%2C%22similar_size%22%3A55%2C%22group_size%22%3A2%2C%22gen_surebets%22%3A1%2C%22tournament%22%3A%22UEFA+Champions+League%22%2C%22teams%22%3A%5B%22Eintracht+Frankfurt%22%2C%22Atalanta%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-24T11%3A59%3A28%22%2C%22value%22%3A1.4697%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A38%3A09%22%2C%22value%22%3A1.83%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A47%3A02%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T03%3A46%3A34%22%2C%22value%22%3A1.45%7D%2C%7B%22datetime%22%3A%222025-11-25T20%3A30%3A51%22%2C%22value%22%3A1.47%7D%2C%7B%22datetime%22%3A%222025-11-25T20%3A25%3A34%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T13%3A50%3A37%22%2C%22value%22%3A1.47%7D%5D%2C%22overvalue%22%3A1.0655%2C%22probability%22%3A0.5822%2C%22value%22%3A1.83%2C%22scan_time%22%3A1764160633000%2C%22unit_scan_time%22%3A1764160633000%2C%22bk_probability%22%3A0.5417%2C%22bk_margin%22%3A0.9907%2C%22commission%22%3A0%2C%22limit%22%3A11%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22YoSbKHm0-AinrH8ISKhTTA%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A614849004%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2365%2C%22time%22%3A%222025-11-26T20%3A00%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244705079%22%2C%22id%22%3A1651166356%2C%22inValue%22%3A1.83%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22326499163_back%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%2224.5%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22shot%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22over%22%7D%2C%22tr_terse%22%3A%22Over+24.5+-+shots%22%2C%22tr_expanded%22%3A%22Total+over+24.5+-+shots%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkG5WN8F87DMjxURe4mMxf9zfGfNJcnhQ18VzKxa%2BOhxrUL4rI0ZzzD%5CnJFXHwdBaP02G%2FwlzEkeGeaywDXQN5w29inWj9YdgP1aHee6q2VT9EBB5hzm8%5CngPk3VscxIenH3cMso66qMsRSZJX9xjkXblJFH7kwdipJJS9l%2Bsqhf0V77DGj%5Cn9QSKCfgo0auJMrofom85D5bzKfEk272tYZYL1Cjb7wWOLtFPU1cZIFtsHCWg%5CnK%2Ftw2I%2Bq9eCKhpR7phlDiKASIZ1DMlbVv5m5V2d6m2q9eI2gfbdcjXA7yVnO%5CnOfy7s0Y%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1651166356, odds: 1.83, originalLayOdds: null, probability: 58.22, overvalue: 1.07, bookmaker: "smarkets", sport: "Football", tournament: "UEFA Champions League", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 1.83 Type: number contentScript.js:2043:15
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607473609741625300, synonym_id: 1407654416, id: 1700888130, similar_size: 15, group_size: 2, gen_surebets: 0, tournament: "UEFA Europa League", teams: (2) […], initial_value: {…}, value_history: (7) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 2.16 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? false contentScript.js:1994:15
+Surebet Helper: Probability: 0.4929 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0647 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 2.16 isNaN: false Final: 2.16 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.739Z", url: "https://en.surebet.com/nav/valuebet/prong/Qn5hZQ/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607473609741625216%2C%22synonym_id%22%3A1407654416%2C%22id%22%3A1700888130%2C%22similar_size%22%3A15%2C%22group_size%22%3A2%2C%22gen_surebets%22%3A0%2C%22tournament%22%3A%22UEFA+Europa+League%22%2C%22teams%22%3A%5B%22PAOK%22%2C%22Brann%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-25T13%3A49%3A42%22%2C%22value%22%3A1.9297%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A38%3A09%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A45%3A04%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T00%3A11%3A17%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-25T21%3A18%3A36%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T15%3A45%3A16%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-25T15%3A30%3A39%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T14%3A17%3A39%22%2C%22value%22%3A2.16%7D%5D%2C%22overvalue%22%3A1.0647%2C%22probability%22%3A0.4929%2C%22value%22%3A2.16%2C%22scan_time%22%3A1764160530000%2C%22unit_scan_time%22%3A1764160530000%2C%22bk_probability%22%3A0.4312%2C%22bk_margin%22%3A0.9408%2C%22commission%22%3A0%2C%22limit%22%3A38%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22-o4rslaaGkEZWO_tz_bh9w%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A718229714%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2367%2C%22time%22%3A%222025-11-27T17%3A45%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244708147%22%2C%22id%22%3A1700888130%2C%22inValue%22%3A2.16%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22326931056_back%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%225%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22card%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22over%22%7D%2C%22tr_terse%22%3A%22Over+5+-+cards%22%2C%22tr_expanded%22%3A%22Total+over+5+-+cards%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGiBlHTswldScLLX0WR5HvczqF9Ikn6uk3xzG3b5O8Vo8kz%2FCdp9JZ%5CnFL55zNsUP5VPeCU67lZGq7Spszv46Hnzkcmr6dzJx2ljgQPHhsLg0h94A8Kz%5CnSDC5fDmTV9qyW75L3QbjS4mO2MaPqvoRC4XYtYW34q%2BF0P%2FwCX4msHGyFhr1%5Cn4WYRBYjoViccDCLIigGMCQzhzkrCu0Keh4tdXQ4LlsbJImsFytQslQAwVQyx%5CnZQbHlzu8YGfIOYRIMgmUaHtQ%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1700888130, odds: 2.16, originalLayOdds: null, probability: 49.29, overvalue: 1.06, bookmaker: "smarkets", sport: "Football", tournament: "UEFA Europa League", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 2.16 Type: number contentScript.js:2043:15
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607360854487134700, synonym_id: 1570176243, id: 1669317681, similar_size: 134, group_size: 1, gen_surebets: 0, tournament: "Brazilian Serie A", teams: (2) […], initial_value: {…}, value_history: (8) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 2.18 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? false contentScript.js:1994:15
+Surebet Helper: Probability: 0.4769 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0396 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 2.18 isNaN: false Final: 2.18 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.740Z", url: "https://en.surebet.com/nav/valuebet/prong/McR_Yw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607360854487134592%2C%22synonym_id%22%3A1570176243%2C%22id%22%3A1669317681%2C%22similar_size%22%3A134%2C%22group_size%22%3A1%2C%22gen_surebets%22%3A0%2C%22tournament%22%3A%22Brazilian+Serie+A%22%2C%22teams%22%3A%5B%22Bragantino%22%2C%22Fortaleza%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-24T18%3A54%3A55%22%2C%22value%22%3A1.8096%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A37%3A55%22%2C%22value%22%3A2.18%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A37%3A15%22%2C%22value%22%3A2.12%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A36%3A32%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A34%3A29%22%2C%22value%22%3A2.14%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A33%3A21%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A31%3A35%22%2C%22value%22%3A2.12%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A30%3A29%22%2C%22value%22%3A2.14%7D%2C%7B%22datetime%22%3A%222025-11-26T12%3A29%3A24%22%2C%22value%22%3A2.12%7D%5D%2C%22overvalue%22%3A1.0396%2C%22probability%22%3A0.4769%2C%22value%22%3A2.18%2C%22scan_time%22%3A1764160644000%2C%22unit_scan_time%22%3A1764160644000%2C%22bk_probability%22%3A0.4182%2C%22bk_margin%22%3A0.926%2C%22commission%22%3A0%2C%22limit%22%3A94%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22b9EEsiExkYNP4UmyMmsexQ%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A1570171683%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A1152%2C%22time%22%3A%222025-11-26T22%3A00%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244731485%22%2C%22id%22%3A1669317681%2C%22inValue%22%3A2.18%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22332086716_back%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%220.5%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22corner%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22ah2%22%7D%2C%22tr_terse%22%3A%22AH2%28%2B0.5%29+-+corners%22%2C%22tr_expanded%22%3A%22Fortaleza+to+win+with+a+handicap+of+%2B0.5+%28Asian+handicap%29+-+corners%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGQYgQzfqqTHORzIceKIGfyAIbXzUa9YiKrJwPhtSVPCGLyWWfmfpF%5CnldwlU2Ii1GYlTm2PpLi2T14O7yxUU4jDNV7SKBIXj48W07nsF21NZ4Mie0Rx%5CnNmOzSLXP6nkEuDRkiVKHJrnwXUpYMxKANs4emVtUuRgD2LhufaFr28LNMnMd%5CnLCxoVLDopGratou8tE8yDoRwGSkmS5eLwl86H5EfF1qFbtrhk1EGZ%2B3jzNOe%5CnPvvhID%2BRo%2BHYffirdTKEl%2Bb72uN4ZI4j4UesSSG2uppsLg%3D%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1669317681, odds: 2.18, originalLayOdds: null, probability: 47.69, overvalue: 1.04, bookmaker: "smarkets", sport: "Football", tournament: "Brazilian Serie A", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 2.18 Type: number contentScript.js:2043:15
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607345772657766400, synonym_id: 1690833299, id: 1732099844, similar_size: 267, group_size: 1, gen_surebets: 187, tournament: "Euroleague Women", teams: (2) […], initial_value: {…}, value_history: (9) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 2.12 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? false contentScript.js:1994:15
+Surebet Helper: Probability: 0.4888 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0363 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 2.12 isNaN: false Final: 2.12 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:10.740Z", url: "https://en.surebet.com/nav/valuebet/prong/BL89Zw/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607345772657766656%2C%22synonym_id%22%3A1690833299%2C%22id%22%3A1732099844%2C%22similar_size%22%3A267%2C%22group_size%22%3A1%2C%22gen_surebets%22%3A187%2C%22tournament%22%3A%22Euroleague+Women%22%2C%22teams%22%3A%5B%22Valencia+BC%22%2C%22DVTK+Miskolc%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-26T04%3A33%3A27%22%2C%22value%22%3A1.7402%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A19%3A38%22%2C%22value%22%3A2.12%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A55%3A58%22%2C%22value%22%3A2.14%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A55%3A04%22%2C%22value%22%3A2.1%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A31%3A07%22%2C%22value%22%3A2.06%7D%2C%7B%22datetime%22%3A%222025-11-26T11%3A21%3A52%22%2C%22value%22%3A1.95%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A35%3A01%22%2C%22value%22%3A1.88%7D%2C%7B%22datetime%22%3A%222025-11-26T10%3A32%3A51%22%2C%22value%22%3A1.87%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A55%3A09%22%2C%22value%22%3A1.9%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A54%3A26%22%2C%22value%22%3A1.89%7D%5D%2C%22overvalue%22%3A1.0363%2C%22probability%22%3A0.4888%2C%22value%22%3A2.12%2C%22scan_time%22%3A1764160646000%2C%22unit_scan_time%22%3A1764160646000%2C%22bk_probability%22%3A0.4423%2C%22bk_margin%22%3A0.9447%2C%22commission%22%3A0%2C%22limit%22%3A17%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22ldmiF9FsTkgrQhRnOzKTxw%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A1688685548%2C%22sport_id%22%3A4%2C%22tournament_id%22%3A276%2C%22time%22%3A%222025-11-26T19%3A00%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244734669%22%2C%22id%22%3A1732099844%2C%22inValue%22%3A2.12%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22333120005_back%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%2221.5%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22point%22%2C%22period%22%3A%22overtime%22%2C%22type%22%3A%22ah2%22%7D%2C%22tr_terse%22%3A%22AH2%28%2B21.5%29+%3Cspan+class%3D%5C%22minor%5C%22%3EOT%3C%2Fspan%3E%22%2C%22tr_expanded%22%3A%22DVTK+Miskolc+to+win+with+a+handicap+of+%2B21.5+%28Asian+handicap%29+-+points+scored+including+overtime%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGpWqW2vMIUODsUkazMk9Yz6E7SSVepfbcLirKWi2u4Bz0V%2FYLwyNI%5CnL%2FUomooOB6q3vjVpeTCwBIaLg%2BczwGBdVwnaGj%2B3CAkXHXeG6JFQ27Hr0mch%5Cnw9w2k506V%2BfIh05kCjiYBfFPAudHS9Npre%2Fw2l3odi6RgO98uzeipwnDcJcD%5CnxmAvfF9iuNldzeS0i6sXZczK%2FQfkX5xDqPSNovplMHuoA3pp4oMXcqAs04kg%5Cn7XKVGIPz1ftZBa78E22Pde3mpgdYKtcpi1uAJzwDKK6mWQ%3D%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1732099844, odds: 2.12, originalLayOdds: null, probability: 48.88, overvalue: 1.04, bookmaker: "smarkets", sport: "Other", tournament: "Euroleague Women", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 2.12 Type: number contentScript.js:2043:15
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: Click detected on: I fa fa-pause-circle 
+<i class="fa fa-play-circle">
+contentScript.js:3125:15
+Surebet Helper: Post-click injection attempt (200ms) contentScript.js:3128:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (500ms) contentScript.js:3134:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (1000ms) contentScript.js:3140:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Click detected on: SPAN surebet-helper-stake-indicator 
+<span class="surebet-helper-stake-indicator" data-stake-value="5">
+contentScript.js:3125:15
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607477262927911000, synonym_id: 1361755299, id: 1651166356, similar_size: 55, group_size: 2, gen_surebets: 1, tournament: "UEFA Champions League", teams: (2) […], initial_value: {…}, value_history: (6) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 1.83 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? false contentScript.js:1994:15
+Surebet Helper: Probability: 0.5822 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0655 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 1.83 isNaN: false Final: 1.83 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:14.557Z", url: "https://en.surebet.com/nav/valuebet/prong/lMxqYg/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607477262927911072%2C%22synonym_id%22%3A1361755299%2C%22id%22%3A1651166356%2C%22similar_size%22%3A55%2C%22group_size%22%3A2%2C%22gen_surebets%22%3A1%2C%22tournament%22%3A%22UEFA+Champions+League%22%2C%22teams%22%3A%5B%22Eintracht+Frankfurt%22%2C%22Atalanta%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-24T11%3A59%3A28%22%2C%22value%22%3A1.4697%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A38%3A09%22%2C%22value%22%3A1.83%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A47%3A02%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T03%3A46%3A34%22%2C%22value%22%3A1.45%7D%2C%7B%22datetime%22%3A%222025-11-25T20%3A30%3A51%22%2C%22value%22%3A1.47%7D%2C%7B%22datetime%22%3A%222025-11-25T20%3A25%3A34%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T13%3A50%3A37%22%2C%22value%22%3A1.47%7D%5D%2C%22overvalue%22%3A1.0655%2C%22probability%22%3A0.5822%2C%22value%22%3A1.83%2C%22scan_time%22%3A1764160633000%2C%22unit_scan_time%22%3A1764160633000%2C%22bk_probability%22%3A0.5417%2C%22bk_margin%22%3A0.9907%2C%22commission%22%3A0%2C%22limit%22%3A11%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22YoSbKHm0-AinrH8ISKhTTA%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A614849004%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2365%2C%22time%22%3A%222025-11-26T20%3A00%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244705079%22%2C%22id%22%3A1651166356%2C%22inValue%22%3A1.83%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22326499163_back%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%2224.5%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22shot%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22over%22%7D%2C%22tr_terse%22%3A%22Over+24.5+-+shots%22%2C%22tr_expanded%22%3A%22Total+over+24.5+-+shots%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkG5WN8F87DMjxURe4mMxf9zfGfNJcnhQ18VzKxa%2BOhxrUL4rI0ZzzD%5CnJFXHwdBaP02G%2FwlzEkeGeaywDXQN5w29inWj9YdgP1aHee6q2VT9EBB5hzm8%5CngPk3VscxIenH3cMso66qMsRSZJX9xjkXblJFH7kwdipJJS9l%2Bsqhf0V77DGj%5Cn9QSKCfgo0auJMrofom85D5bzKfEk272tYZYL1Cjb7wWOLtFPU1cZIFtsHCWg%5CnK%2Ftw2I%2Bq9eCKhpR7phlDiKASIZ1DMlbVv5m5V2d6m2q9eI2gfbdcjXA7yVnO%5CnOfy7s0Y%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1651166356, odds: 1.83, originalLayOdds: null, probability: 58.22, overvalue: 1.07, bookmaker: "smarkets", sport: "Football", tournament: "UEFA Champions League", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 1.83 Type: number contentScript.js:2043:15
+Surebet Helper: ✓ Broker confirmed pendingBet saved (from stake indicator): 
+Object { timestamp: "2025-11-26T12:38:14.557Z", url: "https://en.surebet.com/nav/valuebet/prong/lMxqYg/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607477262927911072%2C%22synonym_id%22%3A1361755299%2C%22id%22%3A1651166356%2C%22similar_size%22%3A55%2C%22group_size%22%3A2%2C%22gen_surebets%22%3A1%2C%22tournament%22%3A%22UEFA+Champions+League%22%2C%22teams%22%3A%5B%22Eintracht+Frankfurt%22%2C%22Atalanta%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-24T11%3A59%3A28%22%2C%22value%22%3A1.4697%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A38%3A09%22%2C%22value%22%3A1.83%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A47%3A02%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T03%3A46%3A34%22%2C%22value%22%3A1.45%7D%2C%7B%22datetime%22%3A%222025-11-25T20%3A30%3A51%22%2C%22value%22%3A1.47%7D%2C%7B%22datetime%22%3A%222025-11-25T20%3A25%3A34%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T13%3A50%3A37%22%2C%22value%22%3A1.47%7D%5D%2C%22overvalue%22%3A1.0655%2C%22probability%22%3A0.5822%2C%22value%22%3A1.83%2C%22scan_time%22%3A1764160633000%2C%22unit_scan_time%22%3A1764160633000%2C%22bk_probability%22%3A0.5417%2C%22bk_margin%22%3A0.9907%2C%22commission%22%3A0%2C%22limit%22%3A11%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22YoSbKHm0-AinrH8ISKhTTA%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A614849004%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2365%2C%22time%22%3A%222025-11-26T20%3A00%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244705079%22%2C%22id%22%3A1651166356%2C%22inValue%22%3A1.83%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22326499163_back%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%2224.5%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22shot%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22over%22%7D%2C%22tr_terse%22%3A%22Over+24.5+-+shots%22%2C%22tr_expanded%22%3A%22Total+over+24.5+-+shots%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkG5WN8F87DMjxURe4mMxf9zfGfNJcnhQ18VzKxa%2BOhxrUL4rI0ZzzD%5CnJFXHwdBaP02G%2FwlzEkeGeaywDXQN5w29inWj9YdgP1aHee6q2VT9EBB5hzm8%5CngPk3VscxIenH3cMso66qMsRSZJX9xjkXblJFH7kwdipJJS9l%2Bsqhf0V77DGj%5Cn9QSKCfgo0auJMrofom85D5bzKfEk272tYZYL1Cjb7wWOLtFPU1cZIFtsHCWg%5CnK%2Ftw2I%2Bq9eCKhpR7phlDiKASIZ1DMlbVv5m5V2d6m2q9eI2gfbdcjXA7yVnO%5CnOfy7s0Y%3D%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1651166356, odds: 1.83, originalLayOdds: null, probability: 58.22, overvalue: 1.07, bookmaker: "smarkets", sport: "Football", tournament: "UEFA Champions League", … }
+contentScript.js:863:29
+Surebet Helper: Post-click injection attempt (200ms) contentScript.js:3128:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (1500ms) contentScript.js:3146:17
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (500ms) contentScript.js:3134:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: Post-click injection attempt (1000ms) contentScript.js:3140:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (1500ms) contentScript.js:3146:17
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Storage access automatically granted for origin “https://smarkets.com” on “https://en.surebet.com”.
+Surebet Helper: Click detected on: I fa-trash-alt fa 
+<i class="fa-trash-alt fa">
+contentScript.js:3125:15
+Surebet Helper: Post-click injection attempt (200ms) contentScript.js:3128:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (500ms) contentScript.js:3134:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Click detected on: BUTTON dropdown-item 
+<button class="dropdown-item" type="submit">
+contentScript.js:3125:15
+Surebet Helper: Post-click injection attempt (1000ms) contentScript.js:3140:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (200ms) contentScript.js:3128:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (500ms) contentScript.js:3134:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (1500ms) contentScript.js:3146:17
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Click detected on: SPAN surebet-helper-stake-indicator 
+<span class="surebet-helper-stake-indicator" data-stake-value="3.5">
+contentScript.js:3125:15
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607473609741625300, synonym_id: 1407654416, id: 1700888130, similar_size: 15, group_size: 2, gen_surebets: 0, tournament: "UEFA Europa League", teams: (2) […], initial_value: {…}, value_history: (7) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 2.16 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? false contentScript.js:1994:15
+Surebet Helper: Probability: 0.4929 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0647 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 2.16 isNaN: false Final: 2.16 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:35.138Z", url: "https://en.surebet.com/nav/valuebet/prong/Qn5hZQ/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607473609741625216%2C%22synonym_id%22%3A1407654416%2C%22id%22%3A1700888130%2C%22similar_size%22%3A15%2C%22group_size%22%3A2%2C%22gen_surebets%22%3A0%2C%22tournament%22%3A%22UEFA+Europa+League%22%2C%22teams%22%3A%5B%22PAOK%22%2C%22Brann%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-25T13%3A49%3A42%22%2C%22value%22%3A1.9297%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A38%3A09%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A45%3A04%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T00%3A11%3A17%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-25T21%3A18%3A36%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T15%3A45%3A16%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-25T15%3A30%3A39%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T14%3A17%3A39%22%2C%22value%22%3A2.16%7D%5D%2C%22overvalue%22%3A1.0647%2C%22probability%22%3A0.4929%2C%22value%22%3A2.16%2C%22scan_time%22%3A1764160530000%2C%22unit_scan_time%22%3A1764160530000%2C%22bk_probability%22%3A0.4312%2C%22bk_margin%22%3A0.9408%2C%22commission%22%3A0%2C%22limit%22%3A38%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22-o4rslaaGkEZWO_tz_bh9w%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A718229714%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2367%2C%22time%22%3A%222025-11-27T17%3A45%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244708147%22%2C%22id%22%3A1700888130%2C%22inValue%22%3A2.16%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22326931056_back%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%225%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22card%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22over%22%7D%2C%22tr_terse%22%3A%22Over+5+-+cards%22%2C%22tr_expanded%22%3A%22Total+over+5+-+cards%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGiBlHTswldScLLX0WR5HvczqF9Ikn6uk3xzG3b5O8Vo8kz%2FCdp9JZ%5CnFL55zNsUP5VPeCU67lZGq7Spszv46Hnzkcmr6dzJx2ljgQPHhsLg0h94A8Kz%5CnSDC5fDmTV9qyW75L3QbjS4mO2MaPqvoRC4XYtYW34q%2BF0P%2FwCX4msHGyFhr1%5Cn4WYRBYjoViccDCLIigGMCQzhzkrCu0Keh4tdXQ4LlsbJImsFytQslQAwVQyx%5CnZQbHlzu8YGfIOYRIMgmUaHtQ%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1700888130, odds: 2.16, originalLayOdds: null, probability: 49.29, overvalue: 1.06, bookmaker: "smarkets", sport: "Football", tournament: "UEFA Europa League", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 2.16 Type: number contentScript.js:2043:15
+Surebet Helper: ✓ Broker confirmed pendingBet saved (from stake indicator): 
+Object { timestamp: "2025-11-26T12:38:35.138Z", url: "https://en.surebet.com/nav/valuebet/prong/Qn5hZQ/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607473609741625216%2C%22synonym_id%22%3A1407654416%2C%22id%22%3A1700888130%2C%22similar_size%22%3A15%2C%22group_size%22%3A2%2C%22gen_surebets%22%3A0%2C%22tournament%22%3A%22UEFA+Europa+League%22%2C%22teams%22%3A%5B%22PAOK%22%2C%22Brann%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-25T13%3A49%3A42%22%2C%22value%22%3A1.9297%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A38%3A09%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A45%3A04%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T00%3A11%3A17%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-25T21%3A18%3A36%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T15%3A45%3A16%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-25T15%3A30%3A39%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T14%3A17%3A39%22%2C%22value%22%3A2.16%7D%5D%2C%22overvalue%22%3A1.0647%2C%22probability%22%3A0.4929%2C%22value%22%3A2.16%2C%22scan_time%22%3A1764160530000%2C%22unit_scan_time%22%3A1764160530000%2C%22bk_probability%22%3A0.4312%2C%22bk_margin%22%3A0.9408%2C%22commission%22%3A0%2C%22limit%22%3A38%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22-o4rslaaGkEZWO_tz_bh9w%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A718229714%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2367%2C%22time%22%3A%222025-11-27T17%3A45%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244708147%22%2C%22id%22%3A1700888130%2C%22inValue%22%3A2.16%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22326931056_back%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%225%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22card%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22over%22%7D%2C%22tr_terse%22%3A%22Over+5+-+cards%22%2C%22tr_expanded%22%3A%22Total+over+5+-+cards%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGiBlHTswldScLLX0WR5HvczqF9Ikn6uk3xzG3b5O8Vo8kz%2FCdp9JZ%5CnFL55zNsUP5VPeCU67lZGq7Spszv46Hnzkcmr6dzJx2ljgQPHhsLg0h94A8Kz%5CnSDC5fDmTV9qyW75L3QbjS4mO2MaPqvoRC4XYtYW34q%2BF0P%2FwCX4msHGyFhr1%5Cn4WYRBYjoViccDCLIigGMCQzhzkrCu0Keh4tdXQ4LlsbJImsFytQslQAwVQyx%5CnZQbHlzu8YGfIOYRIMgmUaHtQ%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1700888130, odds: 2.16, originalLayOdds: null, probability: 49.29, overvalue: 1.06, bookmaker: "smarkets", sport: "Football", tournament: "UEFA Europa League", … }
+contentScript.js:863:29
+Surebet Helper: Post-click injection attempt (1000ms) contentScript.js:3140:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (200ms) contentScript.js:3128:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (500ms) contentScript.js:3134:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (1500ms) contentScript.js:3146:17
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (1000ms) contentScript.js:3140:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (1500ms) contentScript.js:3146:17
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Storage access automatically granted for origin “https://smarkets.com” on “https://en.surebet.com”.
+Surebet Helper: Click detected on: BUTTON surebet-helper-save-btn 
+<button class="surebet-helper-save-btn" title="Save this bet to your log">
+contentScript.js:3125:15
+Surebet Helper: Parsing from link: https://en.surebet.com/nav/valuebet/prong/Qn5hZQ/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607473609741625216%2C%22synonym_id%22%3A1407654416%2C%22id%22%3A1700888130%2C%22similar_size%22%3A15%2C%22group_size%22%3A2%2C%22gen_surebets%22%3A0%2C%22tournament%22%3A%22UEFA+Europa+League%22%2C%22teams%22%3A%5B%22PAOK%22%2C%22Brann%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-25T13%3A49%3A42%22%2C%22value%22%3A1.9297%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A38%3A09%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A45%3A04%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T00%3A11%3A17%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-25T21%3A18%3A36%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T15%3A45%3A16%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-25T15%3A30%3A39%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T14%3A17%3A39%22%2C%22value%22%3A2.16%7D%5D%2C%22overvalue%22%3A1.0647%2C%22probability%22%3A0.4929%2C%22value%22%3A2.16%2C%22scan_time%22%3A1764160530000%2C%22unit_scan_time%22%3A1764160530000%2C%22bk_probability%22%3A0.4312%2C%22bk_margin%22%3A0.9408%2C%22commission%22%3A0%2C%22limit%22%3A38%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22-o4rslaaGkEZWO_tz_bh9w%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A718229714%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2367%2C%22time%22%3A%222025-11-27T17%3A45%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244708147%22%2C%22id%22%3A1700888130%2C%22inValue%22%3A2.16%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22326931056_back%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%225%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22card%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22over%22%7D%2C%22tr_terse%22%3A%22Over+5+-+cards%22%2C%22tr_expanded%22%3A%22Total+over+5+-+cards%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGiBlHTswldScLLX0WR5HvczqF9Ikn6uk3xzG3b5O8Vo8kz%2FCdp9JZ%5CnFL55zNsUP5VPeCU67lZGq7Spszv46Hnzkcmr6dzJx2ljgQPHhsLg0h94A8Kz%5CnSDC5fDmTV9qyW75L3QbjS4mO2MaPqvoRC4XYtYW34q%2BF0P%2FwCX4msHGyFhr1%5Cn4WYRBYjoViccDCLIigGMCQzhzkrCu0Keh4tdXQ4LlsbJImsFytQslQAwVQyx%5CnZQbHlzu8YGfIOYRIMgmUaHtQ%22%7D&odd_format=eu&time_zone=Europe%2FLondon contentScript.js:1897:19
+Surebet Helper: Parsing Surebet link data from URL contentScript.js:1979:15
+Surebet Helper: Parsed JSON from link: 
+Object { sort_by: 4607473609741625300, synonym_id: 1407654416, id: 1700888130, similar_size: 15, group_size: 2, gen_surebets: 0, tournament: "UEFA Europa League", teams: (2) […], initial_value: {…}, value_history: (7) […], … }
+contentScript.js:1992:15
+Surebet Helper: Raw odds value: 2.16 Type: number contentScript.js:1993:15
+Surebet Helper: Is lay bet? false contentScript.js:1994:15
+Surebet Helper: Probability: 0.4929 contentScript.js:1995:15
+Surebet Helper: Overvalue: 1.0647 contentScript.js:1996:15
+Surebet Helper: Parsed odds: 2.16 isNaN: false Final: 2.16 contentScript.js:1999:15
+Surebet Helper: Extracted data from link: 
+Object { timestamp: "2025-11-26T12:38:48.211Z", url: "https://en.surebet.com/nav/valuebet/prong/Qn5hZQ/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607473609741625216%2C%22synonym_id%22%3A1407654416%2C%22id%22%3A1700888130%2C%22similar_size%22%3A15%2C%22group_size%22%3A2%2C%22gen_surebets%22%3A0%2C%22tournament%22%3A%22UEFA+Europa+League%22%2C%22teams%22%3A%5B%22PAOK%22%2C%22Brann%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-25T13%3A49%3A42%22%2C%22value%22%3A1.9297%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A38%3A09%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A45%3A04%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T00%3A11%3A17%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-25T21%3A18%3A36%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T15%3A45%3A16%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-25T15%3A30%3A39%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T14%3A17%3A39%22%2C%22value%22%3A2.16%7D%5D%2C%22overvalue%22%3A1.0647%2C%22probability%22%3A0.4929%2C%22value%22%3A2.16%2C%22scan_time%22%3A1764160530000%2C%22unit_scan_time%22%3A1764160530000%2C%22bk_probability%22%3A0.4312%2C%22bk_margin%22%3A0.9408%2C%22commission%22%3A0%2C%22limit%22%3A38%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22-o4rslaaGkEZWO_tz_bh9w%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A718229714%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2367%2C%22time%22%3A%222025-11-27T17%3A45%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244708147%22%2C%22id%22%3A1700888130%2C%22inValue%22%3A2.16%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22326931056_back%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%225%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22card%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22over%22%7D%2C%22tr_terse%22%3A%22Over+5+-+cards%22%2C%22tr_expanded%22%3A%22Total+over+5+-+cards%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGiBlHTswldScLLX0WR5HvczqF9Ikn6uk3xzG3b5O8Vo8kz%2FCdp9JZ%5CnFL55zNsUP5VPeCU67lZGq7Spszv46Hnzkcmr6dzJx2ljgQPHhsLg0h94A8Kz%5CnSDC5fDmTV9qyW75L3QbjS4mO2MaPqvoRC4XYtYW34q%2BF0P%2FwCX4msHGyFhr1%5Cn4WYRBYjoViccDCLIigGMCQzhzkrCu0Keh4tdXQ4LlsbJImsFytQslQAwVQyx%5CnZQbHlzu8YGfIOYRIMgmUaHtQ%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1700888130, odds: 2.16, originalLayOdds: null, probability: 49.29, overvalue: 1.06, bookmaker: "smarkets", sport: "Football", tournament: "UEFA Europa League", … }
+contentScript.js:2042:15
+Surebet Helper: Final odds value: 2.16 Type: number contentScript.js:2043:15
+Surebet Helper: saveBet called with data: 
+Object { timestamp: "2025-11-26T12:38:48.211Z", url: "https://en.surebet.com/nav/valuebet/prong/Qn5hZQ/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607473609741625216%2C%22synonym_id%22%3A1407654416%2C%22id%22%3A1700888130%2C%22similar_size%22%3A15%2C%22group_size%22%3A2%2C%22gen_surebets%22%3A0%2C%22tournament%22%3A%22UEFA+Europa+League%22%2C%22teams%22%3A%5B%22PAOK%22%2C%22Brann%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-25T13%3A49%3A42%22%2C%22value%22%3A1.9297%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A38%3A09%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A45%3A04%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T00%3A11%3A17%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-25T21%3A18%3A36%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T15%3A45%3A16%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-25T15%3A30%3A39%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T14%3A17%3A39%22%2C%22value%22%3A2.16%7D%5D%2C%22overvalue%22%3A1.0647%2C%22probability%22%3A0.4929%2C%22value%22%3A2.16%2C%22scan_time%22%3A1764160530000%2C%22unit_scan_time%22%3A1764160530000%2C%22bk_probability%22%3A0.4312%2C%22bk_margin%22%3A0.9408%2C%22commission%22%3A0%2C%22limit%22%3A38%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22-o4rslaaGkEZWO_tz_bh9w%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A718229714%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2367%2C%22time%22%3A%222025-11-27T17%3A45%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244708147%22%2C%22id%22%3A1700888130%2C%22inValue%22%3A2.16%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22326931056_back%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%225%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22card%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22over%22%7D%2C%22tr_terse%22%3A%22Over+5+-+cards%22%2C%22tr_expanded%22%3A%22Total+over+5+-+cards%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGiBlHTswldScLLX0WR5HvczqF9Ikn6uk3xzG3b5O8Vo8kz%2FCdp9JZ%5CnFL55zNsUP5VPeCU67lZGq7Spszv46Hnzkcmr6dzJx2ljgQPHhsLg0h94A8Kz%5CnSDC5fDmTV9qyW75L3QbjS4mO2MaPqvoRC4XYtYW34q%2BF0P%2FwCX4msHGyFhr1%5Cn4WYRBYjoViccDCLIigGMCQzhzkrCu0Keh4tdXQ4LlsbJImsFytQslQAwVQyx%5CnZQbHlzu8YGfIOYRIMgmUaHtQ%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1700888130, odds: 2.16, originalLayOdds: null, probability: 49.29, overvalue: 1.06, bookmaker: "smarkets", sport: "Football", tournament: "UEFA Europa League", … }
+contentScript.js:1313:13
+Surebet Helper: Odds check - value: 2.16 type: number check result: false contentScript.js:1314:13
+Surebet Helper: Odds already present: 2.16 contentScript.js:1333:15
+Surebet Helper: skipStakePrompt enabled, using Kelly stake: 3.5 contentScript.js:1360:15
+Surebet Helper: Final bet data to save: 
+Object { timestamp: "2025-11-26T12:38:48.211Z", url: "https://en.surebet.com/nav/valuebet/prong/Qn5hZQ/if?json_body%5Bprongs%5D%5B%5D=%7B%22sort_by%22%3A4607473609741625216%2C%22synonym_id%22%3A1407654416%2C%22id%22%3A1700888130%2C%22similar_size%22%3A15%2C%22group_size%22%3A2%2C%22gen_surebets%22%3A0%2C%22tournament%22%3A%22UEFA+Europa+League%22%2C%22teams%22%3A%5B%22PAOK%22%2C%22Brann%22%5D%2C%22initial_value%22%3A%7B%22datetime%22%3A%222025-11-25T13%3A49%3A42%22%2C%22value%22%3A1.9297%7D%2C%22value_history%22%3A%5B%7B%22datetime%22%3A%222025-11-26T12%3A38%3A09%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-26T09%3A45%3A04%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-26T00%3A11%3A17%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-25T21%3A18%3A36%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T15%3A45%3A16%22%2C%22value%22%3A2.16%7D%2C%7B%22datetime%22%3A%222025-11-25T15%3A30%3A39%22%2C%22value%22%3Anull%7D%2C%7B%22datetime%22%3A%222025-11-25T14%3A17%3A39%22%2C%22value%22%3A2.16%7D%5D%2C%22overvalue%22%3A1.0647%2C%22probability%22%3A0.4929%2C%22value%22%3A2.16%2C%22scan_time%22%3A1764160530000%2C%22unit_scan_time%22%3A1764160530000%2C%22bk_probability%22%3A0.4312%2C%22bk_margin%22%3A0.9408%2C%22commission%22%3A0%2C%22limit%22%3A38%2C%22currency%22%3A%22GBP%22%2C%22source%22%3A%22-o4rslaaGkEZWO_tz_bh9w%22%2C%22bk%22%3A%22smarkets%22%2C%22event_id%22%3A718229714%2C%22sport_id%22%3A15%2C%22tournament_id%22%3A2367%2C%22time%22%3A%222025-11-27T17%3A45%3A00%22%2C%22bookie_nav%22%3A%7B%22direct%22%3Atrue%2C%22links%22%3A%5B%7B%22name%22%3A%22main%22%2C%22link%22%3A%7B%22method%22%3A%22GET%22%2C%22url%22%3A%22https%3A%2F%2Fsmarkets.com%2F%22%7D%7D%5D%2C%22markers%22%3A%7B%22eventId%22%3A%2244708147%22%2C%22id%22%3A1700888130%2C%22inValue%22%3A2.16%2C%22bk%22%3A%22smarkets%22%2C%22externalId%22%3A%22326931056_back%22%7D%7D%2C%22type%22%3A%7B%22condition%22%3A%225%22%2C%22game%22%3A%22regular%22%2C%22base%22%3A%22overall%22%2C%22variety%22%3A%22card%22%2C%22period%22%3A%22regularTime%22%2C%22type%22%3A%22over%22%7D%2C%22tr_terse%22%3A%22Over+5+-+cards%22%2C%22tr_expanded%22%3A%22Total+over+5+-+cards%22%2C%22preferred_nav%22%3A%22ljhTc7ETLA8E%2FNZvcXf%2BkplgZNRUhlPVxDUvJBzLUDwcGr97w9oDdUO2PLiH%5CnyRvNIZyNpi3NNaYzOtBdgY%2BZpwjdcr6c33YuHdf7SrbXAp4xKqf52pWxef%2BE%5CnDI6LUrkGiBlHTswldScLLX0WR5HvczqF9Ikn6uk3xzG3b5O8Vo8kz%2FCdp9JZ%5CnFL55zNsUP5VPeCU67lZGq7Spszv46Hnzkcmr6dzJx2ljgQPHhsLg0h94A8Kz%5CnSDC5fDmTV9qyW75L3QbjS4mO2MaPqvoRC4XYtYW34q%2BF0P%2FwCX4msHGyFhr1%5Cn4WYRBYjoViccDCLIigGMCQzhzkrCu0Keh4tdXQ4LlsbJImsFytQslQAwVQyx%5CnZQbHlzu8YGfIOYRIMgmUaHtQ%22%7D&odd_format=eu&time_zone=Europe%2FLondon", id: 1700888130, odds: 2.16, originalLayOdds: null, probability: 49.29, overvalue: 1.06, bookmaker: "smarkets", sport: "Football", tournament: "UEFA Europa League", … }
+contentScript.js:1403:13
+Surebet Helper: Dustbin setting value: hide-valuebet contentScript.js:1918:19
+Surebet Helper: Attempting dustbin action: hide-valuebet contentScript.js:1224:13
+Surebet Helper: Click detected on: BUTTON px-1 btn-site show 
+<button class="px-1 btn-site" name="button" type="submit" data-bs-toggle="dropdown" aria-expanded="false">
+contentScript.js:3125:15
+Surebet Helper: Clicked dustbin button contentScript.js:1235:13
+Surebet Helper: Menu found and visible, class: dropdown-menu hidden-records-menu available show contentScript.js:1265:17
+Surebet Helper: Found 0 menu items contentScript.js:1277:17
+Surebet Helper: Menu item not found for action: hide-valuebet - looking for: this valuebet contentScript.js:1292:19
+Surebet Helper: Click detected on: BUTTON px-1 btn-site 
+<button class="px-1 btn-site" name="button" type="submit" data-bs-toggle="dropdown" aria-expanded="false">
+contentScript.js:3125:15
+Surebet Helper: Post-click injection attempt (200ms) contentScript.js:3128:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (200ms) contentScript.js:3128:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (200ms) contentScript.js:3128:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (500ms) contentScript.js:3134:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (500ms) contentScript.js:3134:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (500ms) contentScript.js:3134:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (1000ms) contentScript.js:3140:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (1000ms) contentScript.js:3140:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (1000ms) contentScript.js:3140:17
+Surebet Helper: === Attempting to inject preset buttons === contentScript.js:1535:13
+Surebet Helper: Total checkboxes: 4 Visible: 4 contentScript.js:1555:13
+Surebet Helper: Sample checkbox labels: 
+Array(4) [ "Valuebets", "Exclude where quarters are sig", "Exclude when a return is possi", "Exclude surebets for which boo" ]
+contentScript.js:1563:15
+Surebet Helper: Found 4 visible checkboxes contentScript.js:1628:17
+Surebet Helper: ❌ Could not find bookmaker filter container contentScript.js:1655:15
+Surebet Helper: Available visible checkboxes: 4 contentScript.js:1656:15
+Surebet Helper: Top 5 divs with checkboxes: 
+Array(5) [ {…}, {…}, {…}, {…}, {…} ]
+contentScript.js:1666:15
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (1500ms) contentScript.js:3146:17
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (1500ms) contentScript.js:3146:17
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Surebet Helper: Post-click injection attempt (1500ms) contentScript.js:3146:17
+Surebet Helper: On Surebet page, skipping popup detection contentScript.js:2860:15
+Source map error: Error: request failed with status 404
+Stack in the worker:networkRequest@resource://devtools/client/shared/source-map-loader/utils/network-request.js:43:9
+
+Resource URL: https://en.surebet.com/assets/es-module-shims.min-4ca9b3dd5e434131e3bb4b0c1d7dff3bfd4035672a5086deec6f73979a49be73.js
+Source Map URL: /assets/es-module-shims.js-c69f1a5dd068dfc08a4cedc0ad77b792985bf256e162852bd03cdf764b666c4a.map

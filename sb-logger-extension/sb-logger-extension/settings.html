@@ -1,0 +1,866 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Settings - Surebet Helper</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; color: #222; background: #fafafa; }
+    .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { margin: 0 0 10px 0; font-size: 24px; color: #333; }
+    .nav-bar { display: flex; gap: 10px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #dee2e6; flex-wrap: wrap; }
+    .nav-btn { padding: 8px 16px; background: #6c757d; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 12px; transition: background 0.2s; }
+    .nav-btn.active { background: #007bff; }
+    .nav-btn:hover { opacity: 0.85; }
+    .section-container { display: none; }
+    .section-container.active { display: block; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; color: #666; margin-bottom: 4px; font-weight: 600; }
+    .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 3px; font-family: Arial, sans-serif; }
+    .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #007bff; box-shadow: 0 0 3px rgba(0, 123, 255, 0.5); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .form-group-checkbox { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .form-group-checkbox input { width: auto; }
+    .button-row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; }
+    button { padding: 8px 16px; font-size: 12px; cursor: pointer; border: 1px solid #ccc; background: #fff; border-radius: 3px; transition: background 0.2s; font-weight: 600; }
+    button:hover { background: #f0f0f0; }
+    .btn-save { background: #28a745; color: #fff; border-color: #28a745; }
+    .btn-save:hover { background: #218838; }
+    .btn-cancel { background: #6c757d; color: #fff; border-color: #6c757d; }
+    .btn-cancel:hover { background: #5a6268; }
+    .note { color: #666; font-size: 11px; margin-top: 8px; line-height: 1.4; }
+    .info-box { background: #e7f3ff; padding: 12px; border-left: 4px solid #0056b3; border-radius: 3px; margin-bottom: 15px; font-size: 12px; }
+    .info-box strong { color: #004085; }
+    .warning-box { background: #fff3cd; padding: 12px; border-left: 4px solid #ffc107; border-radius: 3px; margin-bottom: 15px; font-size: 12px; }
+    .link-button { color: #007bff; text-decoration: underline; cursor: pointer; background: none; border: none; padding: 0; font-size: inherit; font-weight: inherit; }
+    .link-button:hover { color: #0056b3; }
+    .preset-box { border: 2px solid transparent; }
+    .preset-box:hover { background: #f8f9fa !important; }
+    .preset-box.active { border-color: #28a745; background: #d4edda !important; position: relative; }
+    .preset-box.active::before { content: '✓ Active'; position: absolute; top: 5px; right: 10px; background: #28a745; color: #fff; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚙️ Settings</h1>
+    
+    <div class="nav-bar">
+      <button class="nav-btn active" data-section="commission">💰 Commission</button>
+      <button class="nav-btn" data-section="rounding">📏 Rounding</button>
+      <button class="nav-btn" data-section="autofill">⚡ Auto-Fill</button>
+      <button class="nav-btn" data-section="defaults">⚙️ Default Actions</button>
+      <button class="nav-btn" data-section="kelly">🎲 Kelly Staking</button>
+      <button class="nav-btn" data-section="marketfilters">🎯 Market Filters</button>
+      <button class="nav-btn" data-section="clv">📈 CLV Tracking</button>
+      <button class="nav-btn" data-section="props">🎯 Props Polling</button>
+      <button class="nav-btn" data-section="api">🔑 API Setup</button>
+      <button class="nav-btn" data-section="diagnostics">🔍 API Diagnostics</button>
+      <button class="nav-btn" data-section="data">🗑️ Data</button>
+    </div>
+
+    <!-- Commission Section -->
+    <div id="commission-section" class="section-container active">
+      <h2>Exchange Commission Rates</h2>
+      <div class="info-box">
+        <strong>ℹ️ How Commission Works</strong><br>
+        Commission is deducted from winning bets only. Enter the percentage rate for each exchange.
+      </div>
+      
+      <div class="grid-4">
+        <div class="form-group">
+          <label for="comm-betfair">Betfair (%)</label>
+          <input type="number" id="comm-betfair" step="0.1" min="0" max="100" value="5.0" />
+        </div>
+        <div class="form-group">
+          <label for="comm-betdaq">Betdaq (%)</label>
+          <input type="number" id="comm-betdaq" step="0.1" min="0" max="100" value="2.0" />
+        </div>
+        <div class="form-group">
+          <label for="comm-matchbook">Matchbook (%)</label>
+          <input type="number" id="comm-matchbook" step="0.1" min="0" max="100" value="1.0" />
+        </div>
+        <div class="form-group">
+          <label for="comm-smarkets">Smarkets (%)</label>
+          <input type="number" id="comm-smarkets" step="0.1" min="0" max="100" value="2.0" />
+        </div>
+      </div>
+      
+      <p class="note">💡 Check your exchange account settings to verify these rates. VIP/Premium accounts may have lower commission.</p>
+      
+      <div class="button-row">
+        <button class="btn-cancel js-close-window" type="button">Cancel</button>
+        <button class="btn-save" id="save-commission-btn">Save Changes</button>
+      </div>
+    </div>
+
+    <!-- Rounding Section -->
+    <div id="rounding-section" class="section-container">
+      <h2>Stake Rounding</h2>
+      <div class="info-box">
+        <strong>ℹ️ Auto-Rounding New Bets</strong><br>
+        When enabled, new bet stakes will be automatically rounded to the nearest increment (e.g., £0.50).
+      </div>
+      
+      <div class="form-group">
+        <label class="form-group-checkbox">
+          <input type="checkbox" id="rounding-enabled" />
+          <span>Enable stake rounding for new bets</span>
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label for="rounding-increment">Rounding Increment (£)</label>
+        <input type="number" id="rounding-increment" min="0.01" max="100" step="0.01" placeholder="e.g., 0.50" />
+      </div>
+      
+      <p class="note">📝 Example: With increment £0.50, a stake of £10.23 will be rounded to £10.50. This only applies to bets saved after enabling this setting.</p>
+      
+      <div class="button-row">
+        <button class="btn-cancel js-close-window" type="button">Cancel</button>
+        <button class="btn-save" id="save-rounding-btn">Save Changes</button>
+      </div>
+    </div>
+
+    <!-- Auto-Fill Section -->
+    <div id="autofill-section" class="section-container">
+      <h2>Auto-Fill Stakes on Betting Sites</h2>
+      <div class="info-box">
+        <strong>ℹ️ Auto-Fill Feature</strong><br>
+        When enabled, calculated stakes will be automatically filled into betting slips on supported betting sites. Falls back to clipboard copy if auto-fill fails.
+      </div>
+      
+      <div class="form-group">
+        <label class="form-group-checkbox">
+          <input type="checkbox" id="autofill-enabled" />
+          <span>Enable automatic stake input on betting slip</span>
+        </label>
+      </div>
+
+      <div style="background: #f8f9fa; padding: 12px; border-radius: 3px; margin-bottom: 15px;">
+        <div style="font-weight: 600; margin-bottom: 12px; color: #333;">Select Betting Sites:</div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <label class="form-group-checkbox">
+            <input type="checkbox" id="autofill-betfair" />
+            <span>Betfair</span>
+          </label>
+          <label class="form-group-checkbox">
+            <input type="checkbox" id="autofill-betdaq" />
+            <span>Betdaq</span>
+          </label>
+          <label class="form-group-checkbox">
+            <input type="checkbox" id="autofill-smarkets" />
+            <span>Smarkets</span>
+          </label>
+          <label class="form-group-checkbox">
+            <input type="checkbox" id="autofill-matchbook" />
+            <span>Matchbook</span>
+          </label>
+        </div>
+      </div>
+
+      <p class="note">⚠️ <strong>How to Use:</strong> LEFT-CLICK (not right-click) the stake indicator for your target betting site on surebet.com. The system will store the bet and navigate you to the site. Stakes will auto-fill in the betting slip.</p>
+      
+      <div class="button-row">
+        <button class="btn-cancel js-close-window" type="button">Cancel</button>
+        <button class="btn-save" id="save-autofill-btn">Save Changes</button>
+      </div>
+    </div>
+
+    <!-- Default Actions Section -->
+    <div id="defaults-section" class="section-container">
+      <h2>⚙️ Default Actions</h2>
+      <div class="info-box">
+        <strong>ℹ️ Automate Repetitive Actions</strong><br>
+        Skip confirmation dialogs and use suggested values for common bet-saving actions.
+      </div>
+
+      <div class="form-group">
+        <label class="form-group-checkbox">
+          <input type="checkbox" id="default-actions-skip-stake" />
+          <span>Auto-save bets with Kelly stake (skip stake confirmation)</span>
+        </label>
+        <p class="note">⚠️ <strong>Requires Kelly Staking to be enabled.</strong> When checked, bets will be saved automatically using the calculated Kelly stake without showing a confirmation prompt.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-group-checkbox">
+          <input type="checkbox" id="default-actions-skip-delete" />
+          <span>Delete bets without confirmation</span>
+        </label>
+        <p class="note">When enabled, individual bets will be deleted immediately without a confirmation dialog (does not affect "Delete All" button).</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-group-checkbox">
+          <input type="checkbox" id="default-actions-skip-odds" />
+          <span>Skip odds prompt if missing (cancel save)</span>
+        </label>
+        <p class="note">When enabled and odds cannot be automatically parsed, the bet save will be cancelled silently instead of prompting you to enter odds manually.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-group-checkbox">
+          <input type="checkbox" id="default-actions-skip-market" />
+          <span>Auto-fill missing market as "Unknown"</span>
+        </label>
+        <p class="note">When enabled and market/selection cannot be parsed, "Unknown" will be used automatically instead of prompting you.</p>
+      </div>
+
+      <div class="form-group">
+        <label for="default-actions-dustbin">Auto-click dustbin after save:</label>
+        <select id="default-actions-dustbin">
+          <option value="none">Don't use (manual)</option>
+          <option value="hide-valuebet">Hide only this valuebet</option>
+          <option value="hide-event">Hide entire event</option>
+        </select>
+        <p class="note">After successfully saving a bet on surebet.com, automatically click the dustbin (trash) icon and select the specified action to remove it from view.</p>
+      </div>
+      
+      <div class="button-row">
+        <button class="btn-cancel js-close-window" type="button">Cancel</button>
+        <button class="btn-save" id="save-defaults-btn">Save Changes</button>
+      </div>
+    </div>
+
+    <!-- Kelly Staking Section -->
+    <div id="kelly-section" class="section-container">
+      <h2>🎲 Kelly Staking Configuration</h2>
+      <div class="info-box">
+        <strong>ℹ️ What is Kelly Staking?</strong><br>
+        The Kelly Criterion calculates optimal bet sizes based on odds and probability to maximize long-term growth while minimizing risk of ruin.
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="kelly-bankroll">Starting Bankroll:</label>
+          <input type="number" id="kelly-bankroll" min="50" step="10" placeholder="1000" />
+          <p class="note">Your current betting bankroll (automatically recalculated from P/L)</p>
+        </div>
+        <div class="form-group">
+          <label for="kelly-fraction">Kelly Fraction (%):</label>
+          <input type="number" id="kelly-fraction" min="5" max="100" step="1" placeholder="25" />
+          <p class="note">Percentage of full Kelly to use (25% recommended for safety)</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-group-checkbox">
+          <input type="checkbox" id="kelly-use-commission" />
+          <span>Account for Exchange Commission in Calculations</span>
+        </label>
+        <p class="note">Adjusts odds based on commission rates when calculating Kelly stakes</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-group-checkbox">
+          <input type="checkbox" id="kelly-adjust-pending" />
+          <span>Adjust bankroll for open bets</span>
+        </label>
+        <p class="note">Reduces effective bankroll by pending stakes to manage variance (RebelBetting recommended)</p>
+      </div>
+
+      <div class="form-group">
+        <label for="kelly-max-bet-percent">Max bet size (% of bankroll)</label>
+        <input type="number" id="kelly-max-bet-percent" min="1" max="100" step="1" placeholder="Optional: e.g., 10" />
+        <p class="note">Caps individual bets as a percentage of bankroll. Leave empty for no limit (conservative: 10%, aggressive: 20%)</p>
+      </div>
+
+      <div class="info-box">
+        <strong>📊 Current Status</strong><br>
+        <div id="kelly-summary" style="margin-top: 8px; font-size: 13px;">
+          Loading...
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button class="btn-cancel" id="reset-kelly-btn">Reset to Defaults</button>
+        <button class="btn-save" id="save-kelly-btn">Save Changes</button>
+      </div>
+    </div>
+
+    <!-- Market Filters Section -->
+    <div id="marketfilters-section" class="section-container">
+      <h2>🎯 Market Type Filtering</h2>
+      <div class="info-box">
+        <strong>ℹ️ Filter Underperforming Markets</strong><br>
+        Hide or highlight specific bet types based on historical performance. Use preset filters to block high-risk markets (cards, Asian handicaps) or show only profitable markets (goals, corners).
+      </div>
+
+      <!-- Filter Controls -->
+      <div style="margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">Filter Settings</h3>
+        
+        <div class="form-group">
+          <label class="form-group-checkbox">
+            <input type="checkbox" id="market-filter-enabled">
+            <span style="font-weight: 600;">Enable Market Filter</span>
+          </label>
+          <p class="note">When enabled, bets will be filtered based on selected presets below.</p>
+        </div>
+
+        <div class="form-group">
+          <label>Filter Mode</label>
+          <div style="display: flex; gap: 15px; margin-top: 8px;">
+            <label class="form-group-checkbox">
+              <input type="radio" name="filter-mode" id="filter-mode-hide" value="hide" checked>
+              <span>Hide - Completely remove filtered bets from view</span>
+            </label>
+            <label class="form-group-checkbox">
+              <input type="radio" name="filter-mode" id="filter-mode-highlight" value="highlight">
+              <span>Highlight Red - Show filtered bets with red warning styling</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">Available Market Presets</h3>
+        <p style="font-size: 12px; color: #666; margin-bottom: 15px;">
+          Click preset titles to toggle them on/off. Active presets will be highlighted in green.
+        </p>
+
+        <!-- Blacklist Presets -->
+        <div style="background: #fff3cd; padding: 15px; border-radius: 4px; border-left: 4px solid #ffc107; margin-bottom: 15px;">
+          <div style="font-weight: 600; margin-bottom: 10px; color: #856404;">🚫 Blacklist Presets (Block These Markets)</div>
+          
+          <div id="preset-cards-box" class="preset-box" data-preset="cards" style="margin-bottom: 12px; padding: 10px; background: #fff; border-radius: 3px; cursor: pointer; transition: all 0.2s;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+              <span style="font-weight: 600; color: #333;">Cards / Bookings Markets</span>
+              <span id="roi-cards" style="font-size: 11px; color: #6c757d; font-weight: 600;">Calculating...</span>
+            </div>
+            <p style="margin: 5px 0; font-size: 12px; color: #666;">
+              <strong>Matches markets containing:</strong> card, booking, yellow, red
+            </p>
+            <p style="margin: 5px 0; font-size: 11px; color: #666;">
+              Examples: "Yellow cards", "Total bookings over 3.5", "Red card - Yes"
+            </p>
+          </div>
+
+          <div id="preset-asian_handicap-box" class="preset-box" data-preset="asian_handicap" style="margin-bottom: 12px; padding: 10px; background: #fff; border-radius: 3px; cursor: pointer; transition: all 0.2s;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+              <span style="font-weight: 600; color: #333;">Asian Handicap Markets</span>
+              <span id="roi-asian_handicap" style="font-size: 11px; color: #6c757d; font-weight: 600;">Calculating...</span>
+            </div>
+            <p style="margin: 5px 0; font-size: 12px; color: #666;">
+              <strong>Matches markets containing:</strong> asian handicap, ah
+            </p>
+            <p style="margin: 5px 0; font-size: 11px; color: #666;">
+              Examples: "Asian handicap +1.5", "AH -0.5"
+            </p>
+          </div>
+
+          <div id="preset-dnb-box" class="preset-box" data-preset="dnb" style="margin-bottom: 12px; padding: 10px; background: #fff; border-radius: 3px; cursor: pointer; transition: all 0.2s;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+              <span style="font-weight: 600; color: #333;">Draw No Bet Markets</span>
+              <span id="roi-dnb" style="font-size: 11px; color: #6c757d; font-weight: 600;">Calculating...</span>
+            </div>
+            <p style="margin: 5px 0; font-size: 12px; color: #666;">
+              <strong>Matches markets containing:</strong> draw no bet, dnb
+            </p>
+            <p style="margin: 5px 0; font-size: 11px; color: #666;">
+              Examples: "Draw no bet - Home", "DNB - Away"
+            </p>
+          </div>
+
+          <div id="preset-shots-box" class="preset-box" data-preset="shots" style="margin-bottom: 12px; padding: 10px; background: #fff; border-radius: 3px; cursor: pointer; transition: all 0.2s;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+              <span style="font-weight: 600; color: #333;">Shots Markets</span>
+              <span id="roi-shots" style="font-size: 11px; color: #6c757d; font-weight: 600;">Calculating...</span>
+            </div>
+            <p style="margin: 5px 0; font-size: 12px; color: #666;">
+              <strong>Matches markets containing:</strong> shot, shots on target, sot
+            </p>
+            <p style="margin: 5px 0; font-size: 11px; color: #666;">
+              Examples: "Total shots over 12.5", "Shots on target - Over 5.5"
+            </p>
+          </div>
+
+          <div id="preset-player_props-box" class="preset-box" data-preset="player_props" style="margin-bottom: 12px; padding: 10px; background: #fff; border-radius: 3px; cursor: pointer; transition: all 0.2s;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+              <span style="font-weight: 600; color: #333;">Player Props Markets</span>
+              <span id="roi-player_props" style="font-size: 11px; color: #6c757d; font-weight: 600;">Calculating...</span>
+            </div>
+            <p style="margin: 5px 0; font-size: 12px; color: #666;">
+              <strong>Matches markets containing:</strong> anytime goalscorer, first goalscorer, last goalscorer, to score, player to, assist
+            </p>
+            <p style="margin: 5px 0; font-size: 11px; color: #666;">
+              Examples: "Player to score anytime", "First goalscorer", "Player to assist"
+            </p>
+          </div>
+
+          <div id="preset-correct_score-box" class="preset-box" data-preset="correct_score" style="margin-bottom: 0; padding: 10px; background: #fff; border-radius: 3px; cursor: pointer; transition: all 0.2s;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+              <span style="font-weight: 600; color: #333;">Correct Score Markets</span>
+              <span id="roi-correct_score" style="font-size: 11px; color: #6c757d; font-weight: 600;">Calculating...</span>
+            </div>
+            <p style="margin: 5px 0; font-size: 12px; color: #666;">
+              <strong>Matches markets containing:</strong> correct score, exact score
+            </p>
+            <p style="margin: 5px 0; font-size: 11px; color: #666;">
+              Examples: "Correct score 2-1", "Exact score 0-0"
+            </p>
+          </div>
+        </div>
+
+        <!-- Whitelist Presets -->
+        <div style="background: #d4edda; padding: 15px; border-radius: 4px; border-left: 4px solid #28a745;">
+          <div style="font-weight: 600; margin-bottom: 10px; color: #155724;">✅ Whitelist Presets (Show Only These Markets)</div>
+          <p style="margin: 0 0 15px 0; font-size: 11px; color: #155724;">
+            <strong>Note:</strong> Whitelist presets override blacklist filters. When active, only whitelisted markets are shown.
+          </p>
+          
+          <div id="preset-goals_only-box" class="preset-box" data-preset="goals_only" style="margin-bottom: 12px; padding: 10px; background: #fff; border-radius: 3px; cursor: pointer; transition: all 0.2s;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+              <span style="font-weight: 600; color: #333;">Goals Markets Only</span>
+              <span id="roi-goals_only" style="font-size: 11px; color: #6c757d; font-weight: 600;">Calculating...</span>
+            </div>
+            <p style="margin: 5px 0; font-size: 12px; color: #666;">
+              <strong>Matches markets containing:</strong> goal, btts, over, under, total
+            </p>
+            <p style="margin: 5px 0; font-size: 11px; color: #666;">
+              Examples: "Over 2.5 goals", "BTTS - Yes", "Total goals under 3.5", "First goal"
+            </p>
+          </div>
+
+          <div id="preset-corners_only-box" class="preset-box" data-preset="corners_only" style="margin-bottom: 0; padding: 10px; background: #fff; border-radius: 3px; cursor: pointer; transition: all 0.2s;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+              <span style="font-weight: 600; color: #333;">Corners Markets Only</span>
+              <span id="roi-corners_only" style="font-size: 11px; color: #6c757d; font-weight: 600;">Calculating...</span>
+            </div>
+            <p style="margin: 5px 0; font-size: 12px; color: #666;">
+              <strong>Matches markets containing:</strong> corner
+            </p>
+            <p style="margin: 5px 0; font-size: 11px; color: #666;">
+              Examples: "Total corners over 9.5", "Corner handicap +2.5"
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">How It Works</h3>
+        <div style="font-size: 12px; color: #666; line-height: 1.6;">
+          <p style="margin: 0 0 10px 0;">
+            <strong>1. Precise Matching:</strong> Filters use word-boundary matching to avoid false positives (e.g., "scorecard" won't match the "card" filter).
+          </p>
+          <p style="margin: 0 0 10px 0;">
+            <strong>2. Whitelist Priority:</strong> If you enable a whitelist preset (Goals Only or Corners Only), blacklist filters are ignored and only whitelisted markets are shown.
+          </p>
+          <p style="margin: 0 0 10px 0;">
+            <strong>3. Filter Modes:</strong> Choose "Hide" to completely remove filtered bets from view, or "Highlight Red" to keep them visible with red styling and a ⚠️ warning badge.
+          </p>
+          <p style="margin: 0;">
+            <strong>4. Quick Access:</strong> Toggle presets directly from the popup using the preset buttons, or manage them here in Settings.
+          </p>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button class="btn-cancel js-close-window" type="button">Close</button>
+      </div>
+    </div>
+
+    <!-- CLV Tracking Section -->
+    <div id="clv-section" class="section-container">
+      <h2>📈 CLV Tracking (Closing Line Value)</h2>
+      
+      <div class="info-box">
+        <strong>What is CLV?</strong><br>
+        CLV measures if you're getting better odds than the market's closing line. Positive CLV indicates long-term profitable betting strategy.
+      </div>
+      
+      <!-- Enable Toggle -->
+      <div class="form-group">
+        <label class="form-group-checkbox">
+          <input type="checkbox" id="clv-enabled" />
+          <span style="font-weight: 600;">Enable CLV Tracking</span>
+        </label>
+        <p class="note">Uses FREE CSV data from football-data.co.uk (no API needed)</p>
+      </div>
+      
+      <!-- Coverage Info -->
+      <div style="background: #d4edda; padding: 15px; border-radius: 4px; border-left: 4px solid #28a745; margin-bottom: 20px;">
+        <div style="font-weight: 600; margin-bottom: 10px; color: #155724;">Supported: 22 European Football Leagues</div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 12px; color: #155724;">
+          <div>🏴󠁧󠁢󠁥󠁮󠁧󠁿 England: Premier League</div>
+          <div>🏴󠁧󠁢󠁥󠁮󠁧󠁿 England: Championship</div>
+          <div>🏴󠁧󠁢󠁥󠁮󠁧󠁿 England: League 1/2/National</div>
+          <div>🇪🇸 Spain: La Liga</div>
+          <div>🇪🇸 Spain: Segunda Division</div>
+          <div>🇩🇪 Germany: Bundesliga</div>
+          <div>🇩🇪 Germany: Bundesliga 2</div>
+          <div>🇮🇹 Italy: Serie A</div>
+          <div>🇮🇹 Italy: Serie B</div>
+          <div>🇫🇷 France: Ligue 1</div>
+          <div>🇫🇷 France: Ligue 2</div>
+          <div>🇵🇹 Portugal: Primeira Liga</div>
+          <div>🇳🇱 Netherlands: Eredivisie</div>
+          <div>🇧🇪 Belgium: First Division</div>
+          <div>🇬🇷 Greece: Super League</div>
+          <div>🇹🇷 Turkey: Super Lig</div>
+          <div>🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland: 4 leagues</div>
+        </div>
+      </div>
+      
+      <!-- Limitations -->
+      <div class="warning-box">
+        <strong>✅ Supported Markets (FREE via football-data.co.uk)</strong><br>
+        • <strong>1X2 / Match Odds:</strong> Home, Draw, Away<br>
+        • <strong>Over/Under 2.5 Goals:</strong> Over 2.5, Under 2.5<br>
+        • <strong>Asian Handicap:</strong> All handicap lines (e.g., -0.5, +1.0)<br>
+        <br>
+        <strong>⚠️ Limitations</strong><br>
+        • Football only (other sports: "CLV not available")<br>
+        • BTTS, Correct Score, Cards, Corners, Props: not supported<br>
+        • Data source: Pinnacle closing odds from football-data.co.uk
+      </div>
+      
+      <!-- Cache Management -->
+      <div style="margin-top: 20px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">Force CLV Check</h3>
+        <p style="font-size: 12px; color: #666; margin-bottom: 10px;">
+          Manually trigger CLV fetch for all settled bets (ignores delay and retry limits).
+        </p>
+        <button id="force-clv-check-btn" style="background: #28a745; color: #fff; border-color: #28a745;">
+          ⚡ Force Check Now
+        </button>
+        <span id="force-clv-result" style="margin-left: 10px; font-size: 12px;"></span>
+      </div>
+      
+      <!-- Cache Management -->
+      <div style="margin-top: 20px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">Cache Management</h3>
+        <p style="font-size: 12px; color: #666; margin-bottom: 10px;">
+          Downloaded CSV files are cached for 7 days. Clear cache if you need to force fresh data.
+        </p>
+        <button id="clear-csv-cache-btn" style="background: #ffc107; color: #000; border-color: #ffc107;">
+          Clear CSV Cache
+        </button>
+        <span id="clear-csv-cache-status" style="margin-left: 10px; font-size: 12px;"></span>
+      </div>
+      
+      <div class="button-row">
+        <button class="btn-cancel js-close-window" type="button">Cancel</button>
+        <button class="btn-save" id="save-clv-btn">Save Changes</button>
+      </div>
+    </div>
+
+    <!-- Player Props Polling Section -->
+    <div id="props-section" class="section-container" style="display: none;">
+      <h2>🎯 Player Props Line Movement Tracking</h2>
+      
+      <div class="info-box">
+        <strong>What is this?</strong><br>
+        Tracks odds changes for player prop bets (points, assists, etc.) from opening line to current. Shows how the market has moved after you placed your bet.
+      </div>
+      
+      <!-- Enable Toggle -->
+      <div class="form-group">
+        <label class="form-group-checkbox">
+          <input type="checkbox" id="props-polling-enabled" />
+          <span style="font-weight: 600;">Enable Player Props Polling</span>
+        </label>
+        <p class="note">Polls The Odds API 3x daily (8am, 2pm, 8pm) to track line movement</p>
+      </div>
+      
+      <!-- API Usage Stats -->
+      <div style="background: #e7f3ff; padding: 15px; border-radius: 4px; border-left: 4px solid #007bff; margin-bottom: 20px;">
+        <strong style="color: #333;">📊 API Usage (The Odds API)</strong><br>
+        <span id="props-api-usage" style="font-size: 12px; color: #666; font-family: monospace;">Loading...</span>
+        <p style="margin: 10px 0 0 0; font-size: 11px; color: #666;">
+          Free tier: 500 requests/month | 16/day for auto-polling | 50 reserved for manual polls
+        </p>
+      </div>
+      
+      <!-- Force Poll -->
+      <div style="margin-top: 20px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">Manual Poll</h3>
+        <p style="font-size: 12px; color: #666; margin-bottom: 10px;">
+          Force immediate poll for pending player prop bets (uses manual reserve quota).
+        </p>
+        <button id="props-force-poll-btn" style="background: #28a745; color: #fff; border-color: #28a745;">
+          ⚡ Force Poll Now
+        </button>
+        <div id="props-force-poll-result" style="margin-top: 10px; font-size: 12px; display: none;"></div>
+      </div>
+      
+      <div class="button-row">
+        <button class="btn-cancel js-close-window" type="button">Cancel</button>
+        <button class="btn-save" id="save-props-btn">Save Changes</button>
+      </div>
+    </div>
+
+    <!-- API Setup Section -->
+    <div id="api-section" class="section-container">
+      <h2>Sports APIs for Result Checking</h2>
+      <div class="warning-box">
+        <strong>⚠️ Configuration Required</strong><br>
+        To auto-check bet results, you'll need free API keys from the sports data providers below.
+      </div>
+
+      <div style="margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">Step 1: Get Free API Keys</h3>
+        
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
+          <div style="font-weight: 600; margin-bottom: 8px;">⚽ API-Football (Soccer Only)</div>
+          <p style="margin: 0 0 10px 0; font-size: 12px; color: #555;">
+            Provides football/soccer match results (100 requests per day on free plan)
+          </p>
+          <button class="link-button" id="api-football-link">
+            🔗 Visit api-football.com
+          </button>
+          <p style="margin: 8px 0 0 0; font-size: 11px; color: #666;">
+            1. Create a free account<br>
+            2. Go to Dashboard and copy your API Key<br>
+            3. Paste below
+          </p>
+        </div>
+
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 4px;">
+          <div style="font-weight: 600; margin-bottom: 8px;">🌐 The Odds API (Multiple Sports)</div>
+          <p style="margin: 0 0 10px 0; font-size: 12px; color: #555;">
+            Covers football, basketball, baseball, hockey, tennis, and more (500 requests per month on free plan)
+          </p>
+          <button class="link-button" id="odds-api-link">
+            🔗 Visit the-odds-api.com
+          </button>
+          <p style="margin: 8px 0 0 0; font-size: 11px; color: #666;">
+            1. Create a free account<br>
+            2. Copy your API Key from the dashboard<br>
+            3. Paste below
+          </p>
+        </div>
+      </div>
+
+      <h3 style="margin-top: 0; color: #333; font-size: 14px;">Step 2: Configure API Keys</h3>
+      <p style="font-size: 12px; color: #666; margin-bottom: 15px;">
+        Keys are stored locally in your browser and never sent to external servers.
+      </p>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="api-football-key">API-Football Key:</label>
+          <input type="password" id="api-football-key" placeholder="Paste your API key here" />
+          <p class="note">Format: alphanumeric string</p>
+        </div>
+        <div class="form-group">
+          <label for="api-odds-key">The Odds API Key:</label>
+          <input type="password" id="api-odds-key" placeholder="Paste your API key here" />
+          <p class="note">Format: alphanumeric string</p>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button class="btn-cancel js-close-window" type="button">Cancel</button>
+        <button class="btn-save" id="test-api-btn">🔌 Test Connection</button>
+        <button class="btn-save" id="save-api-btn">💾 Save Changes</button>
+        <button class="btn-save" id="export-config-btn" style="background: #17a2b8; border-color: #17a2b8;">📤 Export Config</button>
+      </div>
+
+      <div id="api-test-result" style="margin-top: 15px; display: none; padding: 12px; border-radius: 4px; font-size: 12px;"></div>
+      
+      <div class="info-box" style="margin-top: 15px;">
+        <strong>📤 Export Config Feature</strong><br>
+        Click "Export Config" to download a configuration file with your API keys.
+        <br><br>
+        <strong>Where to save:</strong> <code style="background: #fff; padding: 2px 6px; border-radius: 3px;">%LOCALAPPDATA%\SurebetHelper\config.json</code> (Windows)
+        <br>or <code style="background: #fff; padding: 2px 6px; border-radius: 3px;">~/.surebethelper/config.json</code> (macOS/Linux)
+      </div>
+    </div>
+
+    <!-- API Diagnostics Section -->
+    <div id="diagnostics-section" class="section-container">
+      <h2>🔍 Multi-Sport API Diagnostics</h2>
+      
+      <!-- Verbose Mode Toggle -->
+      <div style="background: #e7f3ff; padding: 12px; border-left: 4px solid #007bff; border-radius: 3px; margin-bottom: 20px;">
+        <label class="form-group-checkbox" style="cursor: pointer;">
+          <input type="checkbox" id="verbose-diagnostics-toggle" />
+          <span><strong>🔬 Verbose Diagnostic Mode</strong> - Store full fixture data for match failures (uses more storage)</span>
+        </label>
+      </div>
+      
+      <!-- Rate Limit Status -->
+      <div style="margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">📊 API Rate Limits (Today)</h3>
+        <div id="rate-limit-warning" style="display: none; background: #fff3cd; padding: 12px; border-left: 4px solid #ffc107; border-radius: 3px; margin-bottom: 15px; font-size: 12px;">
+          <strong>⚠️ Rate Limit Warning</strong><br>
+          <span id="rate-limit-warning-text"></span>
+        </div>
+        <div id="rate-limits-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px;">
+          <div style="text-align: center; padding: 10px; background: #f8f9fa; border-radius: 4px;">
+            <div style="font-size: 11px; color: #666;">Loading...</div>
+          </div>
+        </div>
+        <button style="margin-top: 10px;" id="refresh-rate-limits-btn">🔄 Refresh</button>
+      </div>
+
+      <!-- Test Match Tool -->
+      <div style="margin-bottom: 25px; background: #f8f9fa; padding: 15px; border-radius: 4px; border: 1px solid #dee2e6;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">🧪 Test Match Tool</h3>
+        <p style="font-size: 12px; color: #666; margin-bottom: 12px;">
+          Test how an event name would match against API fixtures. Enter an event name and click Test to see matching results.
+        </p>
+        <div class="grid-2" style="margin-bottom: 12px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label for="test-event-name">Event Name:</label>
+            <input type="text" id="test-event-name" placeholder="e.g., Manchester City vs Liverpool" />
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label for="test-event-sport">Sport:</label>
+            <select id="test-event-sport">
+              <option value="football">⚽ Football</option>
+              <option value="basketball">🏀 Basketball</option>
+              <option value="hockey">🏒 Hockey</option>
+              <option value="baseball">⚾ Baseball</option>
+              <option value="nfl">🏈 NFL</option>
+              <option value="rugby">🏉 Rugby</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label for="test-event-date">Event Date:</label>
+          <input type="date" id="test-event-date" />
+        </div>
+        <button id="test-match-btn" style="background: #007bff; color: #fff; border-color: #007bff;">🔍 Test Match</button>
+        <div id="test-match-result" style="margin-top: 12px; display: none; padding: 12px; border-radius: 4px; font-size: 12px; max-height: 300px; overflow-y: auto;"></div>
+      </div>
+
+      <!-- Pending Bet Retry Tool -->
+      <div style="margin-bottom: 25px; background: #fff3cd; padding: 15px; border-radius: 4px; border: 1px solid #ffc107;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">🔄 Retry Pending Bets</h3>
+        <p style="font-size: 12px; color: #555; margin-bottom: 12px;">
+          Force re-check all pending bets. Useful after fixing team name issues or updating the matching logic.
+        </p>
+        <button id="retry-pending-btn" style="background: #ffc107; color: #000; border-color: #ffc107;">🔄 Retry All Pending Bets</button>
+        <span id="retry-pending-status" style="margin-left: 10px; font-size: 12px;"></span>
+      </div>
+
+      <!-- Supported Sports -->
+      <div style="margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">🏆 API-Sports.io (Primary)</h3>
+        <div class="info-box">
+          <strong>All sports share the same API key</strong> from dashboard.api-football.com. Each sport has 100 requests/day on the free plan.
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; font-size: 12px;">
+          <div style="background: #d4edda; padding: 8px; border-radius: 4px;">⚽ Football</div>
+          <div style="background: #d4edda; padding: 8px; border-radius: 4px;">🏀 Basketball</div>
+          <div style="background: #d4edda; padding: 8px; border-radius: 4px;">🏒 Hockey</div>
+          <div style="background: #d4edda; padding: 8px; border-radius: 4px;">⚾ Baseball</div>
+          <div style="background: #d4edda; padding: 8px; border-radius: 4px;">🏈 NFL</div>
+          <div style="background: #d4edda; padding: 8px; border-radius: 4px;">🏉 Rugby</div>
+          <div style="background: #d4edda; padding: 8px; border-radius: 4px;">🏐 Volleyball</div>
+          <div style="background: #d4edda; padding: 8px; border-radius: 4px;">🤾 Handball</div>
+          <div style="background: #d4edda; padding: 8px; border-radius: 4px;">🏈 AFL</div>
+        </div>
+      </div>
+
+      <!-- Odds API Fallback -->
+      <div style="margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">🌐 The Odds API (Fallback)</h3>
+        <div style="background: #fff3cd; padding: 12px; border-left: 4px solid #ffc107; border-radius: 3px; margin-bottom: 10px; font-size: 12px;">
+          <strong>Covers all other sports</strong> including tennis, cricket, golf, MMA, and more. Used when a sport isn't available via API-Sports.io. 500 requests/month on free plan.
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; font-size: 12px;">
+          <div style="background: #fff3cd; padding: 8px; border-radius: 4px;">🎾 Tennis</div>
+          <div style="background: #fff3cd; padding: 8px; border-radius: 4px;">🏏 Cricket</div>
+          <div style="background: #fff3cd; padding: 8px; border-radius: 4px;">⛳ Golf</div>
+          <div style="background: #fff3cd; padding: 8px; border-radius: 4px;">🥊 MMA/Boxing</div>
+          <div style="background: #fff3cd; padding: 8px; border-radius: 4px;">🎯 Darts</div>
+          <div style="background: #fff3cd; padding: 8px; border-radius: 4px;">🎱 Snooker</div>
+          <div style="background: #fff3cd; padding: 8px; border-radius: 4px;">+ Many more</div>
+        </div>
+      </div>
+
+      <!-- Diagnostic Log -->
+      <div style="margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #333; font-size: 14px;">📝 API Diagnostic Log</h3>
+        <p style="font-size: 12px; color: #666; margin-bottom: 10px;">
+          Recent API calls, match attempts, and failures. Use this to diagnose why bets aren't being auto-settled.
+        </p>
+        
+        <div style="margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <select id="diagnostic-filter" style="padding: 6px 10px; border: 1px solid #ccc; border-radius: 3px; font-size: 12px;">
+            <option value="">All Types</option>
+            <option value="api_response">API Responses</option>
+            <option value="match_success">Match Successes</option>
+            <option value="match_failure">Match Failures</option>
+            <option value="api_error">API Errors</option>
+            <option value="unsupported_sport">Unsupported Sports</option>
+            <option value="result_determined">Results Determined</option>
+          </select>
+          <button id="load-diagnostics-btn">🔄 Load Log</button>
+          <button id="export-diagnostics-btn">📥 Export JSON</button>
+          <button id="clear-diagnostics-btn" style="background: #ffc107; color: #000; border-color: #ffc107;">🗑️ Clear Log</button>
+        </div>
+
+        <div id="diagnostics-log" style="max-height: 400px; overflow-y: auto; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; padding: 10px; font-family: monospace; font-size: 11px;">
+          <div style="color: #666;">Click "Load Log" to view diagnostic entries...</div>
+        </div>
+        
+        <!-- Expanded Entry View -->
+        <div id="diagnostic-detail-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; padding: 20px; overflow-y: auto;">
+          <div style="max-width: 800px; margin: 0 auto; background: #fff; border-radius: 8px; padding: 20px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+              <h3 style="margin: 0;">📋 Diagnostic Entry Details</h3>
+              <button id="close-detail-modal" style="background: #dc3545; color: #fff; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">✕ Close</button>
+            </div>
+            <pre id="diagnostic-detail-content" style="background: #f8f9fa; padding: 15px; border-radius: 4px; overflow-x: auto; font-size: 11px; white-space: pre-wrap; word-wrap: break-word;"></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button class="btn-cancel js-close-window" type="button">Close</button>
+      </div>
+    </div>
+
+    <!-- Data Management Section -->
+    <div id="data-section" class="section-container">
+      <h2>Data Management</h2>
+      
+      <!-- Export All Bets -->
+      <div style="background: #d4edda; padding: 15px; border-radius: 4px; border-left: 4px solid #28a745; margin-bottom: 20px;">
+        <div style="font-weight: 600; margin-bottom: 8px; color: #155724;">📥 Export All Bets</div>
+        <p style="margin: 0 0 15px 0; font-size: 12px; color: #155724;">
+          Export all saved bets (pending and settled) with complete analysis data.
+        </p>
+        <div style="display: flex; gap: 10px;">
+          <button style="background: #28a745; color: #fff; border-color: #28a745;" id="export-json-all-btn">📄 Export JSON</button>
+          <button style="background: #28a745; color: #fff; border-color: #28a745;" id="export-csv-all-btn">📊 Export CSV</button>
+        </div>
+      </div>
+      
+      <div class="warning-box">
+        <strong>⚠️ Destructive Action</strong><br>
+        The following action will permanently delete all saved bets. This cannot be undone.
+      </div>
+      
+      <div style="background: #e7f3ff; padding: 15px; border-radius: 4px; border-left: 4px solid #007bff; margin-bottom: 20px;">
+        <div style="font-weight: 600; margin-bottom: 8px; color: #004085;">🐛 Debug Export</div>
+        <p style="margin: 0 0 15px 0; font-size: 12px; color: #555;">
+          Export only pending bets (unsettled) for debugging CSV import issues.
+        </p>
+        <button style="background: #007bff; color: #fff; border-color: #007bff;" id="export-pending-btn">📥 Export Pending Bets (JSON)</button>
+      </div>
+      
+      <div style="background: #ffe6e6; padding: 15px; border-radius: 4px; border-left: 4px solid #dc3545;">
+        <div style="font-weight: 600; margin-bottom: 8px; color: #c00;">Delete All Bets</div>
+        <p style="margin: 0 0 15px 0; font-size: 12px; color: #555;">
+          This will permanently delete all saved bets, statistics, and analysis data. Export your data before proceeding if you want to keep it.
+        </p>
+        <button style="background: #dc3545; color: #fff; border-color: #dc3545; padding: 8px 16px; font-weight: 600;" id="clear-all-btn">🗑️ Delete All Bets</button>
+        <p class="note" style="color: #c00; margin-top: 10px;">This action cannot be undone.</p>
+      </div>
+      
+      <div class="button-row">
+        <button class="btn-cancel js-close-window" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="settings.js"></script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Import Betfair P/L - SB Logger</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      margin-top: 0;
+    }
+    .instructions {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+    .instructions ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    .file-input-wrapper {
+      margin: 30px 0;
+      padding: 40px;
+      border: 2px dashed #17a2b8;
+      border-radius: 8px;
+      text-align: center;
+      background: #f8f9fa;
+    }
+    .file-input-wrapper:hover {
+      background: #e9ecef;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    label {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #17a2b8;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    label:hover {
+      background: #138496;
+    }
+    .selected-files {
+      margin-top: 20px;
+      padding: 15px;
+      background: #fff3cd;
+      border-radius: 4px;
+      display: none;
+    }
+    .results {
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 4px;
+      display: none;
+    }
+    .results.success {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+    .results.error {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+    .results.info {
+      background: #d1ecf1;
+      border: 1px solid #bee5eb;
+      color: #0c5460;
+    }
+    button {
+      padding: 10px 20px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    button:hover {
+      background: #218838;
+    }
+    button:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+    }
+    .close-btn {
+      background: #6c757d;
+      margin-left: 10px;
+    }
+    .close-btn:hover {
+      background: #5a6268;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📥 Import Betfair P/L</h1>
+    
+    <div class="instructions">
+      <strong>How to import your Betfair P/L:</strong>
+      <ul>
+        <li>Download your P/L report from Betfair (CSV format)</li>
+        <li>If you have multiple sports, download one CSV per sport</li>
+        <li>Click "Choose Files" below and select your CSV file(s)</li>
+        <li>The extension will automatically match bets and update their status</li>
+      </ul>
+    </div>
+
+    <div class="file-input-wrapper">
+      <label for="csv-file-input">📁 Choose CSV File(s)</label>
+      <input type="file" id="csv-file-input" accept=".csv" multiple>
+    </div>
+
+    <div class="selected-files" id="selected-files">
+      <strong>Selected files:</strong>
+      <ul id="file-list"></ul>
+      <button id="import-btn">Import Now</button>
+      <button class="close-btn" id="cancel-btn">Cancel</button>
+    </div>
+
+    <div class="results" id="results"></div>
+  </div>
+
+  <script src="import.js"></script>
+</body>
+</html>

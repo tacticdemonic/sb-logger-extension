@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Odds API - CLV Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .config-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .results {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .bet-card {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .bet-header {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .bet-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .detail-item {
+            font-size: 13px;
+        }
+        .detail-label {
+            color: #666;
+            font-weight: 500;
+        }
+        .detail-value {
+            color: #333;
+            font-weight: 600;
+        }
+        .status {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .clv-result {
+            background: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+        .clv-negative {
+            background: #ffebee;
+            border-left-color: #f44336;
+        }
+        .error-message {
+            background: #fff3cd;
+            border-left: 4px solid #ff9800;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+            color: #856404;
+        }
+        .summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        .summary-item {
+            text-align: center;
+        }
+        .summary-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        .summary-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #666;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .api-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 The Odds API - CLV Testing Tool</h1>
+    
+    <div class="config-section">
+        <h2>API Configuration</h2>
+        <div class="input-group">
+            <label for="apiKey">The Odds API Key:</label>
+            <input type="text" id="apiKey" placeholder="Enter your API key from the-odds-api.com">
+            <div class="api-info">Get your free key at: <a href="https://the-odds-api.com/" target="_blank">the-odds-api.com</a> (500 requests/month free tier)</div>
+        </div>
+        <button id="testBtn" onclick="runTest()">Run CLV Test on Current Bets</button>
+    </div>
+
+    <div class="warning" id="warning" style="display: none;">
+        <strong>⚠️ Note:</strong> This test will use API requests from your monthly quota. The Odds API free tier allows 500 requests/month.
+    </div>
+
+    <div id="loading" class="loading" style="display: none;">
+        <div class="spinner"></div>
+        <p>Fetching odds data from The Odds API...</p>
+    </div>
+
+    <div id="summary" style="display: none;"></div>
+    
+    <div class="config-section" style="margin-top: 20px;">
+        <h2>Debug Log</h2>
+        <textarea id="debugLog" readonly style="width: 100%; height: 300px; font-family: 'Courier New', monospace; font-size: 12px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; background: #f9f9f9;"></textarea>
+        <button onclick="copyDebugLog()" style="margin-top: 10px;">📋 Copy Debug Log</button>
+        <button onclick="clearDebugLog()" style="margin-top: 10px; background: #666;">🗑️ Clear Log</button>
+    </div>
+
+    <div id="results" class="results"></div>
+
+    <script>
+        let betsData = null;
+        let debugLogBuffer = [];
+
+        function log(message, data = null) {
+            const timestamp = new Date().toISOString();
+            let logEntry = `[${timestamp}] ${message}`;
+            
+            if (data !== null) {
+                logEntry += `\n${JSON.stringify(data, null, 2)}`;
+            }
+            
+            debugLogBuffer.push(logEntry);
+            console.log(message, data || '');
+            
+            const logArea = document.getElementById('debugLog');
+            if (logArea) {
+                logArea.value = debugLogBuffer.join('\n\n');
+                logArea.scrollTop = logArea.scrollHeight;
+            }
+        }
+
+        function copyDebugLog() {
+            const logArea = document.getElementById('debugLog');
+            logArea.select();
+            document.execCommand('copy');
+            alert('Debug log copied to clipboard!');
+        }
+
+        function clearDebugLog() {
+            debugLogBuffer = [];
+            document.getElementById('debugLog').value = '';
+            log('Debug log cleared');
+        }
+
+        // Load bets data from JSON file
+        async function loadBetsData() {
+            try {
+                // Try multiple paths
+                const paths = [
+                    'surebet-bets-2025-12-12T08-01-15.json',
+                    './surebet-bets-2025-12-12T08-01-15.json',
+                    '../surebet-bets-2025-12-12T08-01-15.json'
+                ];
+
+                let response = null;
+                let lastError = null;
+
+                for (const path of paths) {
+                    try {
+                        console.log(`Attempting to load from: ${path}`);
+                        response = await fetch(path);
+                        if (response.ok) {
+                            console.log(`Successfully loaded from: ${path}`);
+                            break;
+                        }
+                    } catch (e) {
+                        lastError = e;
+                        console.log(`Failed to load from ${path}: ${e.message}`);
+                    }
+                }
+
+                if (!response || !response.ok) {
+                    throw new Error(`Could not load JSON file from any path. Last error: ${lastError?.message}`);
+                }
+
+                const data = await response.json();
+                betsData = data.bets;
+                log(`✓ Loaded ${betsData.length} bets from file`);
+                document.getElementById('results').innerHTML = `<p style="color: green; font-weight: 600;">✓ Loaded ${betsData.length} bets successfully. Enter your API key and click "Run CLV Test".</p>`;
+                return true;
+            } catch (error) {
+                log('❌ Failed to load bets data', { error: error.message, stack: error.stack });
+                const errorMsg = `Failed to load bets data: ${error.message}. Current directory: ${window.location.pathname}`;
+                document.getElementById('results').innerHTML = `<p style="color: red; font-weight: 600;">❌ ${errorMsg}</p>`;
+                alert(errorMsg);
+                return false;
+            }
+        }
+
+        async function runTest() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            
+            if (!apiKey) {
+                alert('Please enter your The Odds API key');
+                return;
+            }
+
+            if (!betsData) {
+                const loaded = await loadBetsData();
+                if (!loaded) return;
+            }
+
+            log('=== Starting CLV Test ===');
+            log(`Testing ${betsData.length} bets`);
+
+            document.getElementById('warning').style.display = 'block';
+            document.getElementById('testBtn').disabled = true;
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('summary').style.display = 'none';
+
+            const results = {
+                total: betsData.length,
+                success: 0,
+                failed: 0,
+                notCovered: 0,
+                apiCalls: 0
+            };
+
+            const resultsHtml = [];
+
+            for (const bet of betsData) {
+                log(`\n--- Checking bet: ${bet.event} ---`, {
+                    sport: bet.sport,
+                    tournament: bet.tournament,
+                    market: bet.market,
+                    odds: bet.odds,
+                    eventTime: bet.eventTime
+                });
+
+                const result = await checkBetCLV(bet, apiKey);
+                results.apiCalls++;
+
+                log(`Result: ${result.success ? 'SUCCESS' : result.reason}`, result);
+
+                if (result.success) {
+                    results.success++;
+                } else if (result.reason === 'sport_not_covered') {
+                    results.notCovered++;
+                } else {
+                    results.failed++;
+                }
+
+                resultsHtml.push(renderBetResult(bet, result));
+            }
+
+            log('=== Test Complete ===', results);
+
+            // Display summary
+            document.getElementById('summary').innerHTML = `
+                <div class="summary-item">
+                    <div class="summary-label">Total Bets</div>
+                    <div class="summary-value">${results.total}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">CLV Available</div>
+                    <div class="summary-value" style="color: #4CAF50;">${results.success}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Sport Not Covered</div>
+                    <div class="summary-value" style="color: #ff9800;">${results.notCovered}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">API Calls Used</div>
+                    <div class="summary-value">${results.apiCalls}</div>
+                </div>
+            `;
+            document.getElementById('summary').style.display = 'grid';
+
+            // Display results
+            document.getElementById('results').innerHTML = resultsHtml.join('');
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('testBtn').disabled = false;
+        }
+
+        async function checkBetCLV(bet, apiKey) {
+            try {
+                // Map sport to The Odds API sport key
+                const sportKey = mapSportToOddsAPI(bet.sport, bet.tournament);
+                
+                log(`Mapped sport "${bet.sport}" to API key: ${sportKey || 'NONE'}`);
+                
+                if (!sportKey) {
+                    return {
+                        success: false,
+                        reason: 'sport_not_covered',
+                        message: `Sport "${bet.sport}" not covered by The Odds API`
+                    };
+                }ent.getElementById('loading').style.display = 'none';
+            document.getElementById('testBtn').disabled = false;
+        }
+
+        async function checkBetCLV(bet, apiKey) {
+            try {
+                // Map sport to The Odds API sport key
+                const sportKey = mapSportToOddsAPI(bet.sport);
+                
+                if (!sportKey) {
+                    return {
+                        success: false,
+                        reason: 'sport_not_covered',
+                        message: `Sport "${bet.sport}" not covered by The Odds API`
+                    };
+                }
+                // Fetch odds from The Odds API
+                const url = `https://api.the-odds-api.com/v4/sports/${sportKey}/odds/?apiKey=${apiKey}&regions=uk&markets=h2h&oddsFormat=decimal`;
+                
+                log(`API Request URL: ${url}`);
+                
+                const response = await fetch(url);
+                const data = await response.json();
+
+                log(`API Response: Status ${response.status}`, data);
+
+                if (!response.ok) {
+                    return {
+                        success: false,
+                        reason: 'api_error',
+                        message: `API error: ${response.status} - ${data.message || 'Unknown error'}`,
+                        apiResponse: data
+                    };
+                }/ Fetch odds from The Odds API
+                const url = `https://api.the-odds-api.com/v4/sports/${sportKey}/odds/?apiKey=${apiKey}&regions=uk&markets=h2h&oddsFormat=decimal`;
+                
+                console.log(`Fetching odds for ${bet.event} from ${url}`);
+                
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    return {
+                        success: false,
+                        reason: 'api_error',
+                        message: `API error: ${response.status} - ${data.message || 'Unknown error'}`
+                    };
+                }
+
+                // Find matching event
+                const match = findMatchingEvent(bet, data);
+                
+                if (!match) {
+                    return {
+                        success: false,
+                        reason: 'match_not_found',
+                        message: 'Could not find matching event in API data'
+                    };
+                }
+
+                // Calculate CLV
+                const clv = calculateCLV(bet, match);
+                
+        function mapSportToOddsAPI(sport, tournament = '') {
+            // Tournament-based mapping for football
+            if (sport === 'Football') {
+                const tournamentLower = tournament.toLowerCase();
+                
+                // European leagues
+                if (tournamentLower.includes('premier league')) return 'soccer_epl';
+                if (tournamentLower.includes('championship')) return 'soccer_england_championship';
+                if (tournamentLower.includes('la liga')) return 'soccer_spain_la_liga';
+                if (tournamentLower.includes('serie a')) return 'soccer_italy_serie_a';
+                if (tournamentLower.includes('bundesliga')) return 'soccer_germany_bundesliga';
+                if (tournamentLower.includes('ligue 1')) return 'soccer_france_ligue_one';
+                
+                // International competitions
+                if (tournamentLower.includes('champions league')) return 'soccer_uefa_champs_league';
+                if (tournamentLower.includes('europa league')) return 'soccer_uefa_europa_league';
+                if (tournamentLower.includes('world cup')) return 'soccer_fifa_world_cup';
+                
+                // Default fallback
+                return 'soccer_epl';
+            }
+            
+            // Other sports
+            const mapping = {
+                'Basketball': 'basketball_nba',
+                'Tennis': 'tennis_atp',
+                'Ice Hockey': 'icehockey_nhl',
+                'Baseball': 'baseball_mlb',
+                'American Football': 'americanfootball_nfl',
+                'Rugby': 'rugbyunion_world_cup',
+                'Cricket': 'cricket_test_match',
+                'Boxing': 'boxing_boxing',
+                'MMA': 'mma_mixed_martial_arts'
+            };
+            
+            return mapping[sport] || null;
+        }
+
+        function mapSportToOddsAPI(sport) {
+            const mapping = {
+                'Football': 'soccer_england_epl', // Default to EPL, should be more sophisticated
+                'Basketball': 'basketball_nba',
+                'Tennis': 'tennis_atp',
+                'Ice Hockey': 'icehockey_nhl',
+                'Baseball': 'baseball_mlb',
+                'American Football': 'americanfootball_nfl',
+                'Rugby': 'rugbyunion_world_cup',
+                'Cricket': 'cricket_test_match',
+                'Boxing': 'boxing_boxing',
+                'MMA': 'mma_mixed_martial_arts'
+            };
+            
+            return mapping[sport] || null;
+        }
+
+        function findMatchingEvent(bet, apiData) {
+            // Simple fuzzy matching (in production, use better algorithm)
+            const betTeams = bet.teams || bet.event.split(' vs ');
+            
+            for (const game of apiData) {
+                const homeTeam = game.home_team.toLowerCase();
+                const awayTeam = game.away_team.toLowerCase();
+                
+                const teamMatch = betTeams.some(team => 
+                    homeTeam.includes(team.toLowerCase()) || 
+                    awayTeam.includes(team.toLowerCase())
+                );
+                
+                if (teamMatch) {
+                    // Extract closing odds for the bet outcome
+                    const closingOdds = extractClosingOdds(bet, game);
+                    return {
+                        event: `${game.home_team} vs ${game.away_team}`,
+                        closingOdds: closingOdds
+                    };
+                }
+            }
+            
+            return null;
+        }
+
+        function extractClosingOdds(bet, game) {
+            // Simplified - extract odds for home/away/draw
+            const bookmaker = game.bookmakers && game.bookmakers[0];
+            if (!bookmaker) return null;
+            
+            const h2hMarket = bookmaker.markets.find(m => m.key === 'h2h');
+            if (!h2hMarket) return null;
+            
+            // Determine which outcome matches the bet
+            // This is simplified - real implementation needs market type mapping
+            return h2hMarket.outcomes[0].price; // Placeholder
+        }
+
+        function calculateCLV(bet, match) {
+            if (!match.closingOdds || !bet.odds) return null;
+            
+            // CLV = ((Closing Odds / Opening Odds) - 1) × 100
+            const clv = ((match.closingOdds / bet.odds) - 1) * 100;
+            return clv.toFixed(2);
+        }
+
+        function renderBetResult(bet, result) {
+            const statusClass = result.success ? 'status-success' : 
+                               result.reason === 'sport_not_covered' ? 'status-pending' : 
+                               'status-error';
+            
+            const statusText = result.success ? '✓ CLV Available' : 
+                              result.reason === 'sport_not_covered' ? '⚠ Not Covered' :
+                              result.reason === 'event_not_started' ? '⏳ Pending' :
+                              '✗ Error';
+
+            let clvHtml = '';
+            if (result.success && result.clv !== null) {
+                const clvClass = parseFloat(result.clv) >= 0 ? 'clv-result' : 'clv-result clv-negative';
+                clvHtml = `
+                    <div class="${clvClass}">
+                        <strong>CLV:</strong> ${result.clv}% 
+                        (Opening: ${bet.odds} → Closing: ${result.closingOdds})
+                    </div>
+                `;
+            } else if (!result.success) {
+                clvHtml = `
+                    <div class="error-message">
+                        ${result.message}
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="bet-card">
+                    <div class="status ${statusClass}">${statusText}</div>
+                    <div class="bet-header">${bet.event}</div>
+                    <div class="bet-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Sport</div>
+                            <div class="detail-value">${bet.sport}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Tournament</div>
+                            <div class="detail-value">${bet.tournament}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Market</div>
+                            <div class="detail-value">${bet.market}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Bookmaker</div>
+                            <div class="detail-value">${bet.bookmaker}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Opening Odds</div>
+                            <div class="detail-value">${bet.odds}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Event Time</div>
+                            <div class="detail-value">${new Date(bet.eventTime).toLocaleString()}</div>
+                        </div>
+                    </div>
+                    ${clvHtml}
+                </div>
+            `;
+        }
+
+        // Load bets on page load
+        window.addEventListener('DOMContentLoaded', loadBetsData);
+    </script>
+</body>
+</html>

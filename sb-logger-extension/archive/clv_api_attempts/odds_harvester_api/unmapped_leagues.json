@@ -1,0 +1,1460 @@
+[
+  {
+    "key": "Tennis|Greece - ATP Athens|Alexandre Muller|Jan-Lennard Struff",
+    "timestamp": "2025-12-06T15:47:22.256167",
+    "sport": "Tennis",
+    "tournament": "Greece - ATP Athens",
+    "home_team": "Alexandre Muller",
+    "away_team": "Jan-Lennard Struff",
+    "suggested_league": null
+  },
+  {
+    "key": "Tennis|France - ATP Metz|Kyrian Jacquet|Luca Van Assche",
+    "timestamp": "2025-12-06T22:40:39.767160",
+    "sport": "Tennis",
+    "tournament": "France - ATP Metz",
+    "home_team": "Kyrian Jacquet",
+    "away_team": "Luca Van Assche",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|Greece - ATP Athens|Alexandre Muller|Jan-Lennard Struff",
+    "timestamp": "2025-12-08T10:51:58.378056",
+    "sport": "tennis",
+    "tournament": "Greece - ATP Athens",
+    "home_team": "Alexandre Muller",
+    "away_team": "Jan-Lennard Struff",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|France - ATP Metz|Kyrian Jacquet|Luca Van Assche",
+    "timestamp": "2025-12-08T10:51:58.393775",
+    "sport": "tennis",
+    "tournament": "France - ATP Metz",
+    "home_team": "Kyrian Jacquet",
+    "away_team": "Luca Van Assche",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|Helsinki Challenger 2025|Fatic|Hemery",
+    "timestamp": "2025-12-08T10:51:58.412450",
+    "sport": "tennis",
+    "tournament": "Helsinki Challenger 2025",
+    "home_team": "Fatic",
+    "away_team": "Hemery",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|ATP Athens, Greece Men Singles, Round of 32|Stan Wawrinka|Botic Van de Zandschulp",
+    "timestamp": "2025-12-08T10:51:58.438949",
+    "sport": "tennis",
+    "tournament": "ATP Athens, Greece Men Singles, Round of 32",
+    "home_team": "Stan Wawrinka",
+    "away_team": "Botic Van de Zandschulp",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|Taipei Challenger 2025|Janvier|T Wu",
+    "timestamp": "2025-12-08T10:51:58.463871",
+    "sport": "tennis",
+    "tournament": "Taipei Challenger 2025",
+    "home_team": "Janvier",
+    "away_team": "T Wu",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|Saudi Arabia - WTA Finals Riyadh|Cori Gauff|Jasmine Paolini",
+    "timestamp": "2025-12-08T10:51:58.483782",
+    "sport": "tennis",
+    "tournament": "Saudi Arabia - WTA Finals Riyadh",
+    "home_team": "Cori Gauff",
+    "away_team": "Jasmine Paolini",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|ATP Challenger Knoxville, USA Men Singles, Round of 32|Cedrik-Marcel Stebe|Alex Rybakov",
+    "timestamp": "2025-12-08T10:51:58.511134",
+    "sport": "tennis",
+    "tournament": "ATP Challenger Knoxville, USA Men Singles, Round of 32",
+    "home_team": "Cedrik-Marcel Stebe",
+    "away_team": "Alex Rybakov",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|ATP Athens, Greece Men Singles, Round of 32|Yannick Hanfmann|Ivan Ivanov",
+    "timestamp": "2025-12-08T10:51:58.533395",
+    "sport": "tennis",
+    "tournament": "ATP Athens, Greece Men Singles, Round of 32",
+    "home_team": "Yannick Hanfmann",
+    "away_team": "Ivan Ivanov",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|France - ATP Metz|Cameron Norrie|Lorenzo Sonego",
+    "timestamp": "2025-12-08T10:51:58.548896",
+    "sport": "tennis",
+    "tournament": "France - ATP Metz",
+    "home_team": "Cameron Norrie",
+    "away_team": "Lorenzo Sonego",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|ATP Metz, France Men Singles, Semifinals|Cameron Norrie|Lorenzo Sonego",
+    "timestamp": "2025-12-08T10:51:58.571961",
+    "sport": "tennis",
+    "tournament": "ATP Metz, France Men Singles, Semifinals",
+    "home_team": "Cameron Norrie",
+    "away_team": "Lorenzo Sonego",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|ATP Challenger Taipei, Chinese Taipei Men Singles, Semifinals|James McCabe|Yoshihito Nishioka",
+    "timestamp": "2025-12-08T10:51:58.598816",
+    "sport": "tennis",
+    "tournament": "ATP Challenger Taipei, Chinese Taipei Men Singles, Semifinals",
+    "home_team": "James McCabe",
+    "away_team": "Yoshihito Nishioka",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Swedish Division 1 S\u00f6dra|Lunds BK|IFK Sk\u00f6vde FK",
+    "timestamp": "2025-12-08T10:51:58.620787",
+    "sport": "football",
+    "tournament": "Swedish Division 1 S\u00f6dra",
+    "home_team": "Lunds BK",
+    "away_team": "IFK Sk\u00f6vde FK",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Swedish Division 1 S\u00f6dra|Oskarshamns AIK|Ljungskile SK",
+    "timestamp": "2025-12-08T10:51:58.650432",
+    "sport": "football",
+    "tournament": "Swedish Division 1 S\u00f6dra",
+    "home_team": "Oskarshamns AIK",
+    "away_team": "Ljungskile SK",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|ATP Athens, Greece Men Singles, Semifinals|Novak Djokovic|Yannick Hanfmann",
+    "timestamp": "2025-12-08T10:51:58.675454",
+    "sport": "tennis",
+    "tournament": "ATP Athens, Greece Men Singles, Semifinals",
+    "home_team": "Novak Djokovic",
+    "away_team": "Yannick Hanfmann",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Romania - Romania Liga II|CSM Resita|Concordia Chiajna",
+    "timestamp": "2025-12-08T10:51:58.696501",
+    "sport": "football",
+    "tournament": "Romania - Romania Liga II",
+    "home_team": "CSM Resita",
+    "away_team": "Concordia Chiajna",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Vietnam - Vietnam V.League 1|PVF-Cong An Nhan Dan FC|Viettel",
+    "timestamp": "2025-12-08T10:51:58.715384",
+    "sport": "football",
+    "tournament": "Vietnam - Vietnam V.League 1",
+    "home_team": "PVF-Cong An Nhan Dan FC",
+    "away_team": "Viettel",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Thailand - Thailand League 1|Uthai Thani FC|Muangthong United",
+    "timestamp": "2025-12-08T10:51:58.735740",
+    "sport": "football",
+    "tournament": "Thailand - Thailand League 1",
+    "home_team": "Uthai Thani FC",
+    "away_team": "Muangthong United",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Sweden - Sweden Superettan|IK Brage|Landskrona BoIS",
+    "timestamp": "2025-12-08T10:51:58.757719",
+    "sport": "football",
+    "tournament": "Sweden - Sweden Superettan",
+    "home_team": "IK Brage",
+    "away_team": "Landskrona BoIS",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Swedish Division 1 S\u00f6dra|Eskilsminne IF|J\u00f6nk\u00f6pings S\u00f6dra",
+    "timestamp": "2025-12-08T10:51:58.777673",
+    "sport": "football",
+    "tournament": "Swedish Division 1 S\u00f6dra",
+    "home_team": "Eskilsminne IF",
+    "away_team": "J\u00f6nk\u00f6pings S\u00f6dra",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Polish I Liga|Slask Wroclaw|Polonia Bytom",
+    "timestamp": "2025-12-08T10:51:58.800666",
+    "sport": "football",
+    "tournament": "Polish I Liga",
+    "home_team": "Slask Wroclaw",
+    "away_team": "Polonia Bytom",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Cyprus - Cyprus 1.Division|Akritas Chlorakas|Olympiakos Nicosia",
+    "timestamp": "2025-12-08T10:51:58.818890",
+    "sport": "football",
+    "tournament": "Cyprus - Cyprus 1.Division",
+    "home_team": "Akritas Chlorakas",
+    "away_team": "Olympiakos Nicosia",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Modus Super Series, Modus Super Series|Joe Murnan|Alec Small",
+    "timestamp": "2025-12-08T10:51:58.845498",
+    "sport": "other",
+    "tournament": "Modus Super Series, Modus Super Series",
+    "home_team": "Joe Murnan",
+    "away_team": "Alec Small",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Czech Extraliga|Vk Dukla Liberec|Vk Jihostroj Ceske Budejovice",
+    "timestamp": "2025-12-08T10:51:58.861421",
+    "sport": "other",
+    "tournament": "Czech Extraliga",
+    "home_team": "Vk Dukla Liberec",
+    "away_team": "Vk Jihostroj Ceske Budejovice",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Algerian Ligue Professionnelle 1|ES S\u00e9tif|Olympique Akbou",
+    "timestamp": "2025-12-08T10:51:58.885451",
+    "sport": "football",
+    "tournament": "Algerian Ligue Professionnelle 1",
+    "home_team": "ES S\u00e9tif",
+    "away_team": "Olympique Akbou",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Australia - Australia Big Bash Women|Brisbane Heat Women|Melbourne Renegades Women",
+    "timestamp": "2025-12-08T10:51:58.912378",
+    "sport": "other",
+    "tournament": "Australia - Australia Big Bash Women",
+    "home_team": "Brisbane Heat Women",
+    "away_team": "Melbourne Renegades Women",
+    "suggested_league": null
+  },
+  {
+    "key": "other|NFL|New England Patriots|Tampa Bay Buccaneers",
+    "timestamp": "2025-12-08T10:51:58.933103",
+    "sport": "other",
+    "tournament": "NFL",
+    "home_team": "New England Patriots",
+    "away_team": "Tampa Bay Buccaneers",
+    "suggested_league": null
+  },
+  {
+    "key": "football|German 3.Liga|SV Wehen Wiesbaden|Viktoria K\u00f6ln",
+    "timestamp": "2025-12-08T10:51:58.948721",
+    "sport": "football",
+    "tournament": "German 3.Liga",
+    "home_team": "SV Wehen Wiesbaden",
+    "away_team": "Viktoria K\u00f6ln",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Republic of North Macedonian Soccer|Shkendija|FK Makedonija",
+    "timestamp": "2025-12-08T10:51:58.969708",
+    "sport": "football",
+    "tournament": "Republic of North Macedonian Soccer",
+    "home_team": "Shkendija",
+    "away_team": "FK Makedonija",
+    "suggested_league": null
+  },
+  {
+    "key": "other|NFL|Philadelphia Eagles|Green Bay Packers",
+    "timestamp": "2025-12-08T10:51:58.984039",
+    "sport": "other",
+    "tournament": "NFL",
+    "home_team": "Philadelphia Eagles",
+    "away_team": "Green Bay Packers",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Germany Pro A|Rheinstars Cologne|Sbb Baskets Wolmirstedt",
+    "timestamp": "2025-12-08T10:51:59.011498",
+    "sport": "other",
+    "tournament": "Germany Pro A",
+    "home_team": "Rheinstars Cologne",
+    "away_team": "Sbb Baskets Wolmirstedt",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|ATP Challenger Montevideo, Uruguay Men Singles, Round of 32|Franco Roncadelli|Genaro Alberto Olivieri",
+    "timestamp": "2025-12-08T10:51:59.042141",
+    "sport": "tennis",
+    "tournament": "ATP Challenger Montevideo, Uruguay Men Singles, Round of 32",
+    "home_team": "Franco Roncadelli",
+    "away_team": "Genaro Alberto Olivieri",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Grand Slam of Darts, Fixtures|Michael van Gerwen|Gary Anderson",
+    "timestamp": "2025-12-08T10:51:59.067140",
+    "sport": "other",
+    "tournament": "Grand Slam of Darts, Fixtures",
+    "home_team": "Michael van Gerwen",
+    "away_team": "Gary Anderson",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|ATP Challenger Drummondville, Canada Men's Singles, Round of 32|Liam Draxl|Mikael Arseneault",
+    "timestamp": "2025-12-08T10:51:59.100872",
+    "sport": "tennis",
+    "tournament": "ATP Challenger Drummondville, Canada Men's Singles, Round of 32",
+    "home_team": "Liam Draxl",
+    "away_team": "Mikael Arseneault",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Norway BLNO|Baerums Verk Defenders|Tnt Towers",
+    "timestamp": "2025-12-08T10:51:59.116634",
+    "sport": "other",
+    "tournament": "Norway BLNO",
+    "home_team": "Baerums Verk Defenders",
+    "away_team": "Tnt Towers",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Romania - Romania Liga II|FC Chindia Targoviste|Afumati",
+    "timestamp": "2025-12-08T10:51:59.136424",
+    "sport": "football",
+    "tournament": "Romania - Romania Liga II",
+    "home_team": "FC Chindia Targoviste",
+    "away_team": "Afumati",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|ATP Challenger Lyon (Decines-Charpieu), France Men Singles, Round of 16|Francesco Maestrelli|Vit Kopriva",
+    "timestamp": "2025-12-08T10:51:59.167921",
+    "sport": "tennis",
+    "tournament": "ATP Challenger Lyon (Decines-Charpieu), France Men Singles, Round of 16",
+    "home_team": "Francesco Maestrelli",
+    "away_team": "Vit Kopriva",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Big Bash League, Women|Hobart Hurricanes|Brisbane Heat",
+    "timestamp": "2025-12-08T10:51:59.209177",
+    "sport": "other",
+    "tournament": "Big Bash League, Women",
+    "home_team": "Hobart Hurricanes",
+    "away_team": "Brisbane Heat",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Modus Super Series, Modus Super Series|David Wawrzewski|Scott Campbell",
+    "timestamp": "2025-12-08T10:51:59.230984",
+    "sport": "other",
+    "tournament": "Modus Super Series, Modus Super Series",
+    "home_team": "David Wawrzewski",
+    "away_team": "Scott Campbell",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|Champaign IL Challenger 2025|Dar Blanch|Kozlov",
+    "timestamp": "2025-12-08T10:51:59.250337",
+    "sport": "tennis",
+    "tournament": "Champaign IL Challenger 2025",
+    "home_team": "Dar Blanch",
+    "away_team": "Kozlov",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Australia - Australia Big Bash Women|Hobart Hurricanes Women|Brisbane Heat Women",
+    "timestamp": "2025-12-08T10:51:59.272896",
+    "sport": "other",
+    "tournament": "Australia - Australia Big Bash Women",
+    "home_team": "Hobart Hurricanes Women",
+    "away_team": "Brisbane Heat Women",
+    "suggested_league": null
+  },
+  {
+    "key": "other|French ProB League|Alliance Sport Alsace|Champagne Basketball",
+    "timestamp": "2025-12-08T10:51:59.295002",
+    "sport": "other",
+    "tournament": "French ProB League",
+    "home_team": "Alliance Sport Alsace",
+    "away_team": "Champagne Basketball",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Japan B1 League|Toyama Grouses|Osaka Evessa",
+    "timestamp": "2025-12-08T10:51:59.327740",
+    "sport": "other",
+    "tournament": "Japan B1 League",
+    "home_team": "Toyama Grouses",
+    "away_team": "Osaka Evessa",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|France - ATP Lyon 2 Challenger|Tom Paris|Liam Broady",
+    "timestamp": "2025-12-08T10:51:59.348066",
+    "sport": "tennis",
+    "tournament": "France - ATP Lyon 2 Challenger",
+    "home_team": "Tom Paris",
+    "away_team": "Liam Broady",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Norway BLNO|Asker Aliens BC|Nidaros Jets",
+    "timestamp": "2025-12-08T10:51:59.364271",
+    "sport": "other",
+    "tournament": "Norway BLNO",
+    "home_team": "Asker Aliens BC",
+    "away_team": "Nidaros Jets",
+    "suggested_league": null
+  },
+  {
+    "key": "other|MODUS Super Series|David Wawrzewski|Scott Campbell",
+    "timestamp": "2025-12-08T10:51:59.382849",
+    "sport": "other",
+    "tournament": "MODUS Super Series",
+    "home_team": "David Wawrzewski",
+    "away_team": "Scott Campbell",
+    "suggested_league": null
+  },
+  {
+    "key": "football|World - International Friendlies|Kenya|Equatorial Guinea",
+    "timestamp": "2025-12-08T10:51:59.403223",
+    "sport": "football",
+    "tournament": "World - International Friendlies",
+    "home_team": "Kenya",
+    "away_team": "Equatorial Guinea",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Slovenian 2 SNL|NK Brinje Grosuplje|NK Bilje",
+    "timestamp": "2025-12-08T10:51:59.420075",
+    "sport": "football",
+    "tournament": "Slovenian 2 SNL",
+    "home_team": "NK Brinje Grosuplje",
+    "away_team": "NK Bilje",
+    "suggested_league": null
+  },
+  {
+    "key": "other|German DEL|Dresdner Eislowen|Wild Wings",
+    "timestamp": "2025-12-08T10:51:59.434951",
+    "sport": "other",
+    "tournament": "German DEL",
+    "home_team": "Dresdner Eislowen",
+    "away_team": "Wild Wings",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|ATP Challenger Bergamo, Italy Men's Singles, Round of 32|Stefano Travaglia|Matej Dodig",
+    "timestamp": "2025-12-08T10:51:59.467561",
+    "sport": "tennis",
+    "tournament": "ATP Challenger Bergamo, Italy Men's Singles, Round of 32",
+    "home_team": "Stefano Travaglia",
+    "away_team": "Matej Dodig",
+    "suggested_league": null
+  },
+  {
+    "key": "other|NFL|Dallas Cowboys|Las Vegas Raiders",
+    "timestamp": "2025-12-08T10:51:59.481465",
+    "sport": "other",
+    "tournament": "NFL",
+    "home_team": "Dallas Cowboys",
+    "away_team": "Las Vegas Raiders",
+    "suggested_league": null
+  },
+  {
+    "key": "football|International Friendlies|Egypt|Cape Verde",
+    "timestamp": "2025-12-08T10:51:59.505110",
+    "sport": "football",
+    "tournament": "International Friendlies",
+    "home_team": "Egypt",
+    "away_team": "Cape Verde",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|ATP Challenger Montemar, Spain Men Singles, Round of 32|Edas Butvilas|Max Alcala Gurri",
+    "timestamp": "2025-12-08T10:51:59.532706",
+    "sport": "tennis",
+    "tournament": "ATP Challenger Montemar, Spain Men Singles, Round of 32",
+    "home_team": "Edas Butvilas",
+    "away_team": "Max Alcala Gurri",
+    "suggested_league": null
+  },
+  {
+    "key": "football|International Friendlies|Chile|Peru",
+    "timestamp": "2025-12-08T10:51:59.551742",
+    "sport": "football",
+    "tournament": "International Friendlies",
+    "home_team": "Chile",
+    "away_team": "Peru",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|Chile - WTA Colina 125K Series|Carole Monnet|Veronika Erjavec",
+    "timestamp": "2025-12-08T10:51:59.572305",
+    "sport": "tennis",
+    "tournament": "Chile - WTA Colina 125K Series",
+    "home_team": "Carole Monnet",
+    "away_team": "Veronika Erjavec",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Serbia Prva Liga|FK Dubo\u010dica|FK Vo\u017edovac",
+    "timestamp": "2025-12-08T10:51:59.589141",
+    "sport": "football",
+    "tournament": "Serbia Prva Liga",
+    "home_team": "FK Dubo\u010dica",
+    "away_team": "FK Vo\u017edovac",
+    "suggested_league": null
+  },
+  {
+    "key": "football|World - International Friendlies|Chile|Peru",
+    "timestamp": "2025-12-08T10:51:59.609743",
+    "sport": "football",
+    "tournament": "World - International Friendlies",
+    "home_team": "Chile",
+    "away_team": "Peru",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Australia - Australia Big Bash Women|Sydney Sixers Women|Melbourne Stars Women",
+    "timestamp": "2025-12-08T10:51:59.643214",
+    "sport": "other",
+    "tournament": "Australia - Australia Big Bash Women",
+    "home_team": "Sydney Sixers Women",
+    "away_team": "Melbourne Stars Women",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Latvia Virsliga Promotion/Relegation|FK Grobinas|JDFS Alberts",
+    "timestamp": "2025-12-08T10:51:59.669220",
+    "sport": "football",
+    "tournament": "Latvia Virsliga Promotion/Relegation",
+    "home_team": "FK Grobinas",
+    "away_team": "JDFS Alberts",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|ATP Challenger Yokohama, Japan Men Singles, Quarterfinals|Yasutaka Uchiyama|Rei Sakamoto",
+    "timestamp": "2025-12-08T10:51:59.698691",
+    "sport": "tennis",
+    "tournament": "ATP Challenger Yokohama, Japan Men Singles, Quarterfinals",
+    "home_team": "Yasutaka Uchiyama",
+    "away_team": "Rei Sakamoto",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Paraguay - Paraguay Primera Division|Club Sportivo Trinidense|Club Atletico Tembetary",
+    "timestamp": "2025-12-08T10:51:59.721139",
+    "sport": "football",
+    "tournament": "Paraguay - Paraguay Primera Division",
+    "home_team": "Club Sportivo Trinidense",
+    "away_team": "Club Atletico Tembetary",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|ATP Challenger Bergamo, Italy Men's Singles, Round of 16|Niels Visker|Stefano Napolitano",
+    "timestamp": "2025-12-08T10:51:59.759914",
+    "sport": "tennis",
+    "tournament": "ATP Challenger Bergamo, Italy Men's Singles, Round of 16",
+    "home_team": "Niels Visker",
+    "away_team": "Stefano Napolitano",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Algeria - Algeria Ligue Professionnelle 1|Paradou AC|MC El Bayadh",
+    "timestamp": "2025-12-08T10:51:59.783246",
+    "sport": "football",
+    "tournament": "Algeria - Algeria Ligue Professionnelle 1",
+    "home_team": "Paradou AC",
+    "away_team": "MC El Bayadh",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Algerian Ligue Professionnelle 1|Paradou AC|MC El Bayadh",
+    "timestamp": "2025-12-08T10:51:59.805073",
+    "sport": "football",
+    "tournament": "Algerian Ligue Professionnelle 1",
+    "home_team": "Paradou AC",
+    "away_team": "MC El Bayadh",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Swedish Soccer - Swedish Superettan|Norrby IF|Utsiktens BK",
+    "timestamp": "2025-12-08T10:51:59.827047",
+    "sport": "football",
+    "tournament": "Swedish Soccer - Swedish Superettan",
+    "home_team": "Norrby IF",
+    "away_team": "Utsiktens BK",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Sweden - Sweden Superettan Promotion/Relegation|Norrby IF|Utsiktens BK",
+    "timestamp": "2025-12-08T10:51:59.865257",
+    "sport": "football",
+    "tournament": "Sweden - Sweden Superettan Promotion/Relegation",
+    "home_team": "Norrby IF",
+    "away_team": "Utsiktens BK",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Australia - Australia Big Bash Women|Brisbane Heat Women|Sydney Thunder Women",
+    "timestamp": "2025-12-08T10:51:59.899960",
+    "sport": "other",
+    "tournament": "Australia - Australia Big Bash Women",
+    "home_team": "Brisbane Heat Women",
+    "away_team": "Sydney Thunder Women",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Liga Argentina|Monteros|San Lorenzo de Almagro",
+    "timestamp": "2025-12-08T10:51:59.924823",
+    "sport": "other",
+    "tournament": "Liga Argentina",
+    "home_team": "Monteros",
+    "away_team": "San Lorenzo de Almagro",
+    "suggested_league": null
+  },
+  {
+    "key": "other|AHL|Chicago Wolves|Manitoba Moose",
+    "timestamp": "2025-12-08T10:51:59.967768",
+    "sport": "other",
+    "tournament": "AHL",
+    "home_team": "Chicago Wolves",
+    "away_team": "Manitoba Moose",
+    "suggested_league": null
+  },
+  {
+    "key": "other|MODUS Super Series|Gary Mawson|James Welding",
+    "timestamp": "2025-12-08T10:52:00.007253",
+    "sport": "other",
+    "tournament": "MODUS Super Series",
+    "home_team": "Gary Mawson",
+    "away_team": "James Welding",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Big Bash League, Women|Brisbane Heat|Sydney Thunder",
+    "timestamp": "2025-12-08T10:52:00.039662",
+    "sport": "other",
+    "tournament": "Big Bash League, Women",
+    "home_team": "Brisbane Heat",
+    "away_team": "Sydney Thunder",
+    "suggested_league": null
+  },
+  {
+    "key": "other|MODUS Super Series|Martyn Turner|Adam Leek",
+    "timestamp": "2025-12-08T10:52:00.058699",
+    "sport": "other",
+    "tournament": "MODUS Super Series",
+    "home_team": "Martyn Turner",
+    "away_team": "Adam Leek",
+    "suggested_league": null
+  },
+  {
+    "key": "other|South Africa - South Africa CSA T20 Challenge|The Titans|Dolphins Cricket",
+    "timestamp": "2025-12-08T10:52:00.084991",
+    "sport": "other",
+    "tournament": "South Africa - South Africa CSA T20 Challenge",
+    "home_team": "The Titans",
+    "away_team": "Dolphins Cricket",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|Bergamo Challenger 2025|Jans/Visker|Poljak/Ruehl",
+    "timestamp": "2025-12-08T10:52:00.104940",
+    "sport": "tennis",
+    "tournament": "Bergamo Challenger 2025",
+    "home_team": "Jans/Visker",
+    "away_team": "Poljak/Ruehl",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|Soma Bay Challenger 2025|Betov/Ostapenkov|Simakin/Verbin",
+    "timestamp": "2025-12-08T10:52:00.130368",
+    "sport": "tennis",
+    "tournament": "Soma Bay Challenger 2025",
+    "home_team": "Betov/Ostapenkov",
+    "away_team": "Simakin/Verbin",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Modus Super Series, Modus Super Series|Adam Leek|Jim Mayer",
+    "timestamp": "2025-12-08T10:52:00.156371",
+    "sport": "other",
+    "tournament": "Modus Super Series, Modus Super Series",
+    "home_team": "Adam Leek",
+    "away_team": "Jim Mayer",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Algerian Ligue Professionnelle 1|Olympique Akbou|ASO Chlef",
+    "timestamp": "2025-12-08T10:52:00.179293",
+    "sport": "football",
+    "tournament": "Algerian Ligue Professionnelle 1",
+    "home_team": "Olympique Akbou",
+    "away_team": "ASO Chlef",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Romania - Romania Liga 1|FC Csikszereda Miercurea Ciuc|FC Unirea Slobozia",
+    "timestamp": "2025-12-08T10:52:00.200197",
+    "sport": "football",
+    "tournament": "Romania - Romania Liga 1",
+    "home_team": "FC Csikszereda Miercurea Ciuc",
+    "away_team": "FC Unirea Slobozia",
+    "suggested_league": null
+  },
+  {
+    "key": "football|United Arab Emirates - UAE Pro League|Al-Nasr (UAE)|Al Dhafra",
+    "timestamp": "2025-12-08T10:52:00.223273",
+    "sport": "football",
+    "tournament": "United Arab Emirates - UAE Pro League",
+    "home_team": "Al-Nasr (UAE)",
+    "away_team": "Al Dhafra",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Qatar - Qatar Stars League|Al-Gharafa SC|Al-Wakra",
+    "timestamp": "2025-12-08T10:52:00.250715",
+    "sport": "football",
+    "tournament": "Qatar - Qatar Stars League",
+    "home_team": "Al-Gharafa SC",
+    "away_team": "Al-Wakra",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Danish 1.Division|Lyngby BK|Esbjerg fB",
+    "timestamp": "2025-12-08T10:52:00.269053",
+    "sport": "football",
+    "tournament": "Danish 1.Division",
+    "home_team": "Lyngby BK",
+    "away_team": "Esbjerg fB",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|Italy - ATP Bergamo Challenger|Justin Engel|Andrea Guerrieri",
+    "timestamp": "2025-12-08T10:52:00.295453",
+    "sport": "tennis",
+    "tournament": "Italy - ATP Bergamo Challenger",
+    "home_team": "Justin Engel",
+    "away_team": "Andrea Guerrieri",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Denmark - Denmark 1.Division|Lyngby BK|Esbjerg fB",
+    "timestamp": "2025-12-08T10:52:00.316832",
+    "sport": "football",
+    "tournament": "Denmark - Denmark 1.Division",
+    "home_team": "Lyngby BK",
+    "away_team": "Esbjerg fB",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Switzerland - Switzerland Challenge League|FC Wil 1900|FC Yverdon-Sport",
+    "timestamp": "2025-12-08T10:52:00.340433",
+    "sport": "football",
+    "tournament": "Switzerland - Switzerland Challenge League",
+    "home_team": "FC Wil 1900",
+    "away_team": "FC Yverdon-Sport",
+    "suggested_league": null
+  },
+  {
+    "key": "football|French Ligue National|Paris 13 Atletico|FC Villefranche",
+    "timestamp": "2025-12-08T10:52:00.373317",
+    "sport": "football",
+    "tournament": "French Ligue National",
+    "home_team": "Paris 13 Atletico",
+    "away_team": "FC Villefranche",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Switzerland - Switzerland Challenge League|AC Bellinzona|FC Vaduz",
+    "timestamp": "2025-12-08T10:52:00.398137",
+    "sport": "football",
+    "tournament": "Switzerland - Switzerland Challenge League",
+    "home_team": "AC Bellinzona",
+    "away_team": "FC Vaduz",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Netherlands - Netherlands Eerste Divisie|Jong Ajax|FC Eindhoven",
+    "timestamp": "2025-12-08T10:52:00.421466",
+    "sport": "football",
+    "tournament": "Netherlands - Netherlands Eerste Divisie",
+    "home_team": "Jong Ajax",
+    "away_team": "FC Eindhoven",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Netherlands - Netherlands Eerste Divisie|De Graafschap|Helmond Sport",
+    "timestamp": "2025-12-08T10:52:00.445445",
+    "sport": "football",
+    "tournament": "Netherlands - Netherlands Eerste Divisie",
+    "home_team": "De Graafschap",
+    "away_team": "Helmond Sport",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Polish I Liga|Stal Rzeszow|GKS Tychy",
+    "timestamp": "2025-12-08T10:52:00.464512",
+    "sport": "football",
+    "tournament": "Polish I Liga",
+    "home_team": "Stal Rzeszow",
+    "away_team": "GKS Tychy",
+    "suggested_league": null
+  },
+  {
+    "key": "football|English National League South|Slough Town|Worthing",
+    "timestamp": "2025-12-08T10:52:00.485853",
+    "sport": "football",
+    "tournament": "English National League South",
+    "home_team": "Slough Town",
+    "away_team": "Worthing",
+    "suggested_league": null
+  },
+  {
+    "key": "other|NFL|Seattle Seahawks|Tennessee Titans",
+    "timestamp": "2025-12-08T10:52:00.507278",
+    "sport": "other",
+    "tournament": "NFL",
+    "home_team": "Seattle Seahawks",
+    "away_team": "Tennessee Titans",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|2025 ATP Challenger Bogota (Los Lagartos), Colombia Men Singles, Qualification|Gerard Campana Lee|Sergio Luis Hernandez Ramirez",
+    "timestamp": "2025-12-08T10:52:00.541930",
+    "sport": "tennis",
+    "tournament": "2025 ATP Challenger Bogota (Los Lagartos), Colombia Men Singles, Qualification",
+    "home_team": "Gerard Campana Lee",
+    "away_team": "Sergio Luis Hernandez Ramirez",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Paraguay - Paraguay Primera Division|Cerro Porte\u00f1o|Club Libertad Asunci\u00f3n",
+    "timestamp": "2025-12-08T10:52:00.564972",
+    "sport": "football",
+    "tournament": "Paraguay - Paraguay Primera Division",
+    "home_team": "Cerro Porte\u00f1o",
+    "away_team": "Club Libertad Asunci\u00f3n",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Honduras Liga Nacional|CD Olimpia|CD Marathon",
+    "timestamp": "2025-12-08T10:52:00.590596",
+    "sport": "football",
+    "tournament": "Honduras Liga Nacional",
+    "home_team": "CD Olimpia",
+    "away_team": "CD Marathon",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Slovenia - Slovenia Prva Liga|NK Maribor|Olimpija Ljubljana",
+    "timestamp": "2025-12-08T10:52:00.615855",
+    "sport": "football",
+    "tournament": "Slovenia - Slovenia Prva Liga",
+    "home_team": "NK Maribor",
+    "away_team": "Olimpija Ljubljana",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Croatia - Croatia HNL|NK Osijek|NK Lokomotiva",
+    "timestamp": "2025-12-08T10:52:00.642467",
+    "sport": "football",
+    "tournament": "Croatia - Croatia HNL",
+    "home_team": "NK Osijek",
+    "away_team": "NK Lokomotiva",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Peru Liga 1|Comerciantes Unidos|Asociacion Deportiva Tarma",
+    "timestamp": "2025-12-08T10:52:00.663568",
+    "sport": "football",
+    "tournament": "Peru Liga 1",
+    "home_team": "Comerciantes Unidos",
+    "away_team": "Asociacion Deportiva Tarma",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Spanish Primera Federaci\u00f3n - Group 2|FC Cartagena|Eldense",
+    "timestamp": "2025-12-08T10:52:00.693144",
+    "sport": "football",
+    "tournament": "Spanish Primera Federaci\u00f3n - Group 2",
+    "home_team": "FC Cartagena",
+    "away_team": "Eldense",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Czech Republic NBL|BK Nova Hut Ostrava|Bk Olomoucko",
+    "timestamp": "2025-12-08T10:52:00.711928",
+    "sport": "other",
+    "tournament": "Czech Republic NBL",
+    "home_team": "BK Nova Hut Ostrava",
+    "away_team": "Bk Olomoucko",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Serbia - Serbia SuperLiga|FK Radnicki 1923|FK Novi Pazar",
+    "timestamp": "2025-12-08T10:52:00.731838",
+    "sport": "football",
+    "tournament": "Serbia - Serbia SuperLiga",
+    "home_team": "FK Radnicki 1923",
+    "away_team": "FK Novi Pazar",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Peru - Peru Liga 1|Alianza Universidad|Juan Pablo II College",
+    "timestamp": "2025-12-08T10:52:00.752827",
+    "sport": "football",
+    "tournament": "Peru - Peru Liga 1",
+    "home_team": "Alianza Universidad",
+    "away_team": "Juan Pablo II College",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Romania - Romania Liga 1|CFR Cluj|Rapid Bucuresti",
+    "timestamp": "2025-12-08T10:52:00.772441",
+    "sport": "football",
+    "tournament": "Romania - Romania Liga 1",
+    "home_team": "CFR Cluj",
+    "away_team": "Rapid Bucuresti",
+    "suggested_league": null
+  },
+  {
+    "key": "other|United States of America - NFL|Indianapolis Colts|Kansas City Chiefs",
+    "timestamp": "2025-12-08T10:52:00.793100",
+    "sport": "other",
+    "tournament": "United States of America - NFL",
+    "home_team": "Indianapolis Colts",
+    "away_team": "Kansas City Chiefs",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|Ecuador - ATP Guayaquil Challenger|Juan Pablo Varillas|Adolfo Daniel Vallejo",
+    "timestamp": "2025-12-08T10:52:00.818528",
+    "sport": "tennis",
+    "tournament": "Ecuador - ATP Guayaquil Challenger",
+    "home_team": "Juan Pablo Varillas",
+    "away_team": "Adolfo Daniel Vallejo",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Polish PLK|Trefl Sopot|Wilki Morskie Szczecin",
+    "timestamp": "2025-12-08T10:52:00.839142",
+    "sport": "other",
+    "tournament": "Polish PLK",
+    "home_team": "Trefl Sopot",
+    "away_team": "Wilki Morskie Szczecin",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Swiss National League|HC Fribourg-Gotteron|Geneva Servette HC",
+    "timestamp": "2025-12-08T10:52:00.868709",
+    "sport": "other",
+    "tournament": "Swiss National League",
+    "home_team": "HC Fribourg-Gotteron",
+    "away_team": "Geneva Servette HC",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Republic of North Macedonian Soccer|KF Shkupi|Pelister Bitola",
+    "timestamp": "2025-12-08T10:52:00.898305",
+    "sport": "football",
+    "tournament": "Republic of North Macedonian Soccer",
+    "home_team": "KF Shkupi",
+    "away_team": "Pelister Bitola",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|ATP Challenger Playford City, Australia Men Singles, Round of 32|Finn Bass|Dane Sweeny",
+    "timestamp": "2025-12-08T10:52:00.930089",
+    "sport": "tennis",
+    "tournament": "ATP Challenger Playford City, Australia Men Singles, Round of 32",
+    "home_team": "Finn Bass",
+    "away_team": "Dane Sweeny",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Netherlands - Netherlands Eerste Divisie|Jong FC Utrecht|Den Bosch",
+    "timestamp": "2025-12-08T10:52:00.954167",
+    "sport": "football",
+    "tournament": "Netherlands - Netherlands Eerste Divisie",
+    "home_team": "Jong FC Utrecht",
+    "away_team": "Den Bosch",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|Bahrain - ATP Manama 2 Challenger|Dali Blanch|Sergey Fomin",
+    "timestamp": "2025-12-08T10:52:00.978136",
+    "sport": "tennis",
+    "tournament": "Bahrain - ATP Manama 2 Challenger",
+    "home_team": "Dali Blanch",
+    "away_team": "Sergey Fomin",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Australia WNBL|Sydney Flames|Geelong Supercats",
+    "timestamp": "2025-12-08T10:52:01.003653",
+    "sport": "other",
+    "tournament": "Australia WNBL",
+    "home_team": "Sydney Flames",
+    "away_team": "Geelong Supercats",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|2025 ATP Challenger Bogota (Los Lagartos), Colombia Men Singles, Round of 32|Juan Pablo Ficovich|Mateus Alves",
+    "timestamp": "2025-12-08T10:52:01.037352",
+    "sport": "tennis",
+    "tournament": "2025 ATP Challenger Bogota (Los Lagartos), Colombia Men Singles, Round of 32",
+    "home_team": "Juan Pablo Ficovich",
+    "away_team": "Mateus Alves",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|ITF Fujairah|Georgina Garcia-perez|Alevtina Ibragimova",
+    "timestamp": "2025-12-08T10:52:01.055908",
+    "sport": "tennis",
+    "tournament": "ITF Fujairah",
+    "home_team": "Georgina Garcia-perez",
+    "away_team": "Alevtina Ibragimova",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|Temuco Challenger 2025|Str Kirchheimer|Dutra da Silva",
+    "timestamp": "2025-12-08T10:52:01.076736",
+    "sport": "tennis",
+    "tournament": "Temuco Challenger 2025",
+    "home_team": "Str Kirchheimer",
+    "away_team": "Dutra da Silva",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Georgia Erovnuli Liga|FC Gagra Tbilisi|FC Gareji",
+    "timestamp": "2025-12-08T10:52:01.096124",
+    "sport": "football",
+    "tournament": "Georgia Erovnuli Liga",
+    "home_team": "FC Gagra Tbilisi",
+    "away_team": "FC Gareji",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|Chile - ATP Temuco Challenger|Strong Kirchheimer|Daniel Dutra da Silva",
+    "timestamp": "2025-12-08T10:52:01.118588",
+    "sport": "tennis",
+    "tournament": "Chile - ATP Temuco Challenger",
+    "home_team": "Strong Kirchheimer",
+    "away_team": "Daniel Dutra da Silva",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|ATP Challenger Temuco, Chile, Men Singles, Round of 32|Strong Kirchheimer|Daniel Dutra Da Silva",
+    "timestamp": "2025-12-08T10:52:01.146380",
+    "sport": "tennis",
+    "tournament": "ATP Challenger Temuco, Chile, Men Singles, Round of 32",
+    "home_team": "Strong Kirchheimer",
+    "away_team": "Daniel Dutra Da Silva",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Republic of North Macedonian Soccer|GFK Ohrid Lihnidos|Detonit Plackovica",
+    "timestamp": "2025-12-08T10:52:01.169761",
+    "sport": "football",
+    "tournament": "Republic of North Macedonian Soccer",
+    "home_team": "GFK Ohrid Lihnidos",
+    "away_team": "Detonit Plackovica",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|ATP Challenger Playford City, Australia Men Singles, Round of 16|James Duckworth|Karan (IND) Singh",
+    "timestamp": "2025-12-08T10:52:01.199737",
+    "sport": "tennis",
+    "tournament": "ATP Challenger Playford City, Australia Men Singles, Round of 16",
+    "home_team": "James Duckworth",
+    "away_team": "Karan (IND) Singh",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Netherlands - Netherlands Eerste Divisie|Vitesse|Jong PSV Eindhoven",
+    "timestamp": "2025-12-08T10:52:01.226697",
+    "sport": "football",
+    "tournament": "Netherlands - Netherlands Eerste Divisie",
+    "home_team": "Vitesse",
+    "away_team": "Jong PSV Eindhoven",
+    "suggested_league": null
+  },
+  {
+    "key": "other|United Arab Emirates - United Arab Emirates Abu Dhabi League T10|Deccan Gladiators|Aspin Stallions",
+    "timestamp": "2025-12-08T10:52:01.258279",
+    "sport": "other",
+    "tournament": "United Arab Emirates - United Arab Emirates Abu Dhabi League T10",
+    "home_team": "Deccan Gladiators",
+    "away_team": "Aspin Stallions",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|Portugal - ATP Maia Challenger|Federico Bondioli|Frederico Ferreira Silva",
+    "timestamp": "2025-12-08T10:52:01.279944",
+    "sport": "tennis",
+    "tournament": "Portugal - ATP Maia Challenger",
+    "home_team": "Federico Bondioli",
+    "away_team": "Frederico Ferreira Silva",
+    "suggested_league": null
+  },
+  {
+    "key": "football|International Friendlies Women|Bangladesh Women|Malaysia Women",
+    "timestamp": "2025-12-08T10:52:01.301660",
+    "sport": "football",
+    "tournament": "International Friendlies Women",
+    "home_team": "Bangladesh Women",
+    "away_team": "Malaysia Women",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Mexican Liga MX|FC Ju\u00e1rez|Deportivo Toluca",
+    "timestamp": "2025-12-08T10:52:01.321954",
+    "sport": "football",
+    "tournament": "Mexican Liga MX",
+    "home_team": "FC Ju\u00e1rez",
+    "away_team": "Deportivo Toluca",
+    "suggested_league": null
+  },
+  {
+    "key": "other|MODUS Super Series|Charlie Manby|Keegan Brown",
+    "timestamp": "2025-12-08T10:52:01.341762",
+    "sport": "other",
+    "tournament": "MODUS Super Series",
+    "home_team": "Charlie Manby",
+    "away_team": "Keegan Brown",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Colombia Categor\u00eda Primera B|Real Cundinamarca|C\u00facuta Deportivo",
+    "timestamp": "2025-12-08T10:52:01.365523",
+    "sport": "football",
+    "tournament": "Colombia Categor\u00eda Primera B",
+    "home_team": "Real Cundinamarca",
+    "away_team": "C\u00facuta Deportivo",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Egyptian 2nd Division|Tut Ankh Amun FC|Aswan FC",
+    "timestamp": "2025-12-08T10:52:01.392195",
+    "sport": "football",
+    "tournament": "Egyptian 2nd Division",
+    "home_team": "Tut Ankh Amun FC",
+    "away_team": "Aswan FC",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Friendlies Women's International|T\u00fcrkiye (W)|Albania (W)",
+    "timestamp": "2025-12-08T10:52:01.415105",
+    "sport": "football",
+    "tournament": "Friendlies Women's International",
+    "home_team": "T\u00fcrkiye (W)",
+    "away_team": "Albania (W)",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Qatar - Qatar QSL Cup|Al-Markhiya|Qatar SC",
+    "timestamp": "2025-12-08T10:52:01.434698",
+    "sport": "football",
+    "tournament": "Qatar - Qatar QSL Cup",
+    "home_team": "Al-Markhiya",
+    "away_team": "Qatar SC",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Modus Super Series, Modus Super Series|Carl Wilkinson|David Pallett",
+    "timestamp": "2025-12-08T10:52:01.458908",
+    "sport": "other",
+    "tournament": "Modus Super Series, Modus Super Series",
+    "home_team": "Carl Wilkinson",
+    "away_team": "David Pallett",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|Greece - ATP Athens Challenger|Philip Henning|Sandro Kopp",
+    "timestamp": "2025-12-08T10:52:01.480930",
+    "sport": "tennis",
+    "tournament": "Greece - ATP Athens Challenger",
+    "home_team": "Philip Henning",
+    "away_team": "Sandro Kopp",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|2025 ATP Challenger Bogota (Los Lagartos), Colombia Men Singles, Quarterfinals|Murkel Dellien|Facundo Mena",
+    "timestamp": "2025-12-08T10:52:01.521961",
+    "sport": "tennis",
+    "tournament": "2025 ATP Challenger Bogota (Los Lagartos), Colombia Men Singles, Quarterfinals",
+    "home_team": "Murkel Dellien",
+    "away_team": "Facundo Mena",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Qatar - Qatar QSL Cup|Al-Wakra|Al Shahaniya",
+    "timestamp": "2025-12-08T10:52:01.541382",
+    "sport": "football",
+    "tournament": "Qatar - Qatar QSL Cup",
+    "home_team": "Al-Wakra",
+    "away_team": "Al Shahaniya",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Slovenian Cup|NK Brinje Grosuplje|NK Slovenska Bistrica",
+    "timestamp": "2025-12-08T10:52:01.561176",
+    "sport": "football",
+    "tournament": "Slovenian Cup",
+    "home_team": "NK Brinje Grosuplje",
+    "away_team": "NK Slovenska Bistrica",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Paraguay - Paraguay Primera Division|Club Libertad Asunci\u00f3n|Club General Caballero JLM",
+    "timestamp": "2025-12-08T10:52:01.584560",
+    "sport": "football",
+    "tournament": "Paraguay - Paraguay Primera Division",
+    "home_team": "Club Libertad Asunci\u00f3n",
+    "away_team": "Club General Caballero JLM",
+    "suggested_league": null
+  },
+  {
+    "key": "other|MODUS Super Series|Neil Duff|Keegan Brown",
+    "timestamp": "2025-12-08T10:52:01.606695",
+    "sport": "other",
+    "tournament": "MODUS Super Series",
+    "home_team": "Neil Duff",
+    "away_team": "Keegan Brown",
+    "suggested_league": null
+  },
+  {
+    "key": "football|CAF Confederation Cup|ZESCO United|El-Masry",
+    "timestamp": "2025-12-08T10:52:01.635226",
+    "sport": "football",
+    "tournament": "CAF Confederation Cup",
+    "home_team": "ZESCO United",
+    "away_team": "El-Masry",
+    "suggested_league": null
+  },
+  {
+    "key": "other|SVNS|Argentina|Fiji",
+    "timestamp": "2025-12-08T10:52:01.651497",
+    "sport": "other",
+    "tournament": "SVNS",
+    "home_team": "Argentina",
+    "away_team": "Fiji",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Australian A-League|Wellington Phoenix|Adelaide United",
+    "timestamp": "2025-12-08T10:52:01.676549",
+    "sport": "football",
+    "tournament": "Australian A-League",
+    "home_team": "Wellington Phoenix",
+    "away_team": "Adelaide United",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Romania - Romania Liga II|AFC ASA Tg.Mure\u015f|Concordia Chiajna",
+    "timestamp": "2025-12-08T10:52:01.701528",
+    "sport": "football",
+    "tournament": "Romania - Romania Liga II",
+    "home_team": "AFC ASA Tg.Mure\u015f",
+    "away_team": "Concordia Chiajna",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|Temuco Challenger 2025|Arias/Ingildsen|Ayeni/Milavsky",
+    "timestamp": "2025-12-08T10:52:01.724531",
+    "sport": "tennis",
+    "tournament": "Temuco Challenger 2025",
+    "home_team": "Arias/Ingildsen",
+    "away_team": "Ayeni/Milavsky",
+    "suggested_league": null
+  },
+  {
+    "key": "other|Australia - Australia Big Bash Women|Melbourne Renegades Women|Melbourne Stars Women",
+    "timestamp": "2025-12-08T10:52:01.759637",
+    "sport": "other",
+    "tournament": "Australia - Australia Big Bash Women",
+    "home_team": "Melbourne Renegades Women",
+    "away_team": "Melbourne Stars Women",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Poland - Poland I liga|Miedz Legnica|GKS Tychy",
+    "timestamp": "2025-12-08T10:52:01.779839",
+    "sport": "football",
+    "tournament": "Poland - Poland I liga",
+    "home_team": "Miedz Legnica",
+    "away_team": "GKS Tychy",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Belgium - Belgium First Division B|Beerschot VA|RFC de Li\u00e8ge",
+    "timestamp": "2025-12-08T10:52:01.802697",
+    "sport": "football",
+    "tournament": "Belgium - Belgium First Division B",
+    "home_team": "Beerschot VA",
+    "away_team": "RFC de Li\u00e8ge",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Australian A-League|Auckland FC|Newcastle United Jets",
+    "timestamp": "2025-12-08T10:52:01.822476",
+    "sport": "football",
+    "tournament": "Australian A-League",
+    "home_team": "Auckland FC",
+    "away_team": "Newcastle United Jets",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Americas - Copa Libertadores|Palmeiras|Flamengo",
+    "timestamp": "2025-12-08T10:52:01.851937",
+    "sport": "football",
+    "tournament": "Americas - Copa Libertadores",
+    "home_team": "Palmeiras",
+    "away_team": "Flamengo",
+    "suggested_league": null
+  },
+  {
+    "key": "football|CAF Confederation Cup|Singida Black Stars SC|Stellenbosch FC",
+    "timestamp": "2025-12-08T10:52:01.874951",
+    "sport": "football",
+    "tournament": "CAF Confederation Cup",
+    "home_team": "Singida Black Stars SC",
+    "away_team": "Stellenbosch FC",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Italy - Italy Serie C Girone C|Foggia|Cosenza Calcio",
+    "timestamp": "2025-12-08T10:52:01.905288",
+    "sport": "football",
+    "tournament": "Italy - Italy Serie C Girone C",
+    "home_team": "Foggia",
+    "away_team": "Cosenza Calcio",
+    "suggested_league": null
+  },
+  {
+    "key": "other|United States of America - NFL|Minnesota Vikings|Seattle Seahawks",
+    "timestamp": "2025-12-08T10:52:01.927318",
+    "sport": "other",
+    "tournament": "United States of America - NFL",
+    "home_team": "Minnesota Vikings",
+    "away_team": "Seattle Seahawks",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Italy - Italy Serie C Girone B|Campobasso FC|US Pianese ASD",
+    "timestamp": "2025-12-08T10:52:01.949869",
+    "sport": "football",
+    "tournament": "Italy - Italy Serie C Girone B",
+    "home_team": "Campobasso FC",
+    "away_team": "US Pianese ASD",
+    "suggested_league": null
+  },
+  {
+    "key": "other|German DEL|Dresdner Eislowen|Red Bull Munich",
+    "timestamp": "2025-12-08T10:52:01.984229",
+    "sport": "other",
+    "tournament": "German DEL",
+    "home_team": "Dresdner Eislowen",
+    "away_team": "Red Bull Munich",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Bolivia Primera Division|Oriente Petrolero|Blooming Santa Cruz",
+    "timestamp": "2025-12-08T10:52:02.006943",
+    "sport": "football",
+    "tournament": "Bolivia Primera Division",
+    "home_team": "Oriente Petrolero",
+    "away_team": "Blooming Santa Cruz",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Cypriot First Division|Omonia Nicosia|Omonia Aradippou",
+    "timestamp": "2025-12-08T10:52:02.033388",
+    "sport": "football",
+    "tournament": "Cypriot First Division",
+    "home_team": "Omonia Nicosia",
+    "away_team": "Omonia Aradippou",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Turkish Cup|Sakaryaspor|Genclerbirligi",
+    "timestamp": "2025-12-08T10:52:02.050845",
+    "sport": "football",
+    "tournament": "Turkish Cup",
+    "home_team": "Sakaryaspor",
+    "away_team": "Genclerbirligi",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Honduran Soccer - Honduras Liga Nacional|Club Deportivo Victoria|CD Choloma",
+    "timestamp": "2025-12-08T10:52:02.077776",
+    "sport": "football",
+    "tournament": "Honduran Soccer - Honduras Liga Nacional",
+    "home_team": "Club Deportivo Victoria",
+    "away_team": "CD Choloma",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Turkey - Turkey Cup|Keci\u00f6reng\u00fcc\u00fc|Kayserispor",
+    "timestamp": "2025-12-08T10:52:02.096635",
+    "sport": "football",
+    "tournament": "Turkey - Turkey Cup",
+    "home_team": "Keci\u00f6reng\u00fcc\u00fc",
+    "away_team": "Kayserispor",
+    "suggested_league": null
+  },
+  {
+    "key": "other|CEV Challenge Cup, Women|SC Balta|Ok Nebo",
+    "timestamp": "2025-12-08T10:52:02.119806",
+    "sport": "other",
+    "tournament": "CEV Challenge Cup, Women",
+    "home_team": "SC Balta",
+    "away_team": "Ok Nebo",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|Ecuador - WTA Quito 125K Series|Tatjana Maria|Irene Burillo",
+    "timestamp": "2025-12-08T10:52:02.142179",
+    "sport": "tennis",
+    "tournament": "Ecuador - WTA Quito 125K Series",
+    "home_team": "Tatjana Maria",
+    "away_team": "Irene Burillo",
+    "suggested_league": null
+  },
+  {
+    "key": "tennis|Ecuador - WTA Quito 125K Series|Panna Udvardy|Laura Samson",
+    "timestamp": "2025-12-08T10:52:02.165827",
+    "sport": "tennis",
+    "tournament": "Ecuador - WTA Quito 125K Series",
+    "home_team": "Panna Udvardy",
+    "away_team": "Laura Samson",
+    "suggested_league": null
+  },
+  {
+    "key": "other|International League T20|Dubai Capitals|Gulf Giants",
+    "timestamp": "2025-12-08T10:52:02.187783",
+    "sport": "other",
+    "tournament": "International League T20",
+    "home_team": "Dubai Capitals",
+    "away_team": "Gulf Giants",
+    "suggested_league": null
+  },
+  {
+    "key": "football|Slovenia - Slovenia Prva Liga|NK Radomlje|N\u0160 Mura",
+    "timestamp": "2025-12-08T10:52:02.209809",
+    "sport": "football",
+    "tournament": "Slovenia - Slovenia Prva Liga",
+    "home_team": "NK Radomlje",
+    "away_team": "N\u0160 Mura",
+    "suggested_league": null
+  }
+]

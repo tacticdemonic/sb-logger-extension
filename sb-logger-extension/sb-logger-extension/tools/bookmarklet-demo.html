@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset='utf-8'/>
+    <title>Surebet Helper Bookmarklet Demo</title>
+    <style>body{font-family:Arial,Helvetica,sans-serif;margin:20px}</style>
+  </head>
+  <body>
+    <h1>Surebet Helper: Bookmarklet Demo</h1>
+    <p>This demo shows the bookmarklet and provides instructions.</p>
+    <h2>Bookmarklet</h2>
+    <p>Create a bookmark and use the following as the URL:</p>
+    <textarea id='bookmarklet' rows='6' cols='120'></textarea>
+    <p><button id='copyBtn'>Copy to Clipboard</button></p>
+    <script>
+      fetch('create_issue_bookmarklet.js').then(r=>r.text()).then(js=>{
+        // run the file here to produce the console log output (it prints a string to console)
+        // The file already writes the bookmarklet to console, but here we'll extract the single line and use it
+        // For demonstration, find the string between `console.log(bookmarklet)` - the file prints it direct, so we run it and capture the string by executing
+        // The script in file prints the bookmarklet, but here we'll approximate by minifying helper.
+        const snippet = `javascript:(function(){function getClosestHtml(el, levels){var html='';var node=el;for(var i=0;i<levels&&node;i++){html+=node.outerHTML+'\\n';node=node.parentElement}return html}function sanitize(s){return (s||'').replace(/\\s+/g,' ').trim()}var inputs=Array.from(document.querySelectorAll('input[type="number"], input[type="text"], input.betslip-size-input, input[bf-number-restrict]')).filter(i=>i.offsetHeight>0&&i.offsetWidth>0).map(i=>({type:i.type||'',className:i.className||'',placeholder:i.placeholder||'',name:i.name||'',id:i.id||'',value:i.value||'',parentClasses:i.parentElement?i.parentElement.className:'',html:getClosestHtml(i,3)}));var containers=Array.from(document.querySelectorAll('[class*="slip"],[class*="bet"],[class*="order"],[class*="panel"], .betslip-container')).filter(c=>c.offsetHeight>50).map(c=>({className:c.className,html:c.outerHTML}));var dataAttrs=Array.from(document.querySelectorAll('[data-test],[data-testid],[data-test-id]')).filter(a=>a.offsetHeight>0).map(a=>({dataset:{...a.dataset},node:a.tagName,className:a.className}));var results={url:location.href,timestamp:(new Date()).toISOString(),inputs:inputs,containers:containers,dataAttributes:dataAttrs,userAgent:navigator.userAgent};var title=prompt('Exchange name for issue (e.g. Betfair):',location.hostname)||location.hostname;var issueBody='**Console JSON:**\\n\\n```json\\n'+JSON.stringify(results,null,2)+'\\n```\\n\\n**HTML of stake input (closest):**\\n\\n'+(inputs[0]?('```html\\n'+inputs[0].html+'\\n```'):'(none found)')+'\\n\\n**Steps to reproduce:**\\n- Open: '+location.href+'\\n- Actions: [add selection, open betslip]\\n\\n**Browser / OS:** '+navigator.userAgent+'\\n\\n**Notes:** Please use the Add Exchange Support issue template.';var repoUrl='https://github.com/tacticdemonic/surebet-helper-extension/issues/new?template=add-exchange.md&title='+encodeURIComponent('Add Support for '+title)+'&body='+encodeURIComponent(issueBody)+'&labels=enhancement';if(issueBody.length>8000){window.open('https://github.com/tacticdemonic/surebet-helper-extension/issues/new?template=add-exchange.md&title='+encodeURIComponent('Add Support for '+title),'_blank');alert('Issue body is too large to auto-fill. A new issue page has been opened — paste the JSON into the Console JSON field.');return}else{window.open(repoUrl,'_blank')}})();`;
+        document.getElementById('bookmarklet').value = snippet;
+        document.getElementById('copyBtn').addEventListener('click', async ()=>{
+          await navigator.clipboard.writeText(document.getElementById('bookmarklet').value);
+          alert('Bookmarklet copied to clipboard');
+        });
+      }).catch(e=>{
+        console.error(e);
+        document.getElementById('bookmarklet').value = 'Error fetching create_issue_bookmarklet.js: ' + e;
+      });
+    </script>
+  </body>
+</html>
+
+
+

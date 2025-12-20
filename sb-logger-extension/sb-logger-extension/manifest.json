@@ -1,0 +1,74 @@
+﻿{
+    "manifest_version":  3,
+    "name":  "Surebet Helper - Save Bets",
+    "version": "1.1.4",
+    "description":  "Track and analyze value bets from surebet.com. Save bets with one click, auto-fill stakes on exchanges, auto-check results, view P/L charts, track CLV (22 European football leagues, 1X2/O/U/AH markets), and export data.",
+    "author":  "Surebet Helper Team",
+    "homepage_url":  "https://github.com/tacticdemonic/surebet-helper-extension",
+    "browser_specific_settings":  {
+                                      "gecko":  {
+                                                    "id":  "surebet-helper@tacticdemonic.github.io",
+                                                    "strict_min_version":  "140.0",
+                                                    "data_collection_permissions":  {
+                                                                                        "required":  [
+                                                                                                         "none"
+                                                                                                     ]
+                                                                                    }
+                                                }
+                                  },
+    "icons":  {
+                  "48":  "icons/icon48.png",
+                  "96":  "icons/icon96.png"
+              },
+    "permissions":  [
+                        "storage",
+                        "alarms",
+                        "notifications",
+                        "contextMenus",
+                        "downloads",
+                        "tabs",
+                        "scripting"
+                    ],
+    "host_permissions":  [
+                             "https://www.football-data.co.uk/*",
+                             "https://api.the-odds-api.com/*",
+                             "https://v3.football.api-sports.io/*",
+                             "*://*.surebet.com/*",
+                             "*://*.betfair.com/*",
+                             "*://*.smarkets.com/*",
+                             "*://*.matchbook.com/*",
+                             "*://*.betdaq.com/*"
+                         ],
+    "action":  {
+                   "default_icon":  {
+                                        "48":  "icons/icon48.png",
+                                        "96":  "icons/icon96.png"
+                                    },
+                   "default_title":  "Surebet Helper",
+                   "default_popup":  "popup.html"
+               },
+    "background":  {
+                       "scripts":  [
+                                       "footballDataLeagues.js",
+                                       "csvClvService.js",
+                                       "fuzzyMatcher.js",
+                                       "prop_poller.js",
+                                       "background.js"
+                                   ]
+                   },
+    "content_scripts":  [
+                            {
+                                "matches":  [
+                                            "*://*.surebet.com/*",
+                                            "*://*.betfair.com/*",
+                                            "*://*.smarkets.com/*",
+                                            "*://*.matchbook.com/*",
+                                            "*://*.betdaq.com/*"
+                                        ],
+                                "js":  [
+                                           "contentScript.js"
+                                       ],
+                                "run_at":  "document_idle"
+                            }
+                        ]
+}

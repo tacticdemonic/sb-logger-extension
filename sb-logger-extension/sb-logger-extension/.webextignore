@@ -1,0 +1,5 @@
+tools/
+*.md
+.git
+.gitignore
+node_modules/

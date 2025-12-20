@@ -1,0 +1,87 @@
+{
+  "bets": [
+    {
+      "id": 1700000001000,
+      "timestamp": 1700000001000,
+      "uid": "550e8400-e29b-41d4-a716-446655440001",
+      "bookmaker": "Bet365",
+      "sport": "Football",
+      "event": "Manchester City vs Liverpool",
+      "odds": 1.95,
+      "probability": 51.28,
+      "stake": 10,
+      "overvalue": 2.5,
+      "potentialReturn": 19.50,
+      "profit": 9.50,
+      "expectedValue": 0.25,
+      "status": "pending",
+      "isLay": false,
+      "note": "Test bet 1"
+    },
+    {
+      "id": 1700000002000,
+      "timestamp": 1700000002000,
+      "uid": "550e8400-e29b-41d4-a716-446655440002",
+      "bookmaker": "Betfair",
+      "sport": "Football",
+      "event": "Chelsea vs Arsenal",
+      "odds": 2.10,
+      "probability": 47.62,
+      "stake": 15,
+      "overvalue": 1.8,
+      "potentialReturn": 31.50,
+      "profit": 16.50,
+      "expectedValue": 0.27,
+      "status": "won",
+      "isLay": false,
+      "note": "Test bet 2 - settled"
+    },
+    {
+      "id": 1700000003000,
+      "timestamp": 1700000003000,
+      "uid": "550e8400-e29b-41d4-a716-446655440003",
+      "bookmaker": "Smarkets",
+      "sport": "Tennis",
+      "event": "Djokovic vs Alcaraz",
+      "odds": 1.85,
+      "probability": 54.05,
+      "stake": 20,
+      "overvalue": 3.2,
+      "potentialReturn": 37.00,
+      "profit": 17.00,
+      "expectedValue": 0.54,
+      "status": "lost",
+      "isLay": false,
+      "note": "Test bet 3 - lost"
+    },
+    {
+      "event": "Test Team A vs Test Team B",
+      "bookmaker": "ExampleExchange",
+      "odds": "1.5",
+      "stake": "50",
+      "sport": "Basketball"
+    }
+  ],
+  "analysis": {
+    "tiers": {
+      "low_value": 0,
+      "medium_value": 1,
+      "high_value": 2
+    },
+    "bookmakers": {
+      "Bet365": 1,
+      "Betfair": 1,
+      "Smarkets": 1
+    },
+    "temporal": {
+      "today": 0,
+      "this_week": 3,
+      "this_month": 3
+    },
+    "kelly": {
+      "optimal_stake": 10.5,
+      "average_odds": 1.95,
+      "win_rate": 0.33
+    }
+  }
+}
